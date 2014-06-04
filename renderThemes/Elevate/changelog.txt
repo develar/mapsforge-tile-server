@@ -1,0 +1,145 @@
+2.2.0 01/06/14
+- optimized rendering at zoom 12 and 13 for place names
+- limited poi symbols to zoom 14 and larger and added low zoom markers (zoom 12+13) for important pois
+- included MTB-scale in Elevelo (not in Elements because of sac_scale)
+- added symbol for farmyard, archaeological_site, wayside_shrine, tundra
+- removed green overlay for protected areas at lower zooms
+- changed priority for camp_sites/caravan_sites, rendering for landfill, contour lines at lower zooms, rendering of surface
+
+2.1.2 11/05/14
+- added zoom-min for huts, name for tourism=information without information details 
+- improved motorway_junction, aeroway symbols
+- removed surface coloring for major highways
+
+2.1.1 04/05/14
+- Elements: removed zoom-min for shelter caption, green overlay for protected areas
+- fixed grave_yard caption
+- added surface coloring to highways (except path, track, byway, bridleway, motorway)
+- adjusted some dy for Java map viewers
+
+2.1.0 19/03/14
+- new variation: Elements with cycling & hiking routes and little zoom-mins - for sparsely populated/mapped areas
+- added emergency phone, mini_roundabout, desert, vending=bicycle_tube, religion=buddhist/shinto/hindu, border_control, raceway, bus_guideway, helipad area
+- improved contour lines, closed piste areas
+- changed MTB routes to orange
+- some clean-up & restructuring & zoom-min changes
+
+2.0.1 09/03/14
+- fixed tertiary_link, ele for summits, ford on nodes
+- added buildings to captions, symbol for sports_centre
+- some clean-up & zoom-min changes
+
+2.0.0 22/02/14
+- new theme sizes: L for xhdpi (300+) and XL for xxhdpi (450+) devices
+- new variation: Elevelo with cycling routes instead of hiking routes, therefore no cyling routes in other variants anymore
+- completely reworked symbol set: unified & optimized, lots of modifications, different glow
+- new symbols for bench, geyser, info terminal, railway crossings, sports shop, train station, via ferrata, waterfall, aerialways, information office
+- new larger patterns at zoom 16+
+- new cemetary pattern, reworked fell/heath/marsh/rock/scree/scrub pattern
+- new rendering for military areas/swimming areas
+- added drinking_water for fountains, toll highways, fords
+- improved hknetworks on tracks
+- removed locus bug workaround (bug is fixed in Locus 2.19)
+- switch to one ressource folder with relative paths for Locus themes
+- some clean-up and fine-tuning
+
+1.3.1 01/02/14
+- improved pattern protected_area z16+, rendering of safety measures ways, wetland pattern, zoom-min for landcover, hike nodes, piste:downhill
+- added name for graveyard/cemetery, .nomedia file, slight indicator for sac_scale T5/T6, earlier names for camp_site/caravan_site
+- removed cycle networks at zoom 11-14 in Elegant
+
+1.3.0 12/01/14
+- new rendering of hiking routes, many thanks to Maki for inspiration!
+- new folder name for symbols/patterns, seperate download for easier installation on Locus
+- added trail_visibility, winter_room for alpine_huts, rendering of various POI ways without building tag, market_place, chalet, barrier=block, shelter_type, seperate color for farmland, waterway bridges
+- improved rendering of hkr refs, rendering of tunnels, safety_rope and ladder symbol, rendering of safety measures way, rock pattern, oneway symbol, leisure=track, ridge/arete, highway=track
+- changed early appearance of alpine_hut names (reason: too often wrong tagged), width of highway=cycleway/service, core color cycleway, color of waterways/bodies of water, pipeline caption color, footway/bridge/barrier color, color for various POI areas
+- moved POI name block for better priorities, adjusted some POI zoom-min
+- removed transparency from beach/sand, coastline, transparency of bodies of water at zoom till 13, alpine_hut without name
+- better "glow" for non-sjjb symbols
+- workarounds for Locus "~"-Bug on nodes
+- some fine-tuning
+
+1.2.1 25/12/13
+- improved rendering of sled pistes, school/college/university areas, historic buildings/areas, biergarten area, tourism=attraction, spring rendering
+- removed swimming symbol from swimming_pools with sport=swimming
+- reduced font-size for path etc. names
+- refined forest pattern, rock pattern
+
+1.2.0 17/12/13
+- new subtheme "Elegant" for cities (without hiking routes and less obtrusive paths/footways)
+- new rendering for cycle networks, blue borders on highways
+- names for nearly every symbol starting zoom 18
+- added lots of shops, name for restaurant nodes, name for pipelines, waterways/pipelines in tunnels, symbol for tourism=information without further details, closed=no to networks
+- simplified place_of_worship etc. and more clean-up
+- improved viewpoints, railway ways, access patterns, rock pattern, swimming_pool/swimming/water_park, public transport stations, highway casings, protected area pattern zoom 14+
+- changed rendering for tourist attraction ways/areas/added area pattern, bridges, walls
+- reduced zoom-min for barrier, bus_stop/tram_stop/railway halt captions
+- installation instructions included
+- lots of fine-tuning
+
+1.1.3 01/12/13
+- changed tourism information to any, area colors: industrial etc./school etc./retail, lowered level of residential/industrial etc./retail 
+- improved attraction, pedestrian area/highway, bus_stop/tram_stop captions, swimming_pool
+- turned some nodes into any, added memorial/monument area
+- joined nature_reserve/national_park/protected_area for new handling in OAM
+- added safety_rope, rungs, ladder
+
+1.1.2 23/11/13
+- improved leisure areas, nature_reserve, access patterns, highway=construction, construction bridges, rendering of motorway junctions and motorway refs, tunnels, conflicting refs/names of highways, highway areas
+- added motorway junction names, zoom-min at way tourism attraction captions, transparency to buildings zoom-min=17
+- removed city circles, tunnel platforms
+- simplified shops, highway captions
+- less transparency in patterns
+
+1.1.1 17/11/13
+- fixed meadow names
+- added motorway junctions
+- changed highway=construction
+- changed orchard/protected area names to poly labels
+
+1.1.0 15/11/13
+- massive code clean-up and restructuring, lots of fine-tuning
+- reduced and adjusted landuse/area colors
+- new wood/forest patterns, incl. coniferous/deciduous
+- hiking routes enhanced rendering on tracks/paths, now visible on roads
+- improved: turning circles, highway refs, places, places of worship, tourism attraction, tracks, barrier ways, cliffs, landfill/quarry, tourist information, pier, bridges, tunnels, streets, administrative borders, dam, dock, weir, lock, walls, steps, suburb, river/stream/canal/ditch width
+- added: isolated_dwelling, grassland, tourism attraction, orchard, vineyard, spring drinking_water no/yes, doctors, geyser, coastline, nordic pistes, gorge, water_point, wayside_cross, polylabels: forest/orchard, waterfall, rapids, symbol parking_private, police, slipway, museum, lighthouse, aeroway gate, golf, shooting, embassy, zoo, ele to places, ele/name to guidepost/viewpoint, ruins/castle area, summit:cross, pipeline, weir symbol, generator, alpine_hut access, ele to lots of amenities/spring/place_of_worship, ele to bodies of water, sac_scale to steps
+- changed mountain pass/building text color to be in line with general coloring, changed peak/place color
+- changed symbols for bench, picnic_site, bus stop, tram stop
+- added serif italic font style for landscape information etc.
+- some fixes for Locus
+
+1.0.7 15/10/13
+- removed: startoffset, tree limit rule
+- less transparency for areas
+- alpine_hut icon without zoom restriction again
+- less obstrusive nature_reserve pattern
+- better visibility for fell pattern
+
+1.0.6 12/10/13
+- added zoom restriction to some amenities/aerial ways
+- reduced transparency for water, added transparency for reservoirs
+
+1.0.5 12/10/13
+- transparency in landuses/patterns
+- changed some caption colors
+- smaller sled pistes
+- new rendering for bridleways
+- optimized route refs/names
+
+1.0.4 05/10/13
+- code clean-up
+- adjusted zoom restriction and sizes for various captions
+- optimized swimming/spa etc.
+- added historic symbols
+- removed area for closed cliffs
+- more transparency in wood pattern
+
+1.0.1-1.03 30/09/13 
+- zoom restriction for alpine_hut icon
+- zoom restriction for elevation information
+- bug fix
+
+1.0 30/09/13 
+- first public release

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module type="JAVA_MODULE" version="4">
+  <component name="NewModuleRootManager" inherit-compiler-output="true">
+    <exclude-output />
+    <content url="file://$MODULE_DIR$">
+      <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" />
+    </content>
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="module-library">
+      <library name="cli-parser">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/lib/cli-parser-1.1.2.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://$MODULE_DIR$/lib/cli-parser-1.1.2-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="library" name="annotations" level="project" />
+    <orderEntry type="module-library">
+      <library name="mapsforge">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/lib/mapsforge-core-0.5.0-SNAPSHOT.jar!/" />
+          <root url="jar://$MODULE_DIR$/lib/mapsforge-map-0.5.0-SNAPSHOT.jar!/" />
+          <root url="jar://$MODULE_DIR$/lib/mapsforge-map-awt-0.5.0-SNAPSHOT.jar!/" />
+          <root url="jar://$MODULE_DIR$/lib/mapsforge-map-reader-0.5.0-SNAPSHOT.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="library" name="netty" level="project" />
+    <orderEntry type="module-library">
+      <library name="pngj">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/lib/pngj-2.0.0.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://$MODULE_DIR$/lib/pngj-2.0.0-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+  </component>
+</module>
+
