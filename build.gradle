@@ -1,0 +1,35 @@
+apply plugin: 'java'
+
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
+version = '0.1'
+
+sourceSets {
+  main {
+    java {
+      srcDir 'src'
+    }
+  }
+}
+
+repositories {
+  flatDir {
+    dirs 'lib'
+  }
+}
+
+dependencies {
+  compile name: 'annotations'
+  compile name: 'cli-parser', version: '1.+'
+  compile 'guava:guava:17.+'
+  compile 'org.mapsforge:mapsforge-core:0.5.0-SNAPSHOT'
+  compile 'org.mapsforge:mapsforge-map:0.5.0-SNAPSHOT'
+  compile 'org.mapsforge:mapsforge-map-reader:0.5.0-SNAPSHOT'
+  compile 'org.mapsforge:mapsforge-map-awt:0.5.0-SNAPSHOT'
+  compile 'io.netty:netty-all:4.0.19.Final'
+  compile name: 'sqlite4java'
+}
+
+jar {
+  from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+}

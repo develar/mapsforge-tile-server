@@ -1,5 +1,6 @@
 package develar.mapsforgeTileServer;
 
+import com.google.common.cache.Cache;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.*;
 import io.netty.handler.codec.http.*;
@@ -20,9 +21,11 @@ public class TileHttpRequestHandler extends SimpleChannelInboundHandler<FullHttp
   private static final Pattern MAP_TILE_NAME_PATTERN = Pattern.compile("^/(\\d+)/(\\d+)/(\\d+)");
 
   private final TileRenderer tileRenderer;
+  private final Cache<Tile, byte[]> tileCache;
 
-  public TileHttpRequestHandler(@NotNull TileRenderer tileRenderer) {
+  public TileHttpRequestHandler(@NotNull TileRenderer tileRenderer, @NotNull Cache<Tile, byte[]> tileCache) {
     this.tileRenderer = tileRenderer;
+    this.tileCache = tileCache;
   }
 
   @Override
@@ -37,11 +40,17 @@ public class TileHttpRequestHandler extends SimpleChannelInboundHandler<FullHttp
     long x = Long.parseLong(matcher.group(2));
     long y = Long.parseLong(matcher.group(3));
 
-    BufferedImage bufferedImage = tileRenderer.render(new Tile(x, y, zoom));
-    ByteArrayOutputStream out = new ByteArrayOutputStream();
-    ImageIO.write(bufferedImage, "png", out);
-    byte[] bytes = out.toByteArray();
-    out.close();
+    Tile tile = new Tile(x, y, zoom);
+    byte[] bytes = tileCache.getIfPresent(tile);
+    if (bytes == null) {
+      BufferedImage bufferedImage = tileRenderer.render(tile);
+      ByteArrayOutputStream out = new ByteArrayOutputStream();
+      ImageIO.write(bufferedImage, "png", out);
+      bytes = out.toByteArray();
+      out.close();
+
+      tileCache.put(tile, bytes);
+    }
 
     HttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK, Unpooled.wrappedBuffer(bytes));
     response.headers().add(CONTENT_TYPE, "image/png");
