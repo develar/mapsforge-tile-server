@@ -1,7 +1,8 @@
 apply plugin: 'java'
+apply plugin: 'distribution'
 
-sourceCompatibility = 1.7
-targetCompatibility = 1.7
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
 version = '0.1'
 
 sourceSets {
@@ -20,7 +21,7 @@ repositories {
 
 dependencies {
   compile name: 'annotations'
-  compile name: 'cli-parser', version: '1.+'
+  compile name: 'args4j', version: '2.+'
   compile 'guava:guava:17.+'
   compile 'org.mapsforge:mapsforge-core:0.5.0-SNAPSHOT'
   compile 'org.mapsforge:mapsforge-map:0.5.0-SNAPSHOT'
@@ -31,5 +32,21 @@ dependencies {
 }
 
 jar {
-  from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+  manifest.attributes("Main-Class": "develar.mapsforgeTileServer.MapsforgeTileServer", 'Class-Path': "lib/" + configurations.compile.files.collect { it.name }.join(' lib/'))
+  archiveName 'mapsforge-tile-server.jar'
+}
+
+distributions {
+  main {
+      contents {
+          from { 'dist' }
+          from jar
+
+          into('lib') {
+            from('lib') {
+              exclude '**/*-sources.jar', '**/*-src.zip'
+            }
+          }
+      }
+  }
 }

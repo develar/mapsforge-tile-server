@@ -3,7 +3,7 @@ package develar.mapsforgeTileServer;
 import org.jetbrains.annotations.NotNull;
 import org.mapsforge.core.graphics.TileBitmap;
 import org.mapsforge.core.model.Tile;
-import org.mapsforge.map.awt.AwtGraphicFactoryUtil;
+import org.mapsforge.map.awt.AwtGraphicFactory;
 import org.mapsforge.map.layer.renderer.DatabaseRenderer;
 import org.mapsforge.map.layer.renderer.RendererJob;
 import org.mapsforge.map.model.DisplayModel;
@@ -15,17 +15,23 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 
 public class TileRendererImpl implements TileRenderer {
-  @NotNull private final DisplayModel displayModel;
+  private final DisplayModel displayModel;
+  private final File mapFile;
   private XmlRenderTheme xmlRenderTheme;
 
   private final MapDatabase mapDatabase;
   private final DatabaseRenderer databaseRenderer;
-  private File mapFile;
 
-  public TileRendererImpl(@NotNull DisplayModel displayModel) {
+  public TileRendererImpl(@NotNull DisplayModel displayModel, @NotNull File mapFile) {
     this.displayModel = displayModel;
     mapDatabase = new MapDatabase();
     databaseRenderer = new DatabaseRenderer(mapDatabase, MapsforgeTileServer.GRAPHIC_FACTORY);
+
+    this.mapFile = mapFile;
+    FileOpenResult result = mapDatabase.openFile(mapFile);
+    if (!result.isSuccess()) {
+      throw new IllegalArgumentException(result.getErrorMessage());
+    }
   }
 
   public MapDatabase getMapDatabase() {
@@ -36,20 +42,12 @@ public class TileRendererImpl implements TileRenderer {
     this.xmlRenderTheme = xmlRenderTheme;
   }
 
-  public void setMapFile(@NotNull File mapFile) {
-    this.mapFile = mapFile;
-    FileOpenResult result = mapDatabase.openFile(mapFile);
-    if (!result.isSuccess()) {
-      throw new IllegalArgumentException(result.getErrorMessage());
-    }
-  }
-
   @NotNull
   @Override
-  public synchronized BufferedImage render(@NotNull Tile tile) {
+  public BufferedImage render(@NotNull Tile tile) {
     RendererJob rendererJob = new RendererJob(tile, mapFile, xmlRenderTheme, displayModel, 1, false);
     TileBitmap bitmap = databaseRenderer.executeJob(rendererJob);
     bitmap.decrementRefCount();
-    return AwtGraphicFactoryUtil.getBufferedImage(bitmap);
+    return AwtGraphicFactory.getBufferedImage(bitmap);
   }
 }
