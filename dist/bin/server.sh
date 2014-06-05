@@ -57,5 +57,5 @@ fi
 SCRIPT_LOCATION=$0
 MT_HOME=`dirname "$SCRIPT_LOCATION"`/..
 
-exec "$JDK/bin/java" -Djava.awt.headless=true -Duser.language=en -server -Xmx1G -jar "$MT_HOME/mapsforge-tile-server.jar" -theme "$MT_HOME/renderThemes" "$@"
+exec "$JDK/bin/java" -Djava.awt.headless=true -Duser.language=en -server -Xmx1G -jar "$MT_HOME/mapsforge-tile-server.jar" --theme "$MT_HOME/renderThemes" "$@"
 exit 1 
