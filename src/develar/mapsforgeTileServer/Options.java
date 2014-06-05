@@ -15,6 +15,9 @@ public class Options {
   @Option(name = "-port", aliases = {"-p"})
   public int port = 17778;
 
+  @Option(name = "-host", aliases = {"-h"})
+  public String host;
+
   @Option(name = "ms", usage = "Memory cache spec, see http://docs.guava-libraries.googlecode.com/git/javadoc/com/google/common/cache/CacheBuilder.html")
   public String memoryCacheSpec = "maximumSize=" + (1024 * 10);
 
