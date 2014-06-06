@@ -7,6 +7,8 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
+import io.netty.channel.epoll.EpollEventLoopGroup;
+import io.netty.channel.epoll.EpollServerSocketChannel;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.http.HttpObjectAggregator;
@@ -100,8 +102,9 @@ public class MapsforgeTileServer {
   }
 
   private void startServer(@NotNull Options options) {
-    final EventLoopGroup bossGroup = new NioEventLoopGroup();
-    final EventLoopGroup workerGroup = new NioEventLoopGroup();
+    boolean isLinux = System.getProperty("os.name").toLowerCase(Locale.US).startsWith("linux");
+    final EventLoopGroup bossGroup = isLinux ? new EpollEventLoopGroup() : new NioEventLoopGroup();
+    final EventLoopGroup workerGroup = isLinux ? new EpollEventLoopGroup() : new NioEventLoopGroup();
     final ChannelRegistrar channelRegistrar = new ChannelRegistrar();
 
     Runtime.getRuntime().addShutdownHook(new Thread(() -> {
@@ -117,7 +120,7 @@ public class MapsforgeTileServer {
     final TileHttpRequestHandler tileHttpRequestHandler = new TileHttpRequestHandler(this, CacheBuilder.from(options.memoryCacheSpec).<Tile, RenderedTile>build());
     ServerBootstrap serverBootstrap = new ServerBootstrap();
     serverBootstrap.group(bossGroup, workerGroup)
-      .channel(NioServerSocketChannel.class)
+      .channel(isLinux ? EpollServerSocketChannel.class : NioServerSocketChannel.class)
       .option(ChannelOption.SO_BACKLOG, 100)
       .childHandler(new ChannelInitializer<Channel>() {
         @Override

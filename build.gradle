@@ -27,13 +27,14 @@ dependencies {
   compile 'org.mapsforge:mapsforge-map:0.5.0-SNAPSHOT'
   compile 'org.mapsforge:mapsforge-map-reader:0.5.0-SNAPSHOT'
   compile 'org.mapsforge:mapsforge-map-awt:0.5.0-SNAPSHOT'
-  compile 'io.netty:netty-all:4.0.19.Final'
+  compile name: 'netty-all', version: '4.+'
   compile name: 'sqlite4java'
   compile name: 'webp-imageio'
 }
 
 jar {
-  manifest.attributes("Main-Class": "develar.mapsforgeTileServer.MapsforgeTileServer", 'Class-Path': "lib/" + configurations.compile.files.collect { it.name }.join(' lib/'))
+  from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+  manifest.attributes("Main-Class": "org.develar.mapsforgeTileServer.MapsforgeTileServer")
   archiveName 'mapsforge-tile-server.jar'
 }
 
@@ -45,7 +46,7 @@ distributions {
 
           into('lib') {
             from('lib') {
-              exclude '**/*-sources.jar', '**/*-src.zip'
+              include '**/*.so', '**/*.dylib', '**/*.dll'
             }
           }
       }
