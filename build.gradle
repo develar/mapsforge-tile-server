@@ -29,6 +29,7 @@ dependencies {
   compile 'org.mapsforge:mapsforge-map-awt:0.5.0-SNAPSHOT'
   compile 'io.netty:netty-all:4.0.19.Final'
   compile name: 'sqlite4java'
+  compile name: 'webp-imageio'
 }
 
 jar {

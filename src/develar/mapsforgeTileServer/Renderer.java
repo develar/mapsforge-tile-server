@@ -3,27 +3,18 @@ package develar.mapsforgeTileServer;
 import org.jetbrains.annotations.NotNull;
 import org.mapsforge.core.model.Tile;
 
-import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.IOException;
 
 public final class Renderer {
   private TileRendererImpl[] tileRenderers;
 
-  public byte[] render(@NotNull Tile tile, @NotNull MapsforgeTileServer tileServer) throws IOException {
+  @NotNull
+  public BufferedImage render(@NotNull Tile tile, @NotNull MapsforgeTileServer tileServer) {
     if (tileRenderers == null) {
       tileRenderers = new TileRendererImpl[tileServer.maps.length];
     }
-
-    TileRenderer tileRenderer = getTileRenderer(tileServer);
-    BufferedImage bufferedImage = tileRenderer.render(tile);
-    ByteArrayOutputStream out = new ByteArrayOutputStream(8 * 1024);
-    ImageIO.write(bufferedImage, "png", out);
-    byte[] bytes = out.toByteArray();
-    out.close();
-    return bytes;
+    return getTileRenderer(tileServer).render(tile);
   }
 
   @NotNull

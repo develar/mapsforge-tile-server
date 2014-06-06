@@ -23,28 +23,38 @@ import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.*;
 import io.netty.util.CharsetUtil;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.nio.charset.Charset;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoField;
+import java.time.temporal.TemporalAccessor;
 import java.util.Locale;
-import java.util.TimeZone;
 
 import static io.netty.handler.codec.http.HttpHeaders.Names.*;
 
 public final class Responses {
-  private static final ThreadLocal<DateFormat> DATE_FORMAT = new ThreadLocal<DateFormat>() {
-    @Override
-    protected DateFormat initialValue() {
-      //noinspection SpellCheckingInspection
-      SimpleDateFormat format = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.US);
-      format.setTimeZone(TimeZone.getTimeZone("GMT"));
-      return format;
+  private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.US);
+
+  private static final ZoneId GMT_ZONE_ID = ZoneId.of("GMT");
+
+  public static String formatTime(long epochSecond) {
+    return DATE_FORMAT.format(ZonedDateTime.ofInstant(Instant.ofEpochSecond(epochSecond), GMT_ZONE_ID));
+  }
+
+  public static long parseTime(@NotNull String time) {
+    TemporalAccessor temporalAccessor = DATE_FORMAT.parse(time);
+    if (ChronoField.INSTANT_SECONDS.isSupportedBy(temporalAccessor)) {
+      return temporalAccessor.getLong(ChronoField.INSTANT_SECONDS);
     }
-  };
+    else {
+      return ZonedDateTime.from(temporalAccessor).toEpochSecond();
+    }
+  }
 
   public static FullHttpResponse response(HttpResponseStatus status) {
     return new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, status, Unpooled.EMPTY_BUFFER);
@@ -59,18 +69,18 @@ public final class Responses {
     return response;
   }
 
-  public static void addAllowAnyOrigin(HttpResponse response) {
+  public static void addAllowAnyOrigin(@NotNull HttpResponse response) {
     response.headers().add(ACCESS_CONTROL_ALLOW_ORIGIN, "*");
   }
 
-  public static void addDate(HttpResponse response) {
+  public static void addDate(@NotNull HttpResponse response) {
     if (!response.headers().contains(DATE)) {
-      addDate(response, Calendar.getInstance().getTime());
+      addDate(response, ZonedDateTime.now(GMT_ZONE_ID));
     }
   }
 
-  public static void addDate(HttpResponse response, Date date) {
-    response.headers().set(DATE, DATE_FORMAT.get().format(date));
+  public static void addDate(@NotNull HttpResponse response, @NotNull ZonedDateTime temporal) {
+    response.headers().set(DATE, DATE_FORMAT.format(temporal));
   }
 
   public static void addNoCache(HttpResponse response) {

@@ -1,5 +1,6 @@
 package develar.mapsforgeTileServer;
 
+import com.google.common.base.Strings;
 import com.google.common.cache.CacheBuilder;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
@@ -113,7 +114,7 @@ public class MapsforgeTileServer {
       }
     }));
 
-    final TileHttpRequestHandler tileHttpRequestHandler = new TileHttpRequestHandler(this, CacheBuilder.from(options.memoryCacheSpec).<Tile, byte[]>build());
+    final TileHttpRequestHandler tileHttpRequestHandler = new TileHttpRequestHandler(this, CacheBuilder.from(options.memoryCacheSpec).<Tile, RenderedTile>build());
     ServerBootstrap serverBootstrap = new ServerBootstrap();
     serverBootstrap.group(bossGroup, workerGroup)
       .channel(NioServerSocketChannel.class)
@@ -129,7 +130,7 @@ public class MapsforgeTileServer {
       .childOption(ChannelOption.SO_KEEPALIVE, true)
       .childOption(ChannelOption.TCP_NODELAY, true);
 
-    InetSocketAddress address = options.host == null ? new InetSocketAddress(options.port) : new InetSocketAddress(options.host, options.port);
+    InetSocketAddress address = Strings.isNullOrEmpty(options.host) ? new InetSocketAddress(options.port) : new InetSocketAddress(options.host, options.port);
     Channel serverChannel = serverBootstrap.bind(address).syncUninterruptibly().channel();
     channelRegistrar.add(serverChannel);
     System.out.println("Listening " + address.getHostName() + ":" + address.getPort());

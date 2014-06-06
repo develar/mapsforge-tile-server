@@ -46,6 +46,15 @@
       </library>
     </orderEntry>
     <orderEntry type="library" name="args4j" level="project" />
+    <orderEntry type="module-library">
+      <library name="webp">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/lib/webp-imageio.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
   </component>
 </module>
 
