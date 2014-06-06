@@ -86,7 +86,7 @@ public class TileHttpRequestHandler extends SimpleChannelInboundHandler<FullHttp
     long y = Long.parseLong(matcher.group(3));
 
     ImageFormat imageFormat = ImageFormat.fromName(matcher.group(4));
-    boolean useVaryAccept = imageFormat == null && ;
+    boolean useVaryAccept = imageFormat == null;
     if (useVaryAccept) {
       String accept = request.headers().get(HttpHeaders.Names.ACCEPT);
       imageFormat = accept != null && accept.contains(ImageFormat.WEBP.getContentType()) ? ImageFormat.WEBP : ImageFormat.PNG;
