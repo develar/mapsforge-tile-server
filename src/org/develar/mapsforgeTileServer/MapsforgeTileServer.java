@@ -14,6 +14,9 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpRequestDecoder;
 import io.netty.handler.codec.http.HttpResponseEncoder;
+import org.fusesource.leveldbjni.JniDBFactory;
+import org.iq80.leveldb.CompressionType;
+import org.iq80.leveldb.DB;
 import org.jetbrains.annotations.NotNull;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
@@ -92,8 +95,10 @@ public class MapsforgeTileServer {
       return;
     }
 
+    DB cacheDb = JniDBFactory.factory.open(options.cacheFile, new org.iq80.leveldb.Options().compressionType(CompressionType.NONE).createIfMissing(true));
+
     MapsforgeTileServer tileServer = new MapsforgeTileServer(maps, renderThemes);
-    tileServer.startServer(options);
+    tileServer.startServer(options, cacheDb);
   }
 
   private static void addRenderTheme(@NotNull Path path, @NotNull Map<String, XmlRenderTheme> renderThemes) throws FileNotFoundException {
@@ -101,7 +106,7 @@ public class MapsforgeTileServer {
     renderThemes.put(fileName.substring(0, fileName.length() - ".xml".length()).toLowerCase(Locale.ENGLISH), new ExternalRenderTheme(path.toFile()));
   }
 
-  private void startServer(@NotNull Options options) {
+  private void startServer(@NotNull Options options, @NotNull DB cacheDb) {
     boolean isLinux = System.getProperty("os.name").toLowerCase(Locale.US).startsWith("linux");
     final EventLoopGroup bossGroup = isLinux ? new EpollEventLoopGroup() : new NioEventLoopGroup();
     final EventLoopGroup workerGroup = isLinux ? new EpollEventLoopGroup() : new NioEventLoopGroup();
@@ -117,7 +122,7 @@ public class MapsforgeTileServer {
       }
     }));
 
-    final TileHttpRequestHandler tileHttpRequestHandler = new TileHttpRequestHandler(this, CacheBuilder.from(options.memoryCacheSpec).<Tile, RenderedTile>build());
+    final TileHttpRequestHandler tileHttpRequestHandler = new TileHttpRequestHandler(this, CacheBuilder.from(options.memoryCacheSpec).<Tile, RenderedTile>build(), cacheDb);
     ServerBootstrap serverBootstrap = new ServerBootstrap();
     serverBootstrap.group(bossGroup, workerGroup)
       .channel(isLinux ? EpollServerSocketChannel.class : NioServerSocketChannel.class)

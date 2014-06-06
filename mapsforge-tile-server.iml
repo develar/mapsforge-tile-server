@@ -34,17 +34,6 @@
         </SOURCES>
       </library>
     </orderEntry>
-    <orderEntry type="module-library">
-      <library name="sqlite4java">
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/lib/sqlite4java.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES>
-          <root url="jar://$MODULE_DIR$/lib/sqlite4java-src.zip!/" />
-        </SOURCES>
-      </library>
-    </orderEntry>
     <orderEntry type="library" name="args4j" level="project" />
     <orderEntry type="module-library">
       <library name="webp">
@@ -55,6 +44,7 @@
         <SOURCES />
       </library>
     </orderEntry>
+    <orderEntry type="library" name="leveldbjni" level="project" />
   </component>
 </module>
 

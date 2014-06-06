@@ -1,7 +1,7 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="MapsforgeTileServer" type="Application" factoryName="Application" singleton="true">
     <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
-    <option name="MAIN_CLASS_NAME" value="org.mapsforgeTileServer.MapsforgeTileServer" />
+    <option name="MAIN_CLASS_NAME" value="org.develar.mapsforgeTileServer.MapsforgeTileServer" />
     <option name="VM_PARAMETERS" value="-Djava.awt.headless=true -Djava.library.path=lib" />
     <option name="PROGRAM_PARAMETERS" value="--map $USER_HOME$/Downloads/Alps/Alps.map --theme=dist/renderThemes" />
     <option name="WORKING_DIRECTORY" value="file://$PROJECT_DIR$" />

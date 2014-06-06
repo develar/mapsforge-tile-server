@@ -5,6 +5,7 @@ import com.google.common.cache.Cache;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.*;
 import io.netty.handler.codec.http.*;
+import org.iq80.leveldb.DB;
 import org.jetbrains.annotations.NotNull;
 import org.mapsforge.core.model.Tile;
 
@@ -12,6 +13,7 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.time.format.DateTimeParseException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -30,6 +32,7 @@ public class TileHttpRequestHandler extends SimpleChannelInboundHandler<FullHttp
 
   private final MapsforgeTileServer tileServer;
   private final Cache<Tile, RenderedTile> tileCache;
+  private final DB cacheDb;
 
   static {
     ImageIO.setUseCache(false);
@@ -42,9 +45,10 @@ public class TileHttpRequestHandler extends SimpleChannelInboundHandler<FullHttp
     }
   };
 
-  public TileHttpRequestHandler(@NotNull MapsforgeTileServer tileServer, @NotNull Cache<Tile, RenderedTile> tileCache) {
+  public TileHttpRequestHandler(@NotNull MapsforgeTileServer tileServer, @NotNull Cache<Tile, RenderedTile> tileCache, @NotNull DB cacheDb) {
     this.tileServer = tileServer;
     this.tileCache = tileCache;
+    this.cacheDb = cacheDb;
   }
 
   @Override
@@ -95,11 +99,19 @@ public class TileHttpRequestHandler extends SimpleChannelInboundHandler<FullHttp
     Tile tile = new TileEx(x, y, zoom, imageFormat);
     RenderedTile renderedTile = tileCache.getIfPresent(tile);
     if (renderedTile == null) {
-      BufferedImage bufferedImage = threadLocalRenderer.get().render(tile, tileServer);
-      ByteArrayOutputStream out = new ByteArrayOutputStream(8 * 1024);
-      ImageIO.write(bufferedImage, imageFormat.getFormatName(), out);
-      byte[] bytes = out.toByteArray();
-      out.close();
+      Renderer renderer = threadLocalRenderer.get();
+      ByteBuffer keyBuffer = renderer.key;
+      keyBuffer.clear();
+      byte[] key = keyBuffer.put(zoom).put((byte)imageFormat.ordinal()).putLong(x).putLong(y).array();
+      byte[] bytes = cacheDb.get(key);
+      if (bytes == null) {
+        BufferedImage bufferedImage = renderer.render(tile, tileServer);
+        ByteArrayOutputStream out = new ByteArrayOutputStream(8 * 1024);
+        ImageIO.write(bufferedImage, imageFormat.getFormatName(), out);
+        bytes = out.toByteArray();
+        out.close();
+        cacheDb.put(key, bytes);
+      }
 
       tileCache.put(tile, renderedTile = new RenderedTile(bytes));
     }

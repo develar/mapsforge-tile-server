@@ -5,9 +5,12 @@ import org.mapsforge.core.model.Tile;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.nio.ByteBuffer;
 
 public final class Renderer {
   private TileRendererImpl[] tileRenderers;
+
+  public final ByteBuffer key = ByteBuffer.allocate(1 /* image type */ + 1 /* zoom */ + 8 /* x */ + 8 /* y */);
 
   @NotNull
   public BufferedImage render(@NotNull Tile tile, @NotNull MapsforgeTileServer tileServer) {

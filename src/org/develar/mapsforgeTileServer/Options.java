@@ -21,6 +21,6 @@ public class Options {
   @Option(name = "--memory-cache-spec", aliases = {"-mcs"}, usage = "Memory cache spec, see http://docs.guava-libraries.googlecode.com/git/javadoc/com/google/common/cache/CacheBuilder.html")
   public String memoryCacheSpec = "maximumSize=" + (1024 * 10);
 
-  @Option(name = "--cache-file", aliases = {"-cf"}, usage = "SQLite file cache")
-  public File cacheFile;
+  @Option(name = "--cache-file", aliases = {"-cf"}, usage = "File cache")
+  public File cacheFile = new File("mapsforge-tiles.cache");
 }
