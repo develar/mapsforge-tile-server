@@ -1,4 +1,4 @@
-package develar.mapsforgeTileServer;
+package org.develar.mapsforgeTileServer;
 
 import org.kohsuke.args4j.Option;
 

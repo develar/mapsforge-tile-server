@@ -1,4 +1,4 @@
-package develar.mapsforgeTileServer;
+package org.develar.mapsforgeTileServer;
 
 import io.netty.channel.*;
 import io.netty.channel.group.ChannelGroup;

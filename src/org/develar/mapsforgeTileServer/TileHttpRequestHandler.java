@@ -1,4 +1,4 @@
-package develar.mapsforgeTileServer;
+package org.develar.mapsforgeTileServer;
 
 import com.google.common.base.Strings;
 import com.google.common.cache.Cache;

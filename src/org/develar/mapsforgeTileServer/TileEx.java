@@ -1,4 +1,4 @@
-package develar.mapsforgeTileServer;
+package org.develar.mapsforgeTileServer;
 
 import org.jetbrains.annotations.NotNull;
 import org.mapsforge.core.model.Tile;
