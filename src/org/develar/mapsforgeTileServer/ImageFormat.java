@@ -1,6 +1,5 @@
 package org.develar.mapsforgeTileServer;
 
-import com.google.common.base.Strings;
 import org.jetbrains.annotations.Nullable;
 
 public enum ImageFormat {
@@ -16,7 +15,7 @@ public enum ImageFormat {
 
   @Nullable
   public static ImageFormat fromName(@Nullable String name) {
-    if (Strings.isNullOrEmpty(name)) {
+    if (name == null || name.isEmpty()) {
       return null;
     }
     else {

@@ -23,17 +23,6 @@
       </library>
     </orderEntry>
     <orderEntry type="library" name="netty" level="project" />
-    <orderEntry type="module-library">
-      <library name="guava">
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/lib/guava-17.0.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES>
-          <root url="jar://$MODULE_DIR$/lib/guava-17.0-sources.jar!/" />
-        </SOURCES>
-      </library>
-    </orderEntry>
     <orderEntry type="library" name="args4j" level="project" />
     <orderEntry type="module-library">
       <library name="webp">
@@ -41,10 +30,12 @@
           <root url="jar://$MODULE_DIR$/lib/webp-imageio.jar!/" />
         </CLASSES>
         <JAVADOC />
-        <SOURCES />
+        <SOURCES>
+          <root url="jar://$MODULE_DIR$/lib/webp-imageio-sources.zip!/" />
+        </SOURCES>
       </library>
     </orderEntry>
-    <orderEntry type="library" name="leveldbjni" level="project" />
+    <orderEntry type="library" name="mapdb" level="project" />
   </component>
 </module>
 

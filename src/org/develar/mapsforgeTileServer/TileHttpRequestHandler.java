@@ -1,38 +1,39 @@
 package org.develar.mapsforgeTileServer;
 
-import com.google.common.base.Strings;
-import com.google.common.cache.Cache;
+import com.luciad.imageio.webp.WebPUtil;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.*;
 import io.netty.handler.codec.http.*;
-import org.iq80.leveldb.DB;
 import org.jetbrains.annotations.NotNull;
-import org.mapsforge.core.model.Tile;
+import org.mapdb.DB;
+import org.mapdb.DBMaker;
+import org.mapdb.HTreeMap;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOError;
 import java.io.IOException;
-import java.nio.ByteBuffer;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.time.format.DateTimeParseException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static io.netty.handler.codec.http.HttpHeaders.Names.CONTENT_TYPE;
-import static io.netty.handler.codec.http.HttpHeaders.Names.VARY;
+import static io.netty.handler.codec.http.HttpHeaders.Names.*;
 
 @ChannelHandler.Sharable
 public class TileHttpRequestHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
-  private final static Logger LOG = Logger.getLogger(TileHttpRequestHandler.class.getName());
+  final static Logger LOG = Logger.getLogger(TileHttpRequestHandler.class.getName());
 
   // http://wiki.openstreetmap.org/wiki/Slippy_map_tilenames
   private static final Pattern MAP_TILE_NAME_PATTERN = Pattern.compile("^/(\\d+)/(\\d+)/(\\d+)(?:\\.(png|webp))?(?:\\?theme=(\\w+))?");
 
   private final MapsforgeTileServer tileServer;
-  private final Cache<Tile, RenderedTile> tileCache;
-  private final DB cacheDb;
+  private final HTreeMap<TileRequest, RenderedTile> tileCache;
 
   static {
     ImageIO.setUseCache(false);
@@ -45,10 +46,28 @@ public class TileHttpRequestHandler extends SimpleChannelInboundHandler<FullHttp
     }
   };
 
-  public TileHttpRequestHandler(@NotNull MapsforgeTileServer tileServer, @NotNull Cache<Tile, RenderedTile> tileCache, @NotNull DB cacheDb) {
+  public TileHttpRequestHandler(@NotNull MapsforgeTileServer tileServer, @NotNull Options options) throws IOException {
     this.tileServer = tileServer;
-    this.tileCache = tileCache;
-    this.cacheDb = cacheDb;
+
+    File cacheFile = options.cacheFile;
+    DBMaker dbMaker = DBMaker.newFileDB(cacheFile).transactionDisable().closeOnJvmShutdown().mmapFileEnablePartial().cacheSize(options.memoryCacheCapacity);
+    if (options.maxFileCacheSize > 0) {
+      dbMaker.sizeLimit(options.maxFileCacheSize);
+    }
+
+    DB db;
+    try {
+      db = dbMaker.make();
+    }
+    catch (IOError e) {
+      LOG.log(Level.SEVERE, "Cannot open file cache db, db will be recreated", e);
+      //noinspection ResultOfMethodCallIgnored
+      cacheFile.delete();
+      Files.deleteIfExists(Paths.get(cacheFile.getPath(), ".p"));
+
+      db = dbMaker.make();
+    }
+    tileCache = db.createHashMap("tiles").keySerializer(new TileRequestSerializer()).valueSerializer(new RenderedTileSerializer()).makeOrGet();
   }
 
   @Override
@@ -61,19 +80,19 @@ public class TileHttpRequestHandler extends SimpleChannelInboundHandler<FullHttp
     LOG.log(Level.SEVERE, cause.getMessage(), cause);
   }
 
-  private static boolean checkCache(@NotNull HttpRequest request, @NotNull Channel channel, long lastModified) {
-    String ifModifiedSince = request.headers().get(HttpHeaders.Names.IF_MODIFIED_SINCE);
-    if (!Strings.isNullOrEmpty(ifModifiedSince)) {
+  private static boolean checkClientCache(@NotNull HttpRequest request, long lastModified, @NotNull String etag) {
+    String ifModifiedSince = request.headers().get(IF_MODIFIED_SINCE);
+    if (ifModifiedSince != null && !ifModifiedSince.isEmpty()) {
       try {
         if (Responses.parseTime(ifModifiedSince) >= lastModified) {
-          Responses.send(Responses.response(HttpResponseStatus.NOT_MODIFIED), channel, request);
           return true;
         }
       }
       catch (DateTimeParseException ignored) {
       }
     }
-    return false;
+
+    return etag.equals(request.headers().get(IF_NONE_MATCH));
   }
 
   @Override
@@ -92,37 +111,43 @@ public class TileHttpRequestHandler extends SimpleChannelInboundHandler<FullHttp
     ImageFormat imageFormat = ImageFormat.fromName(matcher.group(4));
     boolean useVaryAccept = imageFormat == null;
     if (useVaryAccept) {
-      String accept = request.headers().get(HttpHeaders.Names.ACCEPT);
+      String accept = request.headers().get(ACCEPT);
       imageFormat = accept != null && accept.contains(ImageFormat.WEBP.getContentType()) ? ImageFormat.WEBP : ImageFormat.PNG;
     }
 
-    Tile tile = new TileEx(x, y, zoom, imageFormat);
-    RenderedTile renderedTile = tileCache.getIfPresent(tile);
+    TileRequest tile = new TileRequest(x, y, zoom, imageFormat);
+    RenderedTile renderedTile = tileCache.get(tile);
+    boolean isToPut = false;
     if (renderedTile == null) {
-      Renderer renderer = threadLocalRenderer.get();
-      ByteBuffer keyBuffer = renderer.key;
-      keyBuffer.clear();
-      byte[] key = keyBuffer.put(zoom).put((byte)imageFormat.ordinal()).putLong(x).putLong(y).array();
-      byte[] bytes = cacheDb.get(key);
-      if (bytes == null) {
-        BufferedImage bufferedImage = renderer.render(tile, tileServer);
+      Renderer rendererManager = threadLocalRenderer.get();
+      TileRenderer renderer = rendererManager.getTileRenderer(tile, tileServer);
+      BufferedImage bufferedImage = renderer.render(tile);
+      byte[] bytes;
+      if (imageFormat == ImageFormat.WEBP) {
+        bytes = WebPUtil.encode(bufferedImage);
+      }
+      else {
         ByteArrayOutputStream out = new ByteArrayOutputStream(8 * 1024);
         ImageIO.write(bufferedImage, imageFormat.getFormatName(), out);
         bytes = out.toByteArray();
         out.close();
-        cacheDb.put(key, bytes);
       }
-
-      tileCache.put(tile, renderedTile = new RenderedTile(bytes));
+      renderedTile = new RenderedTile(bytes, Math.floorDiv(System.currentTimeMillis(), 1000), renderer.computeETag(tile, rendererManager.stringBuilder));
+      isToPut = true;
     }
-    else if (checkCache(request, channel, renderedTile.lastModified)) {
+
+    if (checkClientCache(request, renderedTile.lastModified, renderedTile.etag)) {
+      Responses.send(Responses.response(HttpResponseStatus.NOT_MODIFIED), channel, request);
       return;
     }
 
     boolean isHeadRequest = request.getMethod() == HttpMethod.HEAD;
-    HttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK, isHeadRequest ? Unpooled.EMPTY_BUFFER : Unpooled.wrappedBuffer(renderedTile.getData()));
-    response.headers().add(CONTENT_TYPE, imageFormat.getContentType());
-    response.headers().set(HttpHeaders.Names.LAST_MODIFIED, Responses.formatTime(renderedTile.lastModified));
+    HttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK, isHeadRequest ? Unpooled.EMPTY_BUFFER : Unpooled.wrappedBuffer(renderedTile.data));
+    response.headers().set(CONTENT_TYPE, imageFormat.getContentType());
+    // default cache for one day
+    response.headers().set(CACHE_CONTROL, "public, max-age=" + (60 * 60 * 24));
+    response.headers().set(ETAG, renderedTile.etag);
+    response.headers().set(LAST_MODIFIED, Responses.formatTime(renderedTile.lastModified));
     Responses.addCommonHeaders(response);
     if (useVaryAccept) {
       response.headers().add(VARY, "Accept");
@@ -130,12 +155,17 @@ public class TileHttpRequestHandler extends SimpleChannelInboundHandler<FullHttp
 
     boolean keepAlive = Responses.addKeepAliveIfNeed(response, request);
     if (!isHeadRequest) {
-      HttpHeaders.setContentLength(response, renderedTile.getData().length);
+      HttpHeaders.setContentLength(response, renderedTile.data.length);
     }
 
     ChannelFuture future = channel.writeAndFlush(response);
     if (!keepAlive) {
       future.addListener(ChannelFutureListener.CLOSE);
+    }
+
+    // put (and, so, file write) only after sending response to reduce latency
+    if (isToPut) {
+      tileCache.put(tile, renderedTile);
     }
   }
 }

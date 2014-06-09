@@ -2,18 +2,17 @@ package org.develar.mapsforgeTileServer;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.time.Instant;
+import java.io.Serializable;
 
-public class RenderedTile {
-  private final byte[] data;
-  public long lastModified = Instant.now().getEpochSecond();
+public final class RenderedTile implements Serializable {
+  public final byte[] data;
 
-  public RenderedTile(@NotNull byte[] data) {
+  public final long lastModified;
+  public final String etag;
+
+  public RenderedTile(@NotNull byte[] data, long lastModified, @NotNull String etag) {
     this.data = data;
-  }
-
-  @NotNull
-  public byte[] getData() {
-    return data;
+    this.lastModified = lastModified;
+    this.etag = etag;
   }
 }

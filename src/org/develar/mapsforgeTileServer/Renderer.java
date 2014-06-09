@@ -3,21 +3,19 @@ package org.develar.mapsforgeTileServer;
 import org.jetbrains.annotations.NotNull;
 import org.mapsforge.core.model.Tile;
 
-import java.awt.image.BufferedImage;
 import java.io.File;
-import java.nio.ByteBuffer;
 
 public final class Renderer {
-  private TileRendererImpl[] tileRenderers;
+  private TileRenderer[] tileRenderers;
 
-  public final ByteBuffer key = ByteBuffer.allocate(1 /* image type */ + 1 /* zoom */ + 8 /* x */ + 8 /* y */);
+  public final StringBuilder stringBuilder = new StringBuilder();
 
   @NotNull
-  public BufferedImage render(@NotNull Tile tile, @NotNull MapsforgeTileServer tileServer) {
+  public TileRenderer getTileRenderer(@SuppressWarnings("UnusedParameters") @NotNull Tile tile, @NotNull MapsforgeTileServer tileServer) {
     if (tileRenderers == null) {
-      tileRenderers = new TileRendererImpl[tileServer.maps.length];
+      tileRenderers = new TileRenderer[tileServer.maps.length];
     }
-    return getTileRenderer(tileServer).render(tile);
+    return getTileRenderer(tileServer);
   }
 
   @NotNull
@@ -26,10 +24,9 @@ public final class Renderer {
     //noinspection LoopStatementThatDoesntLoop
     for (int i = 0, n = maps.length; i < n; i++) {
       File mapFile = maps[i];
-      TileRendererImpl tileRenderer = tileRenderers[i];
+      TileRenderer tileRenderer = tileRenderers[i];
       if (tileRenderer == null) {
-        tileRenderer = new TileRendererImpl(tileServer.displayModel, mapFile);
-        tileRenderer.setXmlRenderTheme(tileServer.defaultRenderTheme);
+        tileRenderer = new TileRenderer(tileServer.displayModel, mapFile, tileServer.defaultRenderTheme);
         tileRenderers[i] = tileRenderer;
       }
 

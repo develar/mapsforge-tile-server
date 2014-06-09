@@ -1,7 +1,5 @@
 package org.develar.mapsforgeTileServer;
 
-import com.google.common.base.Strings;
-import com.google.common.cache.CacheBuilder;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
@@ -14,14 +12,10 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpRequestDecoder;
 import io.netty.handler.codec.http.HttpResponseEncoder;
-import org.fusesource.leveldbjni.JniDBFactory;
-import org.iq80.leveldb.CompressionType;
-import org.iq80.leveldb.DB;
 import org.jetbrains.annotations.NotNull;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.mapsforge.core.graphics.GraphicFactory;
-import org.mapsforge.core.model.Tile;
 import org.mapsforge.map.awt.AwtGraphicFactory;
 import org.mapsforge.map.model.DisplayModel;
 import org.mapsforge.map.rendertheme.ExternalRenderTheme;
@@ -95,10 +89,12 @@ public class MapsforgeTileServer {
       return;
     }
 
-    DB cacheDb = JniDBFactory.factory.open(options.cacheFile, new org.iq80.leveldb.Options().compressionType(CompressionType.NONE).createIfMissing(true));
-
     MapsforgeTileServer tileServer = new MapsforgeTileServer(maps, renderThemes);
-    tileServer.startServer(options, cacheDb);
+    tileServer.startServer(options);
+
+    //noinspection ResultOfMethodCallIgnored
+    System.in.read();
+    System.exit(0);
   }
 
   private static void addRenderTheme(@NotNull Path path, @NotNull Map<String, XmlRenderTheme> renderThemes) throws FileNotFoundException {
@@ -106,13 +102,14 @@ public class MapsforgeTileServer {
     renderThemes.put(fileName.substring(0, fileName.length() - ".xml".length()).toLowerCase(Locale.ENGLISH), new ExternalRenderTheme(path.toFile()));
   }
 
-  private void startServer(@NotNull Options options, @NotNull DB cacheDb) {
+  private void startServer(@NotNull Options options) throws IOException {
     boolean isLinux = System.getProperty("os.name").toLowerCase(Locale.US).startsWith("linux");
     final EventLoopGroup bossGroup = isLinux ? new EpollEventLoopGroup() : new NioEventLoopGroup();
     final EventLoopGroup workerGroup = isLinux ? new EpollEventLoopGroup() : new NioEventLoopGroup();
     final ChannelRegistrar channelRegistrar = new ChannelRegistrar();
 
     Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+      System.out.println("Shutdown server");
       try {
         channelRegistrar.close(false);
       }
@@ -122,7 +119,7 @@ public class MapsforgeTileServer {
       }
     }));
 
-    final TileHttpRequestHandler tileHttpRequestHandler = new TileHttpRequestHandler(this, CacheBuilder.from(options.memoryCacheSpec).<Tile, RenderedTile>build(), cacheDb);
+    final TileHttpRequestHandler tileHttpRequestHandler = new TileHttpRequestHandler(this, options);
     ServerBootstrap serverBootstrap = new ServerBootstrap();
     serverBootstrap.group(bossGroup, workerGroup)
       .channel(isLinux ? EpollServerSocketChannel.class : NioServerSocketChannel.class)
@@ -138,11 +135,10 @@ public class MapsforgeTileServer {
       .childOption(ChannelOption.SO_KEEPALIVE, true)
       .childOption(ChannelOption.TCP_NODELAY, true);
 
-    InetSocketAddress address = Strings.isNullOrEmpty(options.host) ? new InetSocketAddress(options.port) : new InetSocketAddress(options.host, options.port);
+    InetSocketAddress address = options.host == null || options.host.isEmpty() ? new InetSocketAddress(options.port) : new InetSocketAddress(options.host, options.port);
     Channel serverChannel = serverBootstrap.bind(address).syncUninterruptibly().channel();
     channelRegistrar.add(serverChannel);
     System.out.println("Listening " + address.getHostName() + ":" + address.getPort());
-    serverChannel.closeFuture().syncUninterruptibly();
   }
 
   private static void validateMapFiles(@NotNull File[] maps) {

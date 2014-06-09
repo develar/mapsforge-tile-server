@@ -18,9 +18,12 @@ public class Options {
   @Option(name = "--host", aliases = {"-h"})
   public String host;
 
-  @Option(name = "--memory-cache-spec", aliases = {"-mcs"}, usage = "Memory cache spec, see http://docs.guava-libraries.googlecode.com/git/javadoc/com/google/common/cache/CacheBuilder.html")
-  public String memoryCacheSpec = "maximumSize=" + (1024 * 10);
+  @Option(name = "--max-file-cache-size", aliases = {"-fs"}, usage = "Maximal file cache size in GB, limit is not strict, actual size might be 10% or more bigger. Set -1 to unlmited")
+  public double maxFileCacheSize = 30;
 
-  @Option(name = "--cache-file", aliases = {"-cf"}, usage = "File cache")
+  @Option(name = "--memory-cache-capacity", aliases = {"-mc"}, usage = "Maximum number of tiles in the memory cache, in case of server installation consider to increase.")
+  public int memoryCacheCapacity = 10 * 1024;
+
+  @Option(name = "--cache-file", aliases = {"-f"}, usage = "File cache")
   public File cacheFile = new File("mapsforge-tiles.cache");
 }
