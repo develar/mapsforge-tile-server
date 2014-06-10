@@ -1,30 +1,59 @@
 package org.develar.mapsforgeTileServer;
 
 import org.jetbrains.annotations.NotNull;
+import org.mapdb.DataInput2;
+import org.mapdb.DataOutput2;
+import org.mapdb.Serializer;
 import org.mapsforge.core.model.Tile;
 
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
 import java.io.Serializable;
 
-class TileRequest extends Tile implements Serializable {
-  public final int flags;
+final class TileRequest extends Tile implements Serializable {
+  public static final int WEIGHT = 8 + 8 + 1 + 1;
 
-  public TileRequest(long tileX, long tileY, byte zoomLevel, int flags) {
+  private final byte imageFormat;
+
+  public TileRequest(long tileX, long tileY, byte zoomLevel, byte imageFormat) {
     super(tileX, tileY, zoomLevel);
 
-    this.flags = flags;
+    this.imageFormat = imageFormat;
   }
 
-  public TileRequest(long tileX, long tileY, byte zoomLevel, @NotNull ImageFormat imageFormat) {
-    this(tileX, tileY, zoomLevel, imageFormat.ordinal());
+  @NotNull
+  public ImageFormat getImageFormat() {
+    return imageFormat == 0 ? ImageFormat.WEBP : ImageFormat.PNG;
   }
 
   @Override
   public int hashCode() {
-    return super.hashCode() + flags;
+    return 31 * super.hashCode() + imageFormat;
   }
 
   @Override
   public boolean equals(Object object) {
-    return super.equals(object) && ((TileRequest)object).flags == flags;
+    return super.equals(object) && ((TileRequest)object).imageFormat == imageFormat;
+  }
+
+  public static final class TileRequestSerializer implements Serializer<TileRequest>, Serializable {
+    @Override
+    public void serialize(DataOutput out, TileRequest value) throws IOException {
+      DataOutput2.packLong(out, value.tileX);
+      DataOutput2.packLong(out, value.tileY);
+      out.write(value.zoomLevel);
+      out.write(value.imageFormat);
+    }
+
+    @Override
+    public TileRequest deserialize(DataInput in, int available) throws IOException {
+      return new TileRequest(DataInput2.unpackLong(in), DataInput2.unpackLong(in), in.readByte(), in.readByte());
+    }
+
+    @Override
+    public int fixedSize() {
+      return -1;
+    }
   }
 }

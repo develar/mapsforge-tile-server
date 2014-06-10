@@ -21,9 +21,6 @@ public class Options {
   @Option(name = "--max-file-cache-size", aliases = {"-fs"}, usage = "Maximal file cache size in GB, limit is not strict, actual size might be 10% or more bigger. Set -1 to unlmited")
   public double maxFileCacheSize = 30;
 
-  @Option(name = "--memory-cache-capacity", aliases = {"-mc"}, usage = "Maximum number of tiles in the memory cache, in case of server installation consider to increase.")
-  public int memoryCacheCapacity = 10 * 1024;
-
   @Option(name = "--cache-file", aliases = {"-f"}, usage = "File cache")
   public File cacheFile = new File("mapsforge-tiles.cache");
 }

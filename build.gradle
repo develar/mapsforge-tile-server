@@ -22,6 +22,7 @@ repositories {
 dependencies {
   compile name: 'annotations'
   compile name: 'args4j', version: '2.+'
+  compile 'guava:guava:17.+'
   compile name: 'mapdb', version: '1.+'
   compile 'org.mapsforge:mapsforge-core:0.5.0-SNAPSHOT'
   compile 'org.mapsforge:mapsforge-map:0.5.0-SNAPSHOT'
@@ -45,7 +46,7 @@ distributions {
 
           into('lib') {
             from('lib') {
-              include '**/*.so', '**/*.dylib', '**/*.dll'
+              include '**/*.so', '**/*.dylib', '**/*.dll', '**/marlin-*'
             }
           }
       }

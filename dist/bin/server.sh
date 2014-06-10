@@ -57,5 +57,5 @@ fi
 SCRIPT_LOCATION=$0
 MT_HOME=`dirname "$SCRIPT_LOCATION"`/..
 
-exec "$JDK/bin/java" -Djava.library.path="$MT_HOME/lib" -Djava.awt.headless=true -Duser.language=en -server -Xmx1G -jar "$MT_HOME/mapsforge-tile-server.jar" --theme "$MT_HOME/renderThemes" "$@"
+exec "$JDK/bin/java" -server -Xmx1G -XX:+UseConcMarkSweepGC -XX:+UseParNewGC -Xbootclasspath/a:"$MT_HOME/lib/marlin-0.5.4-Unsafe.jar" -Dfile.encoding=UTF-8 -Djava.library.path="$MT_HOME/lib" -Djava.awt.headless=true -Duser.language=en -jar "$MT_HOME/mapsforge-tile-server.jar" --theme "$MT_HOME/renderThemes" "$@"
 exit 1 

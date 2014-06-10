@@ -1,5 +1,9 @@
 package org.develar.mapsforgeTileServer;
 
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
+import com.google.common.cache.RemovalNotification;
 import com.luciad.imageio.webp.WebPUtil;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.*;
@@ -13,11 +17,13 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.IOError;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.format.DateTimeParseException;
+import java.util.List;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -33,7 +39,7 @@ public class TileHttpRequestHandler extends SimpleChannelInboundHandler<FullHttp
   private static final Pattern MAP_TILE_NAME_PATTERN = Pattern.compile("^/(\\d+)/(\\d+)/(\\d+)(?:\\.(png|webp))?(?:\\?theme=(\\w+))?");
 
   private final MapsforgeTileServer tileServer;
-  private final HTreeMap<TileRequest, RenderedTile> tileCache;
+  private final LoadingCache<TileRequest, RenderedTile> tileMemoryCache;
 
   static {
     ImageIO.setUseCache(false);
@@ -46,28 +52,86 @@ public class TileHttpRequestHandler extends SimpleChannelInboundHandler<FullHttp
     }
   };
 
-  public TileHttpRequestHandler(@NotNull MapsforgeTileServer tileServer, @NotNull Options options) throws IOException {
+  public TileHttpRequestHandler(@NotNull MapsforgeTileServer tileServer, @NotNull Options options, int executorCount, @NotNull List<Runnable> shutdownHooks) throws IOException {
     this.tileServer = tileServer;
 
     File cacheFile = options.cacheFile;
-    DBMaker dbMaker = DBMaker.newFileDB(cacheFile).transactionDisable().closeOnJvmShutdown().mmapFileEnablePartial().cacheSize(options.memoryCacheCapacity);
+    DBMaker dbMaker = DBMaker.newFileDB(cacheFile).transactionDisable().mmapFileEnablePartial().cacheDisable();
     if (options.maxFileCacheSize > 0) {
       dbMaker.sizeLimit(options.maxFileCacheSize);
     }
+    DB db = createCacheDb(cacheFile, dbMaker);
+    HTreeMap<TileRequest, RenderedTile> tileFileCache = db.createHashMap("tiles")
+      .keySerializer(new TileRequest.TileRequestSerializer())
+      .valueSerializer(new RenderedTileSerializer())
+      .makeOrGet();
 
-    DB db;
+    BlockingQueue<RemovalNotification<TileRequest, RenderedTile>> flushQueue = new LinkedBlockingQueue<>();
+
+    Thread flushThread = new Thread(() -> {
+      while (true) {
+        try {
+          RemovalNotification<TileRequest, RenderedTile> removalNotification = flushQueue.take();
+          tileFileCache.put(removalNotification.getKey(), removalNotification.getValue());
+        }
+        catch (InterruptedException ignored) {
+          break;
+        }
+      }
+    }, "Memory to file cache writer");
+    flushThread.setPriority(Thread.MIN_PRIORITY);
+    flushThread.start();
+
+    tileMemoryCache = CacheBuilder.newBuilder()
+      .concurrencyLevel(executorCount)
+      .weigher((TileRequest key, RenderedTile value) -> TileRequest.WEIGHT + value.computeWeight())
+      .maximumWeight(Runtime.getRuntime().freeMemory() - (64 * 1024 * 1024) /* leave 64MB for another stuff */)
+      .removalListener((RemovalNotification<TileRequest, RenderedTile> notification) -> {
+        if (notification.wasEvicted()) {
+          flushQueue.add(notification);
+        }
+      })
+      .build(new CacheLoader<TileRequest, RenderedTile>() {
+        @Override
+        public RenderedTile load(@NotNull TileRequest tile) throws Exception {
+          RenderedTile renderedTile = tileFileCache.get(tile);
+          return renderedTile == null ? renderTile(tile) : renderedTile;
+        }
+      });
+
+    shutdownHooks.add(new Runnable() {
+      @Override
+      public void run() {
+        LOG.info("Stop 'Memory to file cache writer' thread");
+        flushThread.interrupt();
+      }
+    });
+    shutdownHooks.add(new Runnable() {
+      @Override
+      public void run() {
+        LOG.info("Flush unwritten data");
+        try {
+          tileMemoryCache.asMap().entrySet().parallelStream().forEach(entry -> tileFileCache.put(entry.getKey(), entry.getValue()));
+        }
+        finally {
+          db.close();
+        }
+      }
+    });
+  }
+
+  @NotNull
+  private static DB createCacheDb(@NotNull File cacheFile, @NotNull DBMaker dbMaker) throws IOException {
     try {
-      db = dbMaker.make();
+      return dbMaker.make();
     }
-    catch (IOError e) {
+    catch (Throwable e) {
       LOG.log(Level.SEVERE, "Cannot open file cache db, db will be recreated", e);
       //noinspection ResultOfMethodCallIgnored
       cacheFile.delete();
       Files.deleteIfExists(Paths.get(cacheFile.getPath(), ".p"));
-
-      db = dbMaker.make();
+      return dbMaker.make();
     }
-    tileCache = db.createHashMap("tiles").keySerializer(new TileRequestSerializer()).valueSerializer(new RenderedTileSerializer()).makeOrGet();
   }
 
   @Override
@@ -115,27 +179,7 @@ public class TileHttpRequestHandler extends SimpleChannelInboundHandler<FullHttp
       imageFormat = accept != null && accept.contains(ImageFormat.WEBP.getContentType()) ? ImageFormat.WEBP : ImageFormat.PNG;
     }
 
-    TileRequest tile = new TileRequest(x, y, zoom, imageFormat);
-    RenderedTile renderedTile = tileCache.get(tile);
-    boolean isToPut = false;
-    if (renderedTile == null) {
-      Renderer rendererManager = threadLocalRenderer.get();
-      TileRenderer renderer = rendererManager.getTileRenderer(tile, tileServer);
-      BufferedImage bufferedImage = renderer.render(tile);
-      byte[] bytes;
-      if (imageFormat == ImageFormat.WEBP) {
-        bytes = WebPUtil.encode(bufferedImage);
-      }
-      else {
-        ByteArrayOutputStream out = new ByteArrayOutputStream(8 * 1024);
-        ImageIO.write(bufferedImage, imageFormat.getFormatName(), out);
-        bytes = out.toByteArray();
-        out.close();
-      }
-      renderedTile = new RenderedTile(bytes, Math.floorDiv(System.currentTimeMillis(), 1000), renderer.computeETag(tile, rendererManager.stringBuilder));
-      isToPut = true;
-    }
-
+    RenderedTile renderedTile = tileMemoryCache.get(new TileRequest(x, y, zoom, (byte)imageFormat.ordinal()));
     if (checkClientCache(request, renderedTile.lastModified, renderedTile.etag)) {
       Responses.send(Responses.response(HttpResponseStatus.NOT_MODIFIED), channel, request);
       return;
@@ -162,10 +206,23 @@ public class TileHttpRequestHandler extends SimpleChannelInboundHandler<FullHttp
     if (!keepAlive) {
       future.addListener(ChannelFutureListener.CLOSE);
     }
+  }
 
-    // put (and, so, file write) only after sending response to reduce latency
-    if (isToPut) {
-      tileCache.put(tile, renderedTile);
+  @NotNull
+  private RenderedTile renderTile(@NotNull TileRequest tile) throws IOException {
+    Renderer rendererManager = threadLocalRenderer.get();
+    TileRenderer renderer = rendererManager.getTileRenderer(tile, tileServer);
+    BufferedImage bufferedImage = renderer.render(tile);
+    byte[] bytes;
+    if (tile.getImageFormat() == ImageFormat.WEBP) {
+      bytes = WebPUtil.encode(bufferedImage);
     }
+    else {
+      ByteArrayOutputStream out = new ByteArrayOutputStream(8 * 1024);
+      ImageIO.write(bufferedImage, tile.getImageFormat().getFormatName(), out);
+      bytes = out.toByteArray();
+      out.close();
+    }
+    return new RenderedTile(bytes, Math.floorDiv(System.currentTimeMillis(), 1000), renderer.computeETag(tile, rendererManager.stringBuilder));
   }
 }

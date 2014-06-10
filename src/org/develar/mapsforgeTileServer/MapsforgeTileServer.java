@@ -12,6 +12,7 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpRequestDecoder;
 import io.netty.handler.codec.http.HttpResponseEncoder;
+import io.netty.util.concurrent.MultithreadEventExecutorGroup;
 import org.jetbrains.annotations.NotNull;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
@@ -28,9 +29,7 @@ import java.net.InetSocketAddress;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -89,12 +88,7 @@ public class MapsforgeTileServer {
       return;
     }
 
-    MapsforgeTileServer tileServer = new MapsforgeTileServer(maps, renderThemes);
-    tileServer.startServer(options);
-
-    //noinspection ResultOfMethodCallIgnored
-    System.in.read();
-    System.exit(0);
+    new MapsforgeTileServer(maps, renderThemes).startServer(options);
   }
 
   private static void addRenderTheme(@NotNull Path path, @NotNull Map<String, XmlRenderTheme> renderThemes) throws FileNotFoundException {
@@ -108,18 +102,18 @@ public class MapsforgeTileServer {
     final EventLoopGroup workerGroup = isLinux ? new EpollEventLoopGroup() : new NioEventLoopGroup();
     final ChannelRegistrar channelRegistrar = new ChannelRegistrar();
 
-    Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-      System.out.println("Shutdown server");
-      try {
-        channelRegistrar.close(false);
-      }
-      finally {
-        workerGroup.shutdownGracefully();
-        bossGroup.shutdownGracefully();
-      }
-    }));
+    List<Runnable> shutdownHooks = new ArrayList<>(4);
+    shutdownHooks.add(() -> {
+      LOG.info("Close opened connections");
+      channelRegistrar.close(false);
+    });
+    shutdownHooks.add(() -> {
+      LOG.info("Shutdown server");
+      workerGroup.shutdownGracefully();
+      bossGroup.shutdownGracefully();
+    });
 
-    final TileHttpRequestHandler tileHttpRequestHandler = new TileHttpRequestHandler(this, options);
+    final TileHttpRequestHandler tileHttpRequestHandler = new TileHttpRequestHandler(this, options, ((MultithreadEventExecutorGroup)workerGroup).executorCount(), shutdownHooks);
     ServerBootstrap serverBootstrap = new ServerBootstrap();
     serverBootstrap.group(bossGroup, workerGroup)
       .channel(isLinux ? EpollServerSocketChannel.class : NioServerSocketChannel.class)
@@ -138,7 +132,23 @@ public class MapsforgeTileServer {
     InetSocketAddress address = options.host == null || options.host.isEmpty() ? new InetSocketAddress(options.port) : new InetSocketAddress(options.host, options.port);
     Channel serverChannel = serverBootstrap.bind(address).syncUninterruptibly().channel();
     channelRegistrar.add(serverChannel);
-    System.out.println("Listening " + address.getHostName() + ":" + address.getPort());
+
+    Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
+      @Override
+      public void run() {
+        for (Runnable shutdownHook : shutdownHooks) {
+          try {
+            shutdownHook.run();
+          }
+          catch (Throwable e) {
+            LOG.log(Level.SEVERE, e.getMessage(), e);
+          }
+        }
+      }
+    }));
+
+    LOG.info("Listening " + address.getHostName() + ":" + address.getPort());
+    serverChannel.closeFuture().syncUninterruptibly();
   }
 
   private static void validateMapFiles(@NotNull File[] maps) {

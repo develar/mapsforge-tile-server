@@ -15,4 +15,8 @@ public final class RenderedTile implements Serializable {
     this.lastModified = lastModified;
     this.etag = etag;
   }
+
+  public int computeWeight() {
+    return data.length + 8 + etag.length();
+  }
 }

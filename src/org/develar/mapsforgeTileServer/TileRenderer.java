@@ -47,7 +47,7 @@ public class TileRenderer {
     stringBuilder.setLength(0);
     stringBuilder.append(mapFileLastModified).append('@');
     stringBuilder.append(renderThemeFileLastModified).append('@');
-    stringBuilder.append(Integer.toString(tile.flags, 32)).append('.');
+    stringBuilder.append(Integer.toString(tile.getImageFormat().ordinal(), 32)).append('.');
     stringBuilder.append(Integer.toString(tile.zoomLevel, 32)).append('-').append(Long.toUnsignedString(tile.tileX, 32)).append('-').append(Long.toUnsignedString(tile.tileX, 32));
     return stringBuilder.toString();
   }
