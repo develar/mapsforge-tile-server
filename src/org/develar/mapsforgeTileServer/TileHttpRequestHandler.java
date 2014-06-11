@@ -52,7 +52,7 @@ public class TileHttpRequestHandler extends SimpleChannelInboundHandler<FullHttp
     }
   };
 
-  public TileHttpRequestHandler(@NotNull MapsforgeTileServer tileServer, @NotNull Options options, int executorCount, @NotNull List<Runnable> shutdownHooks) throws IOException {
+  public TileHttpRequestHandler(@NotNull MapsforgeTileServer tileServer, @NotNull Options options, int executorCount, long maxMemoryCacheSize, @NotNull List<Runnable> shutdownHooks) throws IOException {
     this.tileServer = tileServer;
 
     File cacheFile = options.cacheFile;
@@ -79,12 +79,11 @@ public class TileHttpRequestHandler extends SimpleChannelInboundHandler<FullHttp
       }
     }, "Memory to file cache writer");
     flushThread.setPriority(Thread.MIN_PRIORITY);
-    flushThread.start();
 
     tileMemoryCache = CacheBuilder.newBuilder()
       .concurrencyLevel(executorCount)
       .weigher((TileRequest key, RenderedTile value) -> TileRequest.WEIGHT + value.computeWeight())
-      .maximumWeight(Runtime.getRuntime().freeMemory() - (64 * 1024 * 1024) /* leave 64MB for another stuff */)
+      .maximumWeight(maxMemoryCacheSize)
       .removalListener((RemovalNotification<TileRequest, RenderedTile> notification) -> {
         if (notification.wasEvicted()) {
           flushQueue.add(notification);
@@ -117,6 +116,8 @@ public class TileHttpRequestHandler extends SimpleChannelInboundHandler<FullHttp
         }
       }
     });
+
+    flushThread.start();
   }
 
   @NotNull

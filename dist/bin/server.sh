@@ -49,7 +49,11 @@ else
   fi
 fi
 
-if [ -z "$JDK" ]; then
+if [ -z "JAVA_BIN_PATH" ]; then
+  JAVA_BIN_PATH="$JDK/bin/java"
+fi
+
+if [ -z "JAVA_BIN_PATH" ]; then
   message "No JDK found. Please validate either JDK_HOME or JAVA_HOME environment variable points to valid JDK installation."
   exit 1
 fi
@@ -57,5 +61,5 @@ fi
 SCRIPT_LOCATION=$0
 MT_HOME=`dirname "$SCRIPT_LOCATION"`/..
 
-exec "$JDK/bin/java" -server -Xmx1G -XX:+UseConcMarkSweepGC -XX:+UseParNewGC -Xbootclasspath/a:"$MT_HOME/lib/marlin-0.5.4-Unsafe.jar" -Dfile.encoding=UTF-8 -Djava.library.path="$MT_HOME/lib" -Djava.awt.headless=true -Duser.language=en -jar "$MT_HOME/mapsforge-tile-server.jar" --theme "$MT_HOME/renderThemes" "$@"
+exec "$JAVA_BIN_PATH" -server -Xmx1G -XX:+UseConcMarkSweepGC -XX:+UseParNewGC -Xbootclasspath/a:"$MT_HOME/lib/marlin-0.5.4-Unsafe.jar" -Dfile.encoding=UTF-8 -Djava.library.path="$MT_HOME/lib" -Djava.awt.headless=true -Duser.language=en -jar "$MT_HOME/mapsforge-tile-server.jar" --theme "$MT_HOME/renderThemes" "$@"
 exit 1 

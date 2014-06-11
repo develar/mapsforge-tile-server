@@ -96,7 +96,25 @@ public class MapsforgeTileServer {
     renderThemes.put(fileName.substring(0, fileName.length() - ".xml".length()).toLowerCase(Locale.ENGLISH), new ExternalRenderTheme(path.toFile()));
   }
 
+  private static long getAvailableMemory() {
+    Runtime runtime = Runtime.getRuntime();
+    long totalMemory = runtime.totalMemory(); // current heap allocated to the VM process
+    long freeMemory = runtime.freeMemory(); // out of the current heap, how much is free
+    long maxMemory = runtime.maxMemory(); // Max heap VM can use e.g. Xmx setting
+    long usedMemory = totalMemory - freeMemory; // how much of the current heap the VM is using
+    // available memory i.e. Maximum heap size minus the current amount used
+    return maxMemory - usedMemory;
+  }
+
   private void startServer(@NotNull Options options) throws IOException {
+    Runtime runtime = Runtime.getRuntime();
+    long freeMemory = runtime.freeMemory();
+    long maxMemoryCacheSize = getAvailableMemory() - (64 * 1024 * 1024) /* leave 64MB for another stuff */;
+    if (maxMemoryCacheSize <= 0) {
+      LOG.severe("Memory not enough, current free memory " + freeMemory + ", total memory " + runtime.totalMemory() + ", max memory " + runtime.maxMemory());
+      return;
+    }
+
     boolean isLinux = System.getProperty("os.name").toLowerCase(Locale.US).startsWith("linux");
     final EventLoopGroup bossGroup = isLinux ? new EpollEventLoopGroup() : new NioEventLoopGroup();
     final EventLoopGroup workerGroup = isLinux ? new EpollEventLoopGroup() : new NioEventLoopGroup();
@@ -113,7 +131,7 @@ public class MapsforgeTileServer {
       bossGroup.shutdownGracefully();
     });
 
-    final TileHttpRequestHandler tileHttpRequestHandler = new TileHttpRequestHandler(this, options, ((MultithreadEventExecutorGroup)workerGroup).executorCount(), shutdownHooks);
+    final TileHttpRequestHandler tileHttpRequestHandler = new TileHttpRequestHandler(this, options, ((MultithreadEventExecutorGroup)workerGroup).executorCount(), maxMemoryCacheSize, shutdownHooks);
     ServerBootstrap serverBootstrap = new ServerBootstrap();
     serverBootstrap.group(bossGroup, workerGroup)
       .channel(isLinux ? EpollServerSocketChannel.class : NioServerSocketChannel.class)
