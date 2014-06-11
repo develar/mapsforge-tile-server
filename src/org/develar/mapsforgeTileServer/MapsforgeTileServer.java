@@ -25,6 +25,7 @@ import org.mapsforge.map.rendertheme.XmlRenderTheme;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -147,7 +148,7 @@ public class MapsforgeTileServer {
       .childOption(ChannelOption.SO_KEEPALIVE, true)
       .childOption(ChannelOption.TCP_NODELAY, true);
 
-    InetSocketAddress address = options.host == null || options.host.isEmpty() ? new InetSocketAddress(options.port) : new InetSocketAddress(options.host, options.port);
+    InetSocketAddress address = options.host == null || options.host.isEmpty() ? new InetSocketAddress(InetAddress.getLoopbackAddress(), options.port) : new InetSocketAddress(options.host, options.port);
     Channel serverChannel = serverBootstrap.bind(address).syncUninterruptibly().channel();
     channelRegistrar.add(serverChannel);
 

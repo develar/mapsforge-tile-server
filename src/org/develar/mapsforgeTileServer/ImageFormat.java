@@ -19,12 +19,7 @@ public enum ImageFormat {
       return null;
     }
     else {
-      try {
-        return valueOf(name);
-      }
-      catch (IllegalArgumentException e) {
-        return null;
-      }
+      return name.charAt(0) == 'w' ? WEBP : PNG;
     }
   }
 }
