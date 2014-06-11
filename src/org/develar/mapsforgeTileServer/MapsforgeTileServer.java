@@ -29,7 +29,6 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -38,12 +37,12 @@ public class MapsforgeTileServer {
   private final static Logger LOG = Logger.getLogger(MapsforgeTileServer.class.getName());
   static final GraphicFactory GRAPHIC_FACTORY = AwtGraphicFactory.INSTANCE;
 
-  final File[] maps;
+  final List<File> maps;
   final Map<String, XmlRenderTheme> renderThemes;
   final DisplayModel displayModel;
   final XmlRenderTheme defaultRenderTheme;
 
-  public MapsforgeTileServer(@NotNull File[] maps, @NotNull Map<String, XmlRenderTheme> renderThemes) {
+  public MapsforgeTileServer(@NotNull List<File> maps, @NotNull Map<String, XmlRenderTheme> renderThemes) {
     this.maps = maps;
     this.renderThemes = renderThemes;
 
@@ -65,10 +64,20 @@ public class MapsforgeTileServer {
       System.exit(64);
     }
 
-    File[] maps = options.maps;
-    validateMapFiles(maps);
+    List<File> mapFiles = new ArrayList<>(options.maps.length);
+    for (Path mapFile : options.maps) {
+      if (!Files.exists(mapFile)) {
+        throw new IllegalArgumentException("File does not exist: " + mapFile);
+      }
+      else if (Files.isDirectory(mapFile)) {
+        Files.walk(mapFile).filter(path -> !Files.isDirectory(path) && path.getFileName().toString().endsWith(".map")).forEachOrdered(path -> mapFiles.add(path.toFile()));
+      }
+      else if (!Files.isReadable(mapFile)) {
+        throw new IllegalArgumentException("Cannot read file: " + mapFile);
+      }
+    }
 
-    Path theme = Paths.get(options.theme);
+    Path theme = options.theme;
     Map<String, XmlRenderTheme> renderThemes = new HashMap<>();
     if (Files.isDirectory(theme)) {
       Files.walk(theme, 2).filter(path -> !Files.isDirectory(path) && path.getFileName().toString().endsWith(".xml")).forEachOrdered(path -> {
@@ -89,7 +98,7 @@ public class MapsforgeTileServer {
       return;
     }
 
-    new MapsforgeTileServer(maps, renderThemes).startServer(options);
+    new MapsforgeTileServer(mapFiles, renderThemes).startServer(options);
   }
 
   private static void addRenderTheme(@NotNull Path path, @NotNull Map<String, XmlRenderTheme> renderThemes) throws FileNotFoundException {
@@ -168,19 +177,5 @@ public class MapsforgeTileServer {
 
     LOG.info("Listening " + address.getHostName() + ":" + address.getPort());
     serverChannel.closeFuture().syncUninterruptibly();
-  }
-
-  private static void validateMapFiles(@NotNull File[] maps) {
-    for (File mapFile : maps) {
-      if (!mapFile.exists()) {
-        throw new IllegalArgumentException("File does not exist: " + mapFile);
-      }
-      else if (!mapFile.isFile()) {
-        throw new IllegalArgumentException("Not a file: " + mapFile);
-      }
-      else if (!mapFile.canRead()) {
-        throw new IllegalArgumentException("Cannot read file: " + mapFile);
-      }
-    }
   }
 }

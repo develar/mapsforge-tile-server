@@ -3,14 +3,15 @@ package org.develar.mapsforgeTileServer;
 import org.kohsuke.args4j.Option;
 
 import java.io.File;
+import java.nio.file.Path;
 
 public class Options {
   @Option(name = "--map", aliases = {"-m"}, usage = "Map files (see http://www.openandromaps.org/en/downloads)", required = true)
-  public File[] maps;
+  public Path[] maps;
 
   @Option(name = "--theme", aliases = {"-t"}, usage = "Render theme (see http://www.openandromaps.org/en/legend) file (renderThemes/Elevate/Elevate.xml)" +
     " or folder (renderThemes)", required = true)
-  public String theme;
+  public Path theme;
 
   @Option(name = "--port", aliases = {"-p"})
   public int port = 6090;

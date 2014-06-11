@@ -4,6 +4,7 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.cache.RemovalNotification;
+import com.google.common.util.concurrent.UncheckedExecutionException;
 import com.luciad.imageio.webp.WebPUtil;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.*;
@@ -12,6 +13,7 @@ import org.jetbrains.annotations.NotNull;
 import org.mapdb.DB;
 import org.mapdb.DBMaker;
 import org.mapdb.HTreeMap;
+import org.mapsforge.core.model.Tile;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -118,6 +120,27 @@ public class TileHttpRequestHandler extends SimpleChannelInboundHandler<FullHttp
     });
 
     flushThread.start();
+
+    //BufferedImage bufferedImage = new BufferedImage(256, 256, BufferedImage.TYPE_INT_RGB);
+    //Graphics2D g = bufferedImage.createGraphics();
+    //Color backgroundColor = Color.LIGHT_GRAY;
+    //try {
+    //  RenderTheme renderTheme = RenderThemeHandler.getRenderTheme(MapsforgeTileServer.GRAPHIC_FACTORY, tileServer.displayModel, tileServer.defaultRenderTheme);
+    //  int mapBackground = renderTheme.getMapBackground();
+    //  renderTheme.destroy();
+    //  if (mapBackground >= 0) {
+    //    backgroundColor = new Color(mapBackground);
+    //    g.setColor(backgroundColor);
+    //  }
+    //}
+    //catch (SAXException|ParserConfigurationException e) {
+    //  LOG.log(Level.SEVERE, e.getMessage(), e);
+    //}
+    //
+    //g.setColor(backgroundColor);
+    //g.fill(bufferedImage.getRaster().getBounds());
+    //g.dispose();
+    //byte[] encode = WebPUtil.encode(bufferedImage);
   }
 
   @NotNull
@@ -172,6 +195,12 @@ public class TileHttpRequestHandler extends SimpleChannelInboundHandler<FullHttp
     long x = Long.parseLong(matcher.group(2));
     long y = Long.parseLong(matcher.group(3));
 
+    long maxTileNumber = Tile.getMaxTileNumber(zoom);
+    if (x > maxTileNumber || y > maxTileNumber) {
+      Responses.send(Responses.response(HttpResponseStatus.BAD_REQUEST), channel, request);
+      return;
+    }
+
     ImageFormat imageFormat = ImageFormat.fromName(matcher.group(4));
     boolean useVaryAccept = imageFormat == null;
     if (useVaryAccept) {
@@ -179,7 +208,21 @@ public class TileHttpRequestHandler extends SimpleChannelInboundHandler<FullHttp
       imageFormat = accept != null && accept.contains(ImageFormat.WEBP.getContentType()) ? ImageFormat.WEBP : ImageFormat.PNG;
     }
 
-    RenderedTile renderedTile = tileMemoryCache.get(new TileRequest(x, y, zoom, (byte)imageFormat.ordinal()));
+    RenderedTile renderedTile;
+    try {
+      renderedTile = tileMemoryCache.get(new TileRequest(x, y, zoom, (byte)imageFormat.ordinal()));
+    }
+    catch (UncheckedExecutionException e) {
+      if (e.getCause() instanceof TileNotFound) {
+        Responses.send(Responses.response(HttpResponseStatus.NOT_FOUND), channel, request);
+      }
+      else {
+        Responses.send(Responses.response(HttpResponseStatus.INTERNAL_SERVER_ERROR), channel, request);
+        LOG.log(Level.SEVERE, e.getMessage(), e);
+      }
+      return;
+    }
+
     if (checkClientCache(request, renderedTile.lastModified, renderedTile.etag)) {
       Responses.send(Responses.response(HttpResponseStatus.NOT_MODIFIED), channel, request);
       return;
@@ -212,17 +255,24 @@ public class TileHttpRequestHandler extends SimpleChannelInboundHandler<FullHttp
   private RenderedTile renderTile(@NotNull TileRequest tile) throws IOException {
     Renderer rendererManager = threadLocalRenderer.get();
     TileRenderer renderer = rendererManager.getTileRenderer(tile, tileServer);
+    if (renderer == null) {
+      throw TileNotFound.INSTANCE;
+    }
+
     BufferedImage bufferedImage = renderer.render(tile);
-    byte[] bytes;
-    if (tile.getImageFormat() == ImageFormat.WEBP) {
-      bytes = WebPUtil.encode(bufferedImage);
-    }
-    else {
-      ByteArrayOutputStream out = new ByteArrayOutputStream(8 * 1024);
-      ImageIO.write(bufferedImage, tile.getImageFormat().getFormatName(), out);
-      bytes = out.toByteArray();
-      out.close();
-    }
+    byte[] bytes = tile.getImageFormat() == ImageFormat.WEBP ? WebPUtil.encode(bufferedImage) : encodePng(bufferedImage);
     return new RenderedTile(bytes, Math.floorDiv(System.currentTimeMillis(), 1000), renderer.computeETag(tile, rendererManager.stringBuilder));
+  }
+
+  private static byte[] encodePng(@NotNull BufferedImage bufferedImage) throws IOException {
+    byte[] bytes;ByteArrayOutputStream out = new ByteArrayOutputStream(8 * 1024);
+    ImageIO.write(bufferedImage, "png", out);
+    bytes = out.toByteArray();
+    out.close();
+    return bytes;
+  }
+
+  private static class TileNotFound extends RuntimeException {
+    private static final TileNotFound INSTANCE = new TileNotFound();
   }
 }

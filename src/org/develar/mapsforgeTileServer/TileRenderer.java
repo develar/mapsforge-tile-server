@@ -2,6 +2,7 @@ package org.develar.mapsforgeTileServer;
 
 import org.jetbrains.annotations.NotNull;
 import org.mapsforge.core.graphics.TileBitmap;
+import org.mapsforge.core.model.BoundingBox;
 import org.mapsforge.core.model.Tile;
 import org.mapsforge.map.awt.AwtGraphicFactory;
 import org.mapsforge.map.layer.renderer.DatabaseRenderer;
@@ -40,6 +41,11 @@ public class TileRenderer {
     if (!result.isSuccess()) {
       throw new IllegalArgumentException(result.getErrorMessage());
     }
+  }
+
+  @NotNull
+  public BoundingBox getBoundingBox() {
+    return databaseRenderer.getMapDatabase().getMapFileInfo().boundingBox;
   }
 
   @NotNull

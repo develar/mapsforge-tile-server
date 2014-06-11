@@ -9,6 +9,7 @@ public enum ImageFormat {
     return this == WEBP ? "image/webp" : "image/png";
   }
 
+  @SuppressWarnings("UnusedDeclaration")
   String getFormatName() {
     return this == WEBP ? "webp" : "png";
   }
