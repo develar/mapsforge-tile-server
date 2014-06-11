@@ -13,7 +13,7 @@ public class Options {
   public String theme;
 
   @Option(name = "--port", aliases = {"-p"})
-  public int port = 17778;
+  public int port = 6090;
 
   @Option(name = "--host", aliases = {"-h"})
   public String host;

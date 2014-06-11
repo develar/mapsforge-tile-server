@@ -22,8 +22,8 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.format.DateTimeParseException;
 import java.util.List;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -66,8 +66,7 @@ public class TileHttpRequestHandler extends SimpleChannelInboundHandler<FullHttp
       .valueSerializer(new RenderedTileSerializer())
       .makeOrGet();
 
-    BlockingQueue<RemovalNotification<TileRequest, RenderedTile>> flushQueue = new LinkedBlockingQueue<>();
-
+    BlockingQueue<RemovalNotification<TileRequest, RenderedTile>> flushQueue = new ArrayBlockingQueue<>(executorCount * 4);
     Thread flushThread = new Thread(() -> {
       while (true) {
         try {
