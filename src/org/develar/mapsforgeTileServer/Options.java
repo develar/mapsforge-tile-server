@@ -19,9 +19,9 @@ public class Options {
   @Option(name = "--host", aliases = {"-h"})
   public String host;
 
-  @Option(name = "--max-file-cache-size", aliases = {"-fs"}, usage = "Maximal file cache size in GB, limit is not strict, actual size might be 10% or more bigger. Set -1 to unlmited")
+  @Option(name = "--max-file-cache-size", aliases = {"-cs"}, usage = "Maximal file cache size in GB, limit is not strict, actual size might be 10% or more bigger. Set -1 to unlmited")
   public double maxFileCacheSize = 30;
 
-  @Option(name = "--cache-file", aliases = {"-f"}, usage = "File cache")
+  @Option(name = "--cache-file", aliases = {"-c"}, usage = "File cache")
   public File cacheFile = new File("mapsforge-tiles.cache");
 }
