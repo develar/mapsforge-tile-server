@@ -12,14 +12,21 @@ import java.io.IOException;
 import java.io.Serializable;
 
 final class TileRequest extends Tile implements Serializable {
+  private static final int DEFAULT_TILE_SIZE = 256;
+
   public static final int WEIGHT = 8 + 8 + 1 + 1;
 
   private final byte imageFormat;
 
   public TileRequest(long tileX, long tileY, byte zoomLevel, byte imageFormat) {
-    super(tileX, tileY, zoomLevel);
+    super(tileX, tileY, zoomLevel, DEFAULT_TILE_SIZE);
 
     this.imageFormat = imageFormat;
+  }
+
+  @Override
+  protected Tile createNeighbourTile(long y, long x) {
+    return new TileRequest(x, y, zoomLevel, imageFormat);
   }
 
   @NotNull

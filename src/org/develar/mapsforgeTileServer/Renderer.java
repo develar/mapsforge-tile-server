@@ -4,6 +4,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.mapsforge.core.model.BoundingBox;
 import org.mapsforge.core.model.Tile;
+import org.mapsforge.map.layer.renderer.DatabaseRenderer;
 
 import java.io.File;
 import java.util.List;
@@ -14,11 +15,12 @@ public final class Renderer {
   public final StringBuilder stringBuilder = new StringBuilder();
 
   @Nullable
-  public TileRenderer getTileRenderer(@NotNull Tile tile, @NotNull MapsforgeTileServer tileServer) {
+  public TileRenderer getTileRenderer(@NotNull Tile tile, @NotNull MapsforgeTileServer tileServer, @NotNull DatabaseRenderer.TileCacheInfoProvider tileCacheInfoProvider) {
     if (tileRenderers == null) {
       tileRenderers = new TileRenderer[tileServer.maps.size()];
     }
 
+    // todo see http://localhost:6090/3/4/2.png - we should render not only Osterreich/Monaco (Alps.map), but Germany too (Germany.map)
     int y = (int)tile.tileY;
     double north = tileToLat(y, tile.zoomLevel);
     double south = tileToLat(y + 1, tile.zoomLevel);
@@ -32,7 +34,7 @@ public final class Renderer {
       File mapFile = maps.get(i);
       TileRenderer tileRenderer = tileRenderers[i];
       if (tileRenderer == null) {
-        tileRenderer = new TileRenderer(tileServer.displayModel, mapFile, tileServer.defaultRenderTheme);
+        tileRenderer = new TileRenderer(tileServer.displayModel, mapFile, tileServer.defaultRenderTheme, tileCacheInfoProvider);
         tileRenderers[i] = tileRenderer;
       }
 

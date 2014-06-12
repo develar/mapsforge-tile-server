@@ -25,10 +25,10 @@ public class TileRenderer {
   private final String mapFileLastModified;
   private final String renderThemeFileLastModified;
 
-  public TileRenderer(@NotNull DisplayModel displayModel, @NotNull File mapFile, XmlRenderTheme renderTheme) {
+  public TileRenderer(@NotNull DisplayModel displayModel, @NotNull File mapFile, @NotNull XmlRenderTheme renderTheme, @NotNull DatabaseRenderer.TileCacheInfoProvider tileCacheInfoProvider) {
     this.displayModel = displayModel;
     MapDatabase mapDatabase = new MapDatabase();
-    databaseRenderer = new DatabaseRenderer(mapDatabase, MapsforgeTileServer.GRAPHIC_FACTORY);
+    databaseRenderer = new DatabaseRenderer(mapDatabase, MapsforgeTileServer.GRAPHIC_FACTORY, tileCacheInfoProvider);
 
     this.mapFile = mapFile;
     this.renderTheme = renderTheme;
@@ -60,7 +60,7 @@ public class TileRenderer {
 
   @NotNull
   public BufferedImage render(@NotNull Tile tile) {
-    RendererJob rendererJob = new RendererJob(tile, mapFile, renderTheme, displayModel, 1, false);
+    RendererJob rendererJob = new RendererJob(tile, mapFile, renderTheme, displayModel, 1, false, false);
     TileBitmap bitmap = databaseRenderer.executeJob(rendererJob);
     bitmap.decrementRefCount();
     return AwtGraphicFactory.getBufferedImage(bitmap);

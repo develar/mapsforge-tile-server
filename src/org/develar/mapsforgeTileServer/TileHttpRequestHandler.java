@@ -14,6 +14,7 @@ import org.mapdb.DB;
 import org.mapdb.DBMaker;
 import org.mapdb.HTreeMap;
 import org.mapsforge.core.model.Tile;
+import org.mapsforge.map.layer.renderer.DatabaseRenderer;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -53,6 +54,7 @@ public class TileHttpRequestHandler extends SimpleChannelInboundHandler<FullHttp
       return new Renderer();
     }
   };
+  private final DatabaseRenderer.TileCacheInfoProvider tileCacheInfoProvider;
 
   public TileHttpRequestHandler(@NotNull MapsforgeTileServer tileServer, @NotNull Options options, int executorCount, long maxMemoryCacheSize, @NotNull List<Runnable> shutdownHooks) throws IOException {
     this.tileServer = tileServer;
@@ -120,6 +122,8 @@ public class TileHttpRequestHandler extends SimpleChannelInboundHandler<FullHttp
     });
 
     flushThread.start();
+
+    tileCacheInfoProvider = (tile, rendererJob) -> tileMemoryCache.asMap().containsKey((TileRequest)tile);
 
     //BufferedImage bufferedImage = new BufferedImage(256, 256, BufferedImage.TYPE_INT_RGB);
     //Graphics2D g = bufferedImage.createGraphics();
@@ -254,7 +258,7 @@ public class TileHttpRequestHandler extends SimpleChannelInboundHandler<FullHttp
   @NotNull
   private RenderedTile renderTile(@NotNull TileRequest tile) throws IOException {
     Renderer rendererManager = threadLocalRenderer.get();
-    TileRenderer renderer = rendererManager.getTileRenderer(tile, tileServer);
+    TileRenderer renderer = rendererManager.getTileRenderer(tile, tileServer, tileCacheInfoProvider);
     if (renderer == null) {
       throw TileNotFound.INSTANCE;
     }
