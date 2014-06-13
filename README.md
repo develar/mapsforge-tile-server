@@ -35,3 +35,27 @@ or
 
 ### Nginx
 See [nginx configuration example](dist/bin/nginx).
+
+## Public instance and demo 
+For personal usage you can use [public mapsforge tile server](http://routeplanner.develar.org) instance instead of setting own.
+```javascript
+var mapsforgeAttribution = '&copy; <a target="_blank" href="http://www.openandromaps.org/en/disclaimer">OpenAndroMaps</a>';
+var mapsforge = L.tileLayer('http://{s}.tile.develar.org/{z}/{x}/{y}', {
+  maxZoom: 21,
+  attribution: 'tiles ' + mapsforgeAttribution
+});
+```
+
+Coverage is limited currently, feel free [to open issue](https://github.com/develar/mapsforge-tile-server/issues/new). Covered countries:
+* [Alps](http://www.openandromaps.org/wp-content/images/maps/europe/Alps.jpg)
+* [Germany](http://www.openandromaps.org/wp-content/images/maps/europe/Germany.jpg)
+* [France](http://www.openandromaps.org/wp-content/images/maps/europe/France.jpg)
+* [Great Britain](http://www.openandromaps.org/wp-content/images/maps/europe/Great_Britain.jpg)
+* [Italy](http://www.openandromaps.org/wp-content/images/maps/europe/Italy.jpg)
+* [Spain, Portugal](http://www.openandromaps.org/wp-content/images/maps/europe/Spain_Portugal.jpg)
+* [Poland](http://www.openandromaps.org/wp-content/images/maps/europe/Poland.jpg)
+* [Finland](http://www.openandromaps.org/wp-content/images/maps/europe/Finland.jpg)
+* [Belarus](http://www.openandromaps.org/wp-content/images/maps/europe/Belarus.jpg)
+* [Balkan](http://www.openandromaps.org/wp-content/images/maps/europe/Balkan.jpg)
+
+Usage policy the same as [OSM](http://wiki.openstreetmap.org/wiki/Tile_usage_policy).
