@@ -23,6 +23,8 @@ import org.mapsforge.map.awt.AwtGraphicFactory;
 import org.mapsforge.map.model.DisplayModel;
 import org.mapsforge.map.rendertheme.ExternalRenderTheme;
 import org.mapsforge.map.rendertheme.XmlRenderTheme;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -34,11 +36,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.function.Consumer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class MapsforgeTileServer {
-  private final static Logger LOG = Logger.getLogger(MapsforgeTileServer.class.getName());
+  final static Logger LOG = LoggerFactory.getLogger(MapsforgeTileServer.class);
   static final GraphicFactory GRAPHIC_FACTORY = AwtGraphicFactory.INSTANCE;
 
   final List<File> maps;
@@ -73,7 +73,7 @@ public class MapsforgeTileServer {
     processPaths(options.maps, ".map", Integer.MAX_VALUE, path -> maps.add(path.toFile()));
 
     if (maps.isEmpty()) {
-      LOG.log(Level.SEVERE, "No map specified");
+      LOG.error("No map specified");
       return;
     }
 
@@ -83,12 +83,12 @@ public class MapsforgeTileServer {
         addRenderTheme(path, renderThemes);
       }
       catch (FileNotFoundException e) {
-        LOG.log(Level.SEVERE, e.getMessage(), e);
+        LOG.error(e.getMessage(), e);
       }
     });
 
     if (renderThemes.isEmpty()) {
-      LOG.log(Level.SEVERE, "No render theme specified");
+      LOG.error("No render theme specified");
       return;
     }
 
@@ -156,7 +156,7 @@ public class MapsforgeTileServer {
     long freeMemory = runtime.freeMemory();
     long maxMemoryCacheSize = getAvailableMemory() - (64 * 1024 * 1024) /* leave 64MB for another stuff */;
     if (maxMemoryCacheSize <= 0) {
-      LOG.severe("Memory not enough, current free memory " + freeMemory + ", total memory " + runtime.totalMemory() + ", max memory " + runtime.maxMemory());
+      LOG.error("Memory not enough, current free memory " + freeMemory + ", total memory " + runtime.totalMemory() + ", max memory " + runtime.maxMemory());
       return;
     }
 
@@ -176,7 +176,9 @@ public class MapsforgeTileServer {
       bossGroup.shutdownGracefully();
     });
 
-    final TileHttpRequestHandler tileHttpRequestHandler = new TileHttpRequestHandler(this, options, ((MultithreadEventExecutorGroup)workerGroup).executorCount(), maxMemoryCacheSize, shutdownHooks);
+    int executorCount = ((MultithreadEventExecutorGroup)workerGroup).executorCount();
+    FileCacheManager fileCacheManager = options.maxFileCacheSize == 0 ? null : new FileCacheManager(options, executorCount, shutdownHooks);
+    final TileHttpRequestHandler tileHttpRequestHandler = new TileHttpRequestHandler(this, fileCacheManager, executorCount, maxMemoryCacheSize, shutdownHooks);
     ServerBootstrap serverBootstrap = new ServerBootstrap();
     serverBootstrap.group(bossGroup, workerGroup)
       .channel(isLinux ? EpollServerSocketChannel.class : NioServerSocketChannel.class)
@@ -196,16 +198,13 @@ public class MapsforgeTileServer {
     Channel serverChannel = serverBootstrap.bind(address).syncUninterruptibly().channel();
     channelRegistrar.add(serverChannel);
 
-    Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
-      @Override
-      public void run() {
-        for (Runnable shutdownHook : shutdownHooks) {
-          try {
-            shutdownHook.run();
-          }
-          catch (Throwable e) {
-            LOG.log(Level.SEVERE, e.getMessage(), e);
-          }
+    Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+      for (Runnable shutdownHook : shutdownHooks) {
+        try {
+          shutdownHook.run();
+        }
+        catch (Throwable e) {
+          LOG.error(e.getMessage(), e);
         }
       }
     }));

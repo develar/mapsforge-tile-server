@@ -2,7 +2,7 @@
   <configuration default="false" name="MapsforgeTileServer" type="Application" factoryName="Application" singleton="true">
     <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
     <option name="MAIN_CLASS_NAME" value="org.develar.mapsforgeTileServer.MapsforgeTileServer" />
-    <option name="VM_PARAMETERS" value="-server -Xmx1G -XX:+UseConcMarkSweepGC -XX:+UseParNewGC -Xbootclasspath/a:lib/marlin-0.5.4-Unsafe.jar -Dsun.java2d.renderer=org.marlin.pisces.PiscesRenderingEngine -Dsun.java2d.renderer.useRef=hard -Dfile.encoding=UTF-8 -Djava.library.path=lib -Djava.awt.headless=true -Duser.language=en" />
+    <option name="VM_PARAMETERS" value="-server -Xmx1G -XX:+UseConcMarkSweepGC -XX:+UseParNewGC -Xbootclasspath/a:lib/marlin-0.5.4-Unsafe.jar -Dsun.java2d.renderer=org.marlin.pisces.PiscesRenderingEngine -Dsun.java2d.renderer.useRef=hard -Dfile.encoding=UTF-8 -Djava.library.path=lib -Djava.awt.headless=true -Duser.language=en -Dorg.slf4j.simpleLogger.showLogName=false -Dorg.slf4j.simpleLogger.showDateTime=true -Dorg.slf4j.simpleLogger.dateTimeFormat=&quot;yyyy-MM-dd HH:mm:ss,SSS&quot;" />
     <option name="PROGRAM_PARAMETERS" value="--map ~/maps --theme dist/renderThemes --cache-file out/cache.db" />
     <option name="WORKING_DIRECTORY" value="file://$PROJECT_DIR$" />
     <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />

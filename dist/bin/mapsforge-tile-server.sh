@@ -61,5 +61,5 @@ fi
 SCRIPT_LOCATION=$0
 MT_HOME=`dirname "$SCRIPT_LOCATION"`/..
 
-exec "$JAVA_BIN_PATH" -server -Xmx1G -XX:+UseConcMarkSweepGC -XX:+UseParNewGC -Xbootclasspath/a:"$MT_HOME/lib/marlin-0.5.4-Unsafe.jar" -Dsun.java2d.renderer=org.marlin.pisces.PiscesRenderingEngine -Dsun.java2d.renderer.useRef=hard -Dfile.encoding=UTF-8 -Djava.library.path="$MT_HOME/lib" -Djava.awt.headless=true -Duser.language=en -jar "$MT_HOME/mapsforge-tile-server.jar" --theme "$MT_HOME/renderThemes" "$@"
+exec "$JAVA_BIN_PATH" -server -Xmx1G -XX:+UseConcMarkSweepGC -XX:+UseParNewGC -Xbootclasspath/a:"$MT_HOME/lib/marlin-0.5.4-Unsafe.jar" -Dsun.java2d.renderer=org.marlin.pisces.PiscesRenderingEngine -Dsun.java2d.renderer.useRef=hard -Dfile.encoding=UTF-8 -Djava.library.path="$MT_HOME/lib" -Djava.awt.headless=true -Duser.language=en -Dorg.slf4j.simpleLogger.showLogName=false -Dorg.slf4j.simpleLogger.showDateTime=true -Dorg.slf4j.simpleLogger.dateTimeFormat="yyyy-MM-dd HH:mm:ss,SSS" -jar "$MT_HOME/mapsforge-tile-server.jar" --theme "$MT_HOME/renderThemes" "$@"
 exit 1 
