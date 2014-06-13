@@ -21,6 +21,8 @@ repositories {
 
 dependencies {
   compile name: 'annotations'
+  compile name: 'slf4j-api', version: '1.+'
+  compile name: 'slf4j-simple', version: '1.+'
   compile name: 'args4j', version: '2.+'
   compile 'guava:guava:17.+'
   compile name: 'mapdb', version: '1.+'
