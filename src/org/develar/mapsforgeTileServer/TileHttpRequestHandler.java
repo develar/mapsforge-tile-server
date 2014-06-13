@@ -4,7 +4,8 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.util.concurrent.UncheckedExecutionException;
-import com.luciad.imageio.webp.WebPUtil;
+import com.luciad.imageio.webp.WebP;
+import com.luciad.imageio.webp.WebPWriteParam;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.*;
 import io.netty.handler.codec.http.*;
@@ -20,6 +21,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.time.format.DateTimeParseException;
 import java.util.List;
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -28,6 +30,8 @@ import static org.develar.mapsforgeTileServer.MapsforgeTileServer.LOG;
 
 @ChannelHandler.Sharable
 public class TileHttpRequestHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
+  private static final WebPWriteParam WRITE_PARAM = new WebPWriteParam(Locale.ENGLISH);
+
   // http://wiki.openstreetmap.org/wiki/Slippy_map_tilenames
   private static final Pattern MAP_TILE_NAME_PATTERN = Pattern.compile("^/(\\d+)/(\\d+)/(\\d+)(?:\\.(png|webp))?(?:\\?theme=(\\w+))?");
 
@@ -183,7 +187,7 @@ public class TileHttpRequestHandler extends SimpleChannelInboundHandler<FullHttp
     }
 
     BufferedImage bufferedImage = renderer.render(tile);
-    byte[] bytes = tile.getImageFormat() == ImageFormat.WEBP ? WebPUtil.encode(bufferedImage) : encodePng(bufferedImage);
+    byte[] bytes = tile.getImageFormat() == ImageFormat.WEBP ? WebP.encode(WRITE_PARAM, bufferedImage) : encodePng(bufferedImage);
     return new RenderedTile(bytes, Math.floorDiv(System.currentTimeMillis(), 1000), renderer.computeETag(tile, rendererManager.stringBuilder));
   }
 

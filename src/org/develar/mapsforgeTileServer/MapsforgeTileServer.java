@@ -20,13 +20,16 @@ import org.jetbrains.annotations.NotNull;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.mapsforge.core.graphics.GraphicFactory;
+import org.mapsforge.core.graphics.TileBitmap;
 import org.mapsforge.map.awt.AwtGraphicFactory;
+import org.mapsforge.map.awt.AwtTileBitmap;
 import org.mapsforge.map.model.DisplayModel;
 import org.mapsforge.map.rendertheme.ExternalRenderTheme;
 import org.mapsforge.map.rendertheme.XmlRenderTheme;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -41,7 +44,12 @@ import java.util.function.Consumer;
 
 public class MapsforgeTileServer {
   final static Logger LOG = LoggerFactory.getLogger(MapsforgeTileServer.class);
-  static final GraphicFactory GRAPHIC_FACTORY = AwtGraphicFactory.INSTANCE;
+  static final GraphicFactory GRAPHIC_FACTORY = new AwtGraphicFactory() {
+    @Override
+    public TileBitmap createTileBitmap(int tileSize, boolean hasAlpha) {
+      return new AwtTileBitmap(new BufferedImage(tileSize, tileSize, hasAlpha ? BufferedImage.TYPE_INT_ARGB : BufferedImage.TYPE_3BYTE_BGR));
+    }
+  };
 
   final List<File> maps;
   final Map<String, XmlRenderTheme> renderThemes;

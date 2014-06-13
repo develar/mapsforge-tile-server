@@ -13,10 +13,10 @@
     <orderEntry type="module-library">
       <library name="mapsforge">
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/lib/mapsforge-map-awt-0.5.0-SNAPSHOT.jar!/" />
-          <root url="jar://$MODULE_DIR$/lib/mapsforge-map-reader-0.5.0-SNAPSHOT.jar!/" />
           <root url="jar://$MODULE_DIR$/lib/mapsforge-core-dev-SNAPSHOT.jar!/" />
           <root url="jar://$MODULE_DIR$/lib/mapsforge-map-dev-SNAPSHOT.jar!/" />
+          <root url="jar://$MODULE_DIR$/lib/mapsforge-map-awt-dev-SNAPSHOT.jar!/" />
+          <root url="jar://$MODULE_DIR$/lib/mapsforge-map-reader-dev-SNAPSHOT.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />

@@ -63,6 +63,6 @@ public class TileRenderer {
     RendererJob rendererJob = new RendererJob(tile, mapFile, renderTheme, displayModel, 1, false, false);
     TileBitmap bitmap = databaseRenderer.executeJob(rendererJob);
     bitmap.decrementRefCount();
-    return AwtGraphicFactory.getBufferedImage(bitmap);
+    return AwtGraphicFactory.getBitmap(bitmap);
   }
 }
