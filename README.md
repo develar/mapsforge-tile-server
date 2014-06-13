@@ -12,17 +12,17 @@ Current status — alpha.
 ```
 Usage: ./bin/mapsforge-tile-server.sh [options]
 Options:
- --map (-m) <path1>[,<path2>,...]   : Map files (see http://www.openandromaps.or
-                                      g/en/downloads)
- --theme (-t) <path1>[,<path2>,...] : Render themes (see http://www.openandromap
-                                      s.org/en/legend), file (renderThemes/Eleva
-                                      te/Elevate.xml) or folder (renderThemes)     
+ --map (-m) <path1>[,<path2>,...]   : Map files (see http://www.openandromaps.org/en/downloads)
+ --theme (-t) <path1>[,<path2>,...] : Render themes (see http://www.openandromaps.org/en/legend), 
+                                      file (renderThemes/Elevate/Elevate.xml) or folder (renderThemes)     
  --port (-p)  <int>                 : Port, default 6090 
  --host (-h) VAL                    : Host, default localhost
  --max-file-cache-size (-cs)  <int> : Maximal file cache size in GB, limit is
                                       not strict, actual size might be 10% or
                                       more bigger. Set -1 to unlmited
 ```
+
+Only `--map` option is required. [Elevate theme](http://www.openandromaps.org/en/legend/elevate-mountain-hike-theme) will be used by default.
 
 ### Several maps
 ```
@@ -34,4 +34,4 @@ or
 ```
 
 ### Nginx
-See [nginx configuration example](mapsforge-tile-server/nginx).
+See [nginx configuration example](dist/bin/nginx).

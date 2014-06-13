@@ -60,7 +60,7 @@ public class MapsforgeTileServer {
 
   public static void main(String[] args) throws IOException {
     Options options = new Options();
-    printUsage(options);
+    //printUsage(options);
     try {
       new CmdLineParser(options).parseArgument(args);
     }
