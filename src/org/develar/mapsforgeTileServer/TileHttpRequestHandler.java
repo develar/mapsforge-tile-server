@@ -8,6 +8,7 @@ import com.luciad.imageio.webp.WebPUtil;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.*;
 import io.netty.handler.codec.http.*;
+import io.netty.util.internal.FastThreadLocal;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.mapsforge.core.model.Tile;
@@ -37,12 +38,13 @@ public class TileHttpRequestHandler extends SimpleChannelInboundHandler<FullHttp
     ImageIO.setUseCache(false);
   }
 
-  private final ThreadLocal<Renderer> threadLocalRenderer = new ThreadLocal<Renderer>() {
+  private final FastThreadLocal<Renderer> threadLocalRenderer = new FastThreadLocal<Renderer>() {
     @Override
     protected Renderer initialValue() {
       return new Renderer();
     }
   };
+
   private final DatabaseRenderer.TileCacheInfoProvider tileCacheInfoProvider;
 
   public TileHttpRequestHandler(@NotNull MapsforgeTileServer tileServer, @Nullable FileCacheManager fileCacheManager, int executorCount, long maxMemoryCacheSize, @NotNull List<Runnable> shutdownHooks) {
