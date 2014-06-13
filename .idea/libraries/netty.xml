@@ -5,7 +5,7 @@
     </CLASSES>
     <JAVADOC />
     <SOURCES>
-      <root url="jar://$PROJECT_DIR$/lib/netty-all-4.1.0.Alpha1-SNAPSHOT-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/src/netty-all-4.1.0.Alpha1-SNAPSHOT-sources.jar!/" />
     </SOURCES>
   </library>
 </component>

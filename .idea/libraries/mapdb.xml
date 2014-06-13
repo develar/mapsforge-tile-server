@@ -5,7 +5,7 @@
     </CLASSES>
     <JAVADOC />
     <SOURCES>
-      <root url="jar://$PROJECT_DIR$/lib/mapdb-1.0.3-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/src/mapdb-1.0.3-sources.jar!/" />
     </SOURCES>
   </library>
 </component>

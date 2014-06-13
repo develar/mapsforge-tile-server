@@ -1,5 +1,7 @@
 package org.develar.mapsforgeTileServer;
 
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Iterators;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
@@ -25,11 +27,13 @@ import org.mapsforge.map.rendertheme.XmlRenderTheme;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -56,6 +60,7 @@ public class MapsforgeTileServer {
 
   public static void main(String[] args) throws IOException {
     Options options = new Options();
+    printUsage(options);
     try {
       new CmdLineParser(options).parseArgument(args);
     }
@@ -64,41 +69,71 @@ public class MapsforgeTileServer {
       System.exit(64);
     }
 
-    List<File> mapFiles = new ArrayList<>(options.maps.length);
-    for (Path mapFile : options.maps) {
-      if (!Files.exists(mapFile)) {
-        throw new IllegalArgumentException("File does not exist: " + mapFile);
-      }
-      else if (Files.isDirectory(mapFile)) {
-        Files.walk(mapFile).filter(path -> !Files.isDirectory(path) && path.getFileName().toString().endsWith(".map")).forEachOrdered(path -> mapFiles.add(path.toFile()));
-      }
-      else if (!Files.isReadable(mapFile)) {
-        throw new IllegalArgumentException("Cannot read file: " + mapFile);
-      }
-    }
+    List<File> maps = new ArrayList<>(options.maps.length);
+    processPaths(options.maps, ".map", Integer.MAX_VALUE, path -> maps.add(path.toFile()));
 
-    Path theme = options.theme;
-    Map<String, XmlRenderTheme> renderThemes = new HashMap<>();
-    if (Files.isDirectory(theme)) {
-      Files.walk(theme, 2).filter(path -> !Files.isDirectory(path) && path.getFileName().toString().endsWith(".xml")).forEachOrdered(path -> {
-        try {
-          addRenderTheme(path, renderThemes);
-        }
-        catch (FileNotFoundException e) {
-          LOG.log(Level.SEVERE, e.getMessage(), e);
-        }
-      });
-    }
-    else {
-      addRenderTheme(theme, renderThemes);
-    }
-
-    if (renderThemes.isEmpty()) {
-      LOG.log(Level.SEVERE, "No render themes specified");
+    if (maps.isEmpty()) {
+      LOG.log(Level.SEVERE, "No map specified");
       return;
     }
 
-    new MapsforgeTileServer(mapFiles, renderThemes).startServer(options);
+    Map<String, XmlRenderTheme> renderThemes = new LinkedHashMap<>();
+    processPaths(options.themes, ".xml", 2, path -> {
+      try {
+        addRenderTheme(path, renderThemes);
+      }
+      catch (FileNotFoundException e) {
+        LOG.log(Level.SEVERE, e.getMessage(), e);
+      }
+    });
+
+    if (renderThemes.isEmpty()) {
+      LOG.log(Level.SEVERE, "No render theme specified");
+      return;
+    }
+
+    new MapsforgeTileServer(maps, renderThemes).startServer(options);
+  }
+
+  private static void processPaths(@NotNull Path[] paths, @NotNull String ext, int maxDepth, @NotNull Consumer<Path> action) throws IOException {
+    for (Path specifiedPath : paths) {
+      if (!Files.exists(specifiedPath)) {
+        throw new IllegalArgumentException("File does not exist: " + specifiedPath);
+      }
+      else if (!Files.isReadable(specifiedPath)) {
+        throw new IllegalArgumentException("Cannot read file: " + specifiedPath);
+      }
+      else if (Files.isDirectory(specifiedPath)) {
+        Files.walk(specifiedPath, maxDepth).filter(path -> !Files.isDirectory(path) && path.getFileName().toString().endsWith(ext)).forEachOrdered(action);
+      }
+      else {
+        action.accept(specifiedPath);
+      }
+    }
+  }
+
+  @SuppressWarnings("UnusedDeclaration")
+  private static void printUsage(@NotNull Options options) {
+    new CmdLineParser(options).printUsage(new OutputStreamWriter(System.out), new ResourceBundle() {
+      private final ImmutableMap<String, String> data = new ImmutableMap.Builder<String, String>()
+        .put("FILE", "<path>")
+        .put("PATH", "<path>")
+        .put("VAL", "<string>")
+        .put("N", " <int>")
+        .build();
+
+      @Override
+      protected Object handleGetObject(@NotNull String key) {
+        String value = data.get(key);
+        return value == null ? key : value;
+      }
+
+      @NotNull
+      @Override
+      public Enumeration<String> getKeys() {
+        return Iterators.asEnumeration(data.keySet().iterator());
+      }
+    });
   }
 
   private static void addRenderTheme(@NotNull Path path, @NotNull Map<String, XmlRenderTheme> renderThemes) throws FileNotFoundException {

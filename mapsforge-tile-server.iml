@@ -31,7 +31,7 @@
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$MODULE_DIR$/lib/webp-imageio-sources.zip!/" />
+          <root url="jar://$MODULE_DIR$/lib/src/webp-imageio-sources.zip!/" />
         </SOURCES>
       </library>
     </orderEntry>
@@ -43,7 +43,7 @@
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$MODULE_DIR$/lib/guava-17.0-sources.jar!/" />
+          <root url="jar://$MODULE_DIR$/lib/src/guava-17.0-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>

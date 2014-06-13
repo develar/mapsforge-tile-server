@@ -5,7 +5,7 @@
     </CLASSES>
     <JAVADOC />
     <SOURCES>
-      <root url="jar://$PROJECT_DIR$/lib/args4j-2.0.28-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/src/args4j-2.0.28-sources.jar!/" />
     </SOURCES>
   </library>
 </component>

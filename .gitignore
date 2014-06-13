@@ -1,2 +1,5 @@
 .gradle
-build
+build/
+out/
+.DS_Store
+.idea/workspace.xml
