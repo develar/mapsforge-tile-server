@@ -28,8 +28,8 @@ dependencies {
   compile name: 'mapdb', version: '1.+'
   compile 'org.mapsforge:mapsforge-core:dev-SNAPSHOT'
   compile 'org.mapsforge:mapsforge-map:dev-SNAPSHOT'
-  compile 'org.mapsforge:mapsforge-map-reader:0.5.0-SNAPSHOT'
-  compile 'org.mapsforge:mapsforge-map-awt:0.5.0-SNAPSHOT'
+  compile 'org.mapsforge:mapsforge-map-reader:dev-SNAPSHOT'
+  compile 'org.mapsforge:mapsforge-map-awt:dev-SNAPSHOT'
   compile name: 'netty-all', version: '4.+'
   compile name: 'webp-imageio'
 }
