@@ -3,18 +3,14 @@ package org.develar.mapsforgeTileServer;
 import io.netty.channel.*;
 import io.netty.channel.group.ChannelGroup;
 import io.netty.channel.group.DefaultChannelGroup;
-import io.netty.util.concurrent.ImmediateEventExecutor;
+import io.netty.util.concurrent.GlobalEventExecutor;
 import org.jetbrains.annotations.NotNull;
 
 @ChannelHandler.Sharable
 public final class ChannelRegistrar extends ChannelInboundHandlerAdapter {
-  private final ChannelGroup openChannels = new DefaultChannelGroup(ImmediateEventExecutor.INSTANCE);
+  private final ChannelGroup openChannels = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
 
-  public boolean isEmpty() {
-    return openChannels.isEmpty();
-  }
-
-  public void add(@NotNull Channel serverChannel) {
+  public void addServerChannel(@NotNull Channel serverChannel) {
     assert serverChannel instanceof ServerChannel;
     openChannels.add(serverChannel);
   }
@@ -27,28 +23,7 @@ public final class ChannelRegistrar extends ChannelInboundHandlerAdapter {
     super.channelActive(context);
   }
 
-  public void close() {
-    close(true);
-  }
-
-  public void close(boolean shutdownEventLoopGroup) {
-    EventLoopGroup eventLoopGroup = null;
-    if (shutdownEventLoopGroup) {
-      for (Channel channel : openChannels) {
-        if (channel instanceof ServerChannel) {
-          eventLoopGroup = channel.eventLoop().parent();
-          break;
-        }
-      }
-    }
-
-    try {
-      openChannels.close().awaitUninterruptibly();
-    }
-    finally {
-      if (eventLoopGroup != null) {
-        eventLoopGroup.shutdownGracefully();
-      }
-    }
+  public void closeAndSyncUninterruptibly() {
+    openChannels.close().syncUninterruptibly();
   }
 }

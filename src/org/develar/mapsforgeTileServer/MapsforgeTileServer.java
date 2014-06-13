@@ -14,6 +14,7 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpRequestDecoder;
 import io.netty.handler.codec.http.HttpResponseEncoder;
+import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.MultithreadEventExecutorGroup;
 import org.jetbrains.annotations.NotNull;
 import org.kohsuke.args4j.CmdLineException;
@@ -35,6 +36,7 @@ import java.net.InetSocketAddress;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
 public class MapsforgeTileServer {
@@ -161,28 +163,33 @@ public class MapsforgeTileServer {
     }
 
     boolean isLinux = System.getProperty("os.name").toLowerCase(Locale.US).startsWith("linux");
-    final EventLoopGroup bossGroup = isLinux ? new EpollEventLoopGroup() : new NioEventLoopGroup();
-    final EventLoopGroup workerGroup = isLinux ? new EpollEventLoopGroup() : new NioEventLoopGroup();
+    final EventLoopGroup eventGroup = isLinux ? new EpollEventLoopGroup() : new NioEventLoopGroup();
     final ChannelRegistrar channelRegistrar = new ChannelRegistrar();
 
+    final AtomicReference<Future<?>> eventGroupShutdownFeature = new AtomicReference<>();
     List<Runnable> shutdownHooks = new ArrayList<>(4);
     shutdownHooks.add(() -> {
-      LOG.info("Close opened connections");
-      channelRegistrar.close(false);
-    });
-    shutdownHooks.add(() -> {
       LOG.info("Shutdown server");
-      workerGroup.shutdownGracefully();
-      bossGroup.shutdownGracefully();
+      try {
+        channelRegistrar.closeAndSyncUninterruptibly();
+      }
+      finally {
+        if (!eventGroupShutdownFeature.compareAndSet(null, eventGroup.shutdownGracefully())) {
+          LOG.error("ereventGroupShutdownFeature was already set");
+        }
+      }
     });
 
-    int executorCount = ((MultithreadEventExecutorGroup)workerGroup).executorCount();
+    int executorCount = ((MultithreadEventExecutorGroup)eventGroup).executorCount();
     FileCacheManager fileCacheManager = options.maxFileCacheSize == 0 ? null : new FileCacheManager(options, executorCount, shutdownHooks);
     final TileHttpRequestHandler tileHttpRequestHandler = new TileHttpRequestHandler(this, fileCacheManager, executorCount, maxMemoryCacheSize, shutdownHooks);
+
+    // task "sync eventGroupShutdownFeature only" must be last
+    shutdownHooks.add(() -> eventGroupShutdownFeature.getAndSet(null).syncUninterruptibly());
+
     ServerBootstrap serverBootstrap = new ServerBootstrap();
-    serverBootstrap.group(bossGroup, workerGroup)
+    serverBootstrap.group(eventGroup)
       .channel(isLinux ? EpollServerSocketChannel.class : NioServerSocketChannel.class)
-      .option(ChannelOption.SO_BACKLOG, 100)
       .childHandler(new ChannelInitializer<Channel>() {
         @Override
         public void initChannel(Channel channel) throws Exception {
@@ -196,7 +203,7 @@ public class MapsforgeTileServer {
 
     InetSocketAddress address = options.host == null || options.host.isEmpty() ? new InetSocketAddress(InetAddress.getLoopbackAddress(), options.port) : new InetSocketAddress(options.host, options.port);
     Channel serverChannel = serverBootstrap.bind(address).syncUninterruptibly().channel();
-    channelRegistrar.add(serverChannel);
+    channelRegistrar.addServerChannel(serverChannel);
 
     Runtime.getRuntime().addShutdownHook(new Thread(() -> {
       for (Runnable shutdownHook : shutdownHooks) {
