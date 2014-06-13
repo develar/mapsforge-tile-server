@@ -25,13 +25,15 @@ import org.mapsforge.map.awt.AwtGraphicFactory;
 import org.mapsforge.map.awt.AwtTileBitmap;
 import org.mapsforge.map.model.DisplayModel;
 import org.mapsforge.map.rendertheme.ExternalRenderTheme;
-import org.mapsforge.map.rendertheme.XmlRenderTheme;
+import org.mapsforge.map.rendertheme.rule.RenderTheme;
+import org.mapsforge.map.rendertheme.rule.RenderThemeHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xml.sax.SAXException;
 
+import javax.xml.parsers.ParserConfigurationException;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.net.InetAddress;
@@ -52,19 +54,34 @@ public class MapsforgeTileServer {
   };
 
   final List<File> maps;
-  final Map<String, XmlRenderTheme> renderThemes;
+  final Map<String, RenderThemeItem> renderThemes;
   final DisplayModel displayModel;
-  final XmlRenderTheme defaultRenderTheme;
+  final RenderThemeItem defaultRenderTheme;
 
-  public MapsforgeTileServer(@NotNull List<File> maps, @NotNull Map<String, XmlRenderTheme> renderThemes) {
+  public MapsforgeTileServer(@NotNull List<File> maps, @NotNull Path[] renderThemeFiles) throws IOException {
     this.maps = maps;
-    this.renderThemes = renderThemes;
 
     displayModel = new DisplayModel();
-    XmlRenderTheme defaultRenderTheme = renderThemes.get("elevate");
+
+    renderThemes = new LinkedHashMap<>();
+    processPaths(renderThemeFiles, ".xml", 2, path -> {
+      try {
+        addRenderTheme(path, displayModel);
+      }
+      catch (IOException | SAXException | ParserConfigurationException e) {
+        LOG.error(e.getMessage(), e);
+      }
+    });
+
+    if (renderThemes.isEmpty()) {
+      throw new IllegalStateException("No render theme specified");
+    }
+
+    RenderThemeItem defaultRenderTheme = renderThemes.get("elevate");
     if (defaultRenderTheme == null) {
       defaultRenderTheme = renderThemes.values().iterator().next();
     }
+
     this.defaultRenderTheme = defaultRenderTheme;
   }
 
@@ -87,22 +104,16 @@ public class MapsforgeTileServer {
       return;
     }
 
-    Map<String, XmlRenderTheme> renderThemes = new LinkedHashMap<>();
-    processPaths(options.themes, ".xml", 2, path -> {
-      try {
-        addRenderTheme(path, renderThemes);
-      }
-      catch (FileNotFoundException e) {
-        LOG.error(e.getMessage(), e);
-      }
-    });
-
-    if (renderThemes.isEmpty()) {
-      LOG.error("No render theme specified");
+    MapsforgeTileServer mapsforgeTileServer;
+    try {
+      mapsforgeTileServer = new MapsforgeTileServer(maps, options.themes);
+    }
+    catch (IllegalStateException e) {
+      LOG.error(e.getMessage());
       return;
     }
 
-    new MapsforgeTileServer(maps, renderThemes).startServer(options);
+    mapsforgeTileServer.startServer(options);
   }
 
   private static void processPaths(@NotNull Path[] paths, @NotNull String ext, int maxDepth, @NotNull Consumer<Path> action) throws IOException {
@@ -146,9 +157,13 @@ public class MapsforgeTileServer {
     });
   }
 
-  private static void addRenderTheme(@NotNull Path path, @NotNull Map<String, XmlRenderTheme> renderThemes) throws FileNotFoundException {
+  private void addRenderTheme(@NotNull Path path, @NotNull DisplayModel displayModel)
+    throws IOException, SAXException, ParserConfigurationException {
     String fileName = path.getFileName().toString();
-    renderThemes.put(fileName.substring(0, fileName.length() - ".xml".length()).toLowerCase(Locale.ENGLISH), new ExternalRenderTheme(path.toFile()));
+    String name = fileName.substring(0, fileName.length() - ".xml".length()).toLowerCase(Locale.ENGLISH);
+    RenderTheme renderTheme = RenderThemeHandler.getRenderTheme(GRAPHIC_FACTORY, displayModel, new ExternalRenderTheme(path.toFile()));
+    String etag = name + "@" + Long.toUnsignedString(Files.getLastModifiedTime(path).toMillis(), 32);
+    renderThemes.put(name, new RenderThemeItem(renderTheme, etag));
   }
 
   private static long getAvailableMemory() {
