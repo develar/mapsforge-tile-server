@@ -34,7 +34,7 @@ or
 ```
 
 ### Nginx
-See [nginx configuration example](dist/bin/nginx).
+See [nginx configuration example](dist/conf/nginx).
 
 ## Public instance and demo 
 For personal usage you can use [public mapsforge tile server](http://routeplanner.develar.org) instance instead of setting own.

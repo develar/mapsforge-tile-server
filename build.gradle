@@ -44,11 +44,18 @@ distributions {
   main {
       contents {
           from { 'dist' }
+
+          from ('dist') {
+            include('mapsforge-tile-server')
+            fileMode = 0755
+          }
+
           from jar
 
           into('lib') {
             from('lib') {
-              include '**/*.so', '**/*.dylib', '**/*.dll', '**/marlin-*'
+              exclude '**/src'
+              include '**/*.so', '**/*.dylib', '**/*.dll', '**/marlin-*', '**/wrapper/*'
             }
           }
       }
