@@ -23,7 +23,7 @@
 #             script's ability to control the application.
 
 # Application
-APP_NAME="mapsforge-tile-server"
+APP_NAME="mts"
 APP_LONG_NAME="Mapsforge Tile Server"
 
 # Wrapper

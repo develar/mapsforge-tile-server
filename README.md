@@ -2,7 +2,7 @@ Mapsforge Tile Server — serve Mapsforge maps. So any application can load tile
 
 Main purpose of this project — ability to use excellent beautiful detailed [Elevate theme](http://www.openandromaps.org/en/legend/elevate-mountain-hike-theme) not only in Android OS.
 
-Modified mapsforge 'dev' (0.5) version used because in this version label clipping partially fixed.
+[Modified mapsforge](https://github.com/develar/mapsforge) 'dev' (0.5) version used because in this version label clipping partially fixed.
 
 [Latest release](/releases/latest)
 
@@ -35,7 +35,19 @@ Usage policy the same as [OSM](http://wiki.openstreetmap.org/wiki/Tile_usage_pol
 
 ## Usage
 ```
-Usage: ./bin/mapsforge-tile-server.sh [options]
+Usage: ./bin/mts [ console {options} | start {options} | stop | restart {options} | condrestart {options} | status | install | remove | dump ]
+
+Commands:
+  console      Launch in the current console.
+  start        Start in the background as a daemon process.
+  stop         Stop if running as a daemon or in another console.
+  restart      Stop if running and then start.
+  condrestart  Restart only if already running.
+  status       Query the current status.
+  install      Install to start automatically when system boots.
+  remove       Uninstall.
+  dump         Request a Java thread dump if running.
+  
 Options:
  --map (-m) <path1>[,<path2>,...]     : Map files (see http://www.openandromaps.org/en/downloads)
  --theme (-t) <path1>[,<path2>,...]   : Render themes (see http://www.openandromaps.org/en/legend), 
