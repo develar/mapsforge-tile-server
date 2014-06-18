@@ -2,9 +2,9 @@ Mapsforge Tile Server — serve Mapsforge maps. So any application can load tile
 
 Main purpose of this project — ability to use excellent beautiful detailed [Elevate theme](http://www.openandromaps.org/en/legend/elevate-mountain-hike-theme) not only in Android OS.
 
-[Modified mapsforge](https://github.com/develar/mapsforge) 'dev' (0.5) version used because in this version label clipping partially fixed.
+[Latest release](https://github.com/develar/mapsforge-tile-server/releases/latest)
 
-[Latest release](/releases/latest)
+Modified [mapsforge](https://github.com/develar/mapsforge) 'dev' (0.5) version used because in this version label clipping was partially fixed.
 
 ## Features
 * Tiles in the [WebP](https://developers.google.com/speed/webp/) image format if supported by browser and server (currently, only Mac OS X and Linux 64-bit supported as server platform — under Windows/other platforms only PNG (feel free to open issue)).
