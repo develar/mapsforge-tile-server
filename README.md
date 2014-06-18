@@ -35,7 +35,9 @@ Usage policy the same as [OSM](http://wiki.openstreetmap.org/wiki/Tile_usage_pol
 
 ## Usage
 ```
-Usage: ./bin/mts [ console {options} | start {options} | stop | restart {options} | condrestart {options} | status | install | remove | dump ]
+Usage: ./bin/mts [ console {options} | 
+                   start {options} | stop | restart {options} | 
+                   condrestart {options} | status | install | remove | dump ]
 
 Commands:
   console      Launch in the current console.
