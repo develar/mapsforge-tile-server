@@ -1,5 +1,6 @@
 package org.develar.mapsforgeTileServer;
 
+import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterators;
 import io.netty.bootstrap.ServerBootstrap;
@@ -25,13 +26,14 @@ import org.mapsforge.map.awt.AwtGraphicFactory;
 import org.mapsforge.map.awt.AwtTileBitmap;
 import org.mapsforge.map.model.DisplayModel;
 import org.mapsforge.map.rendertheme.ExternalRenderTheme;
+import org.mapsforge.map.rendertheme.renderinstruction.RenderInstruction;
+import org.mapsforge.map.rendertheme.rule.MatchingCacheKey;
 import org.mapsforge.map.rendertheme.rule.RenderTheme;
 import org.mapsforge.map.rendertheme.rule.RenderThemeHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.xml.sax.SAXException;
+import org.xmlpull.v1.XmlPullParserException;
 
-import javax.xml.parsers.ParserConfigurationException;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -53,6 +55,13 @@ public class MapsforgeTileServer {
     }
   };
 
+  private static final RenderThemeHandler.RenderThemeFactory RENDER_THEME_FACTORY = renderThemeBuilder -> {
+    CacheBuilder<Object, Object> cacheBuilder = CacheBuilder.<MatchingCacheKey, List<RenderInstruction>>newBuilder().maximumSize(1024);
+    return new RenderTheme(renderThemeBuilder,
+      cacheBuilder.<MatchingCacheKey, List<RenderInstruction>>build().asMap(),
+      cacheBuilder.<MatchingCacheKey, List<RenderInstruction>>build().asMap());
+  };
+
   final List<File> maps;
   final Map<String, RenderThemeItem> renderThemes;
   final DisplayModel displayModel;
@@ -68,7 +77,7 @@ public class MapsforgeTileServer {
       try {
         addRenderTheme(path, displayModel);
       }
-      catch (IOException | SAXException | ParserConfigurationException e) {
+      catch (IOException | XmlPullParserException e) {
         LOG.error(e.getMessage(), e);
       }
     });
@@ -77,10 +86,14 @@ public class MapsforgeTileServer {
       throw new IllegalStateException("No render theme specified");
     }
 
-    RenderThemeItem defaultRenderTheme = renderThemes.get("elevate");
+    String themeName = "elevate";
+    RenderThemeItem defaultRenderTheme = renderThemes.get(themeName);
     if (defaultRenderTheme == null) {
-      defaultRenderTheme = renderThemes.values().iterator().next();
+      themeName = renderThemes.keySet().iterator().next();
+      defaultRenderTheme = renderThemes.get(themeName);
     }
+
+    LOG.info("Use " + themeName + " as default theme");
 
     this.defaultRenderTheme = defaultRenderTheme;
   }
@@ -157,11 +170,10 @@ public class MapsforgeTileServer {
     });
   }
 
-  private void addRenderTheme(@NotNull Path path, @NotNull DisplayModel displayModel)
-    throws IOException, SAXException, ParserConfigurationException {
+  private void addRenderTheme(@NotNull Path path, @NotNull DisplayModel displayModel) throws IOException, XmlPullParserException {
     String fileName = path.getFileName().toString();
     String name = fileName.substring(0, fileName.length() - ".xml".length()).toLowerCase(Locale.ENGLISH);
-    RenderTheme renderTheme = RenderThemeHandler.getRenderTheme(GRAPHIC_FACTORY, displayModel, new ExternalRenderTheme(path.toFile()));
+    RenderTheme renderTheme = RenderThemeHandler.getRenderTheme(GRAPHIC_FACTORY, displayModel, new ExternalRenderTheme(path.toFile()), RENDER_THEME_FACTORY);
     String etag = name + "@" + Long.toUnsignedString(Files.getLastModifiedTime(path).toMillis(), 32);
     renderThemes.put(name, new RenderThemeItem(renderTheme, etag));
   }

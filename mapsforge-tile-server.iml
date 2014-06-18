@@ -17,9 +17,12 @@
           <root url="jar://$MODULE_DIR$/lib/mapsforge-map-dev-SNAPSHOT.jar!/" />
           <root url="jar://$MODULE_DIR$/lib/mapsforge-map-awt-dev-SNAPSHOT.jar!/" />
           <root url="jar://$MODULE_DIR$/lib/mapsforge-map-reader-dev-SNAPSHOT.jar!/" />
+          <root url="jar://$MODULE_DIR$/lib/kxml2-2.3.0.jar!/" />
         </CLASSES>
         <JAVADOC />
-        <SOURCES />
+        <SOURCES>
+          <root url="jar://$MODULE_DIR$/lib/src/mapsforge-src.jar!/" />
+        </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="library" name="netty" level="project" />
