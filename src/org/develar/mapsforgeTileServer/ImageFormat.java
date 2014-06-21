@@ -1,17 +1,29 @@
 package org.develar.mapsforgeTileServer;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public enum ImageFormat {
-  WEBP, PNG;
+  WEBP, PNG, VECTOR;
 
+  @NotNull
   String getContentType() {
-    return this == WEBP ? "image/webp" : "image/png";
+    switch (this) {
+      case WEBP:
+        return "image/webp";
+      case PNG:
+        return "image/png";
+      case VECTOR:
+        return "application/octet-stream";
+
+      default:
+        throw new IllegalStateException();
+    }
   }
 
   @SuppressWarnings("UnusedDeclaration")
   String getFormatName() {
-    return this == WEBP ? "webp" : "png";
+    return this == WEBP ? "webp" : this == PNG ? "png" : "pixi";
   }
 
   @Nullable
@@ -20,7 +32,7 @@ public enum ImageFormat {
       return null;
     }
     else {
-      return name.charAt(0) == 'w' ? WEBP : PNG;
+      return name.charAt(0) == 'w' ? WEBP : (name.charAt(0) == 'p' ? PNG : VECTOR);
     }
   }
 }

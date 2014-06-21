@@ -10,6 +10,8 @@ import io.netty.buffer.Unpooled;
 import io.netty.channel.*;
 import io.netty.handler.codec.http.*;
 import io.netty.util.internal.FastThreadLocal;
+import org.develar.mapsforgeTileServer.pixi.PixiBitmap;
+import org.develar.mapsforgeTileServer.pixi.PixiGraphicFactory;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.mapsforge.core.model.Tile;
@@ -33,7 +35,7 @@ public class TileHttpRequestHandler extends SimpleChannelInboundHandler<FullHttp
   private static final WebPWriteParam WRITE_PARAM = new WebPWriteParam(Locale.ENGLISH);
 
   // http://wiki.openstreetmap.org/wiki/Slippy_map_tilenames
-  private static final Pattern MAP_TILE_NAME_PATTERN = Pattern.compile("^/(\\d+)/(\\d+)/(\\d+)(?:\\.(png|webp))?(?:\\?theme=(\\w+))?");
+  private static final Pattern MAP_TILE_NAME_PATTERN = Pattern.compile("^/(\\d+)/(\\d+)/(\\d+)(?:\\.(png|webp|v))?(?:\\?theme=(\\w+))?");
 
   private final MapsforgeTileServer tileServer;
   private final LoadingCache<TileRequest, RenderedTile> tileCache;
@@ -119,10 +121,10 @@ public class TileHttpRequestHandler extends SimpleChannelInboundHandler<FullHttp
     }
 
     byte zoom = Byte.parseByte(matcher.group(1));
-    long x = Long.parseLong(matcher.group(2));
-    long y = Long.parseLong(matcher.group(3));
+    int x = Integer.parseUnsignedInt(matcher.group(2));
+    int y = Integer.parseUnsignedInt(matcher.group(3));
 
-    long maxTileNumber = Tile.getMaxTileNumber(zoom);
+    int maxTileNumber = Tile.getMaxTileNumber(zoom);
     if (x > maxTileNumber || y > maxTileNumber) {
       Responses.send(Responses.response(HttpResponseStatus.BAD_REQUEST), channel, request);
       return;
@@ -136,18 +138,33 @@ public class TileHttpRequestHandler extends SimpleChannelInboundHandler<FullHttp
     }
 
     RenderedTile renderedTile;
-    try {
-      renderedTile = tileCache.get(new TileRequest(x, y, zoom, (byte)imageFormat.ordinal()));
-    }
-    catch (UncheckedExecutionException e) {
-      if (e.getCause() instanceof TileNotFound) {
+
+    TileRequest tile = new TileRequest(x, y, zoom, (byte)imageFormat.ordinal());
+    if (imageFormat == ImageFormat.VECTOR) {
+      Renderer rendererManager = threadLocalRenderer.get();
+      TileRenderer renderer = rendererManager.getTileRenderer(tile, tileServer, tileCacheInfoProvider);
+      if (renderer == null) {
         Responses.send(Responses.response(HttpResponseStatus.NOT_FOUND), channel, request);
+        return;
       }
-      else {
-        Responses.send(Responses.response(HttpResponseStatus.INTERNAL_SERVER_ERROR), channel, request);
-        LOG.error(e.getMessage(), e);
+
+      PixiBitmap bitmap = (PixiBitmap)renderer.render(tile, PixiGraphicFactory.INSTANCE);
+      renderedTile = new RenderedTile(bitmap.build(), Math.floorDiv(System.currentTimeMillis(), 1000), "");
+    }
+    else {
+      try {
+        renderedTile = tileCache.get(tile);
       }
-      return;
+      catch (UncheckedExecutionException e) {
+        if (e.getCause() instanceof TileNotFound) {
+          Responses.send(Responses.response(HttpResponseStatus.NOT_FOUND), channel, request);
+        }
+        else {
+          Responses.send(Responses.response(HttpResponseStatus.INTERNAL_SERVER_ERROR), channel, request);
+          LOG.error(e.getMessage(), e);
+        }
+        return;
+      }
     }
 
     if (checkClientCache(request, renderedTile.lastModified, renderedTile.etag)) {
@@ -157,10 +174,13 @@ public class TileHttpRequestHandler extends SimpleChannelInboundHandler<FullHttp
 
     boolean isHeadRequest = request.getMethod() == HttpMethod.HEAD;
     HttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK, isHeadRequest ? Unpooled.EMPTY_BUFFER : Unpooled.wrappedBuffer(renderedTile.data));
+    //noinspection ConstantConditions
     response.headers().set(CONTENT_TYPE, imageFormat.getContentType());
     // default cache for one day
-    response.headers().set(CACHE_CONTROL, "public, max-age=" + (60 * 60 * 24));
-    response.headers().set(ETAG, renderedTile.etag);
+    if (imageFormat != ImageFormat.VECTOR) {
+      response.headers().set(CACHE_CONTROL, "public, max-age=" + (60 * 60 * 24));
+      response.headers().set(ETAG, renderedTile.etag);
+    }
     response.headers().set(LAST_MODIFIED, Responses.formatTime(renderedTile.lastModified));
     Responses.addCommonHeaders(response);
     if (useVaryAccept) {

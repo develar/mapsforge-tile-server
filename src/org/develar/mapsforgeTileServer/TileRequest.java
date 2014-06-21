@@ -18,14 +18,14 @@ final class TileRequest extends Tile implements Serializable {
 
   private final byte imageFormat;
 
-  public TileRequest(long tileX, long tileY, byte zoomLevel, byte imageFormat) {
+  public TileRequest(int tileX, int tileY, byte zoomLevel, byte imageFormat) {
     super(tileX, tileY, zoomLevel, DEFAULT_TILE_SIZE);
 
     this.imageFormat = imageFormat;
   }
 
   @Override
-  protected Tile createNeighbourTile(long y, long x) {
+  protected Tile createNeighbourTile(int y, int x) {
     return new TileRequest(x, y, zoomLevel, imageFormat);
   }
 
@@ -47,15 +47,15 @@ final class TileRequest extends Tile implements Serializable {
   public static final class TileRequestSerializer implements Serializer<TileRequest>, Serializable {
     @Override
     public void serialize(DataOutput out, TileRequest value) throws IOException {
-      DataOutput2.packLong(out, value.tileX);
-      DataOutput2.packLong(out, value.tileY);
+      DataOutput2.packInt(out, value.tileX);
+      DataOutput2.packInt(out, value.tileY);
       out.write(value.zoomLevel);
       out.write(value.imageFormat);
     }
 
     @Override
     public TileRequest deserialize(DataInput in, int available) throws IOException {
-      return new TileRequest(DataInput2.unpackLong(in), DataInput2.unpackLong(in), in.readByte(), in.readByte());
+      return new TileRequest(DataInput2.unpackInt(in), DataInput2.unpackInt(in), in.readByte(), in.readByte());
     }
 
     @Override

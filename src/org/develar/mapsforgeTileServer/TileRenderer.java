@@ -1,6 +1,8 @@
 package org.develar.mapsforgeTileServer;
 
 import org.jetbrains.annotations.NotNull;
+import org.mapsforge.core.graphics.GraphicFactory;
+import org.mapsforge.core.graphics.TileBitmap;
 import org.mapsforge.core.model.BoundingBox;
 import org.mapsforge.core.model.Tile;
 import org.mapsforge.map.awt.AwtGraphicFactory;
@@ -8,6 +10,7 @@ import org.mapsforge.map.layer.renderer.DatabaseRenderer;
 import org.mapsforge.map.model.DisplayModel;
 import org.mapsforge.map.reader.MapDatabase;
 import org.mapsforge.map.reader.header.FileOpenResult;
+import org.mapsforge.map.rendertheme.rule.RenderTheme;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -16,6 +19,10 @@ public class TileRenderer {
   private final DisplayModel displayModel;
 
   private final DatabaseRenderer databaseRenderer;
+  private final DatabaseRenderer.TileCacheInfoProvider tileCacheInfoProvider;
+  private final RenderTheme vectorRenderTheme;
+  // DatabaseRenderer keep reference to canvas and we cannot change it after creation, so, currently, we use different instances
+  private DatabaseRenderer databaseVectorRenderer;
 
   private final String mapFileLastModified;
   private final String renderThemeEtag;
@@ -23,8 +30,10 @@ public class TileRenderer {
   public TileRenderer(@NotNull DisplayModel displayModel, @NotNull File mapFile, @NotNull RenderThemeItem renderTheme, @NotNull DatabaseRenderer.TileCacheInfoProvider tileCacheInfoProvider) {
     this.displayModel = displayModel;
     MapDatabase mapDatabase = new MapDatabase();
-    databaseRenderer = new DatabaseRenderer(mapDatabase, MapsforgeTileServer.GRAPHIC_FACTORY, tileCacheInfoProvider);
-    databaseRenderer.setRenderTheme(renderTheme.renderTheme);
+    this.tileCacheInfoProvider = tileCacheInfoProvider;
+    databaseRenderer = new DatabaseRenderer(mapDatabase, MapsforgeTileServer.GRAPHIC_FACTORY, this.tileCacheInfoProvider);
+    vectorRenderTheme = renderTheme.vectorRenderTheme;
+    databaseRenderer.setRenderTheme(renderTheme.awtRenderTheme);
 
     mapFileLastModified = Long.toUnsignedString(mapFile.lastModified(), 32);
     renderThemeEtag = renderTheme.etag;
@@ -48,6 +57,15 @@ public class TileRenderer {
     stringBuilder.append(Integer.toString(tile.getImageFormat().ordinal(), 32)).append('.');
     stringBuilder.append(Integer.toString(tile.zoomLevel, 32)).append('-').append(Long.toUnsignedString(tile.tileX, 32)).append('-').append(Long.toUnsignedString(tile.tileX, 32));
     return stringBuilder.toString();
+  }
+
+  @NotNull
+  public TileBitmap render(@NotNull Tile tile, @NotNull GraphicFactory graphicFactory) {
+    if (databaseVectorRenderer == null) {
+      databaseVectorRenderer = new DatabaseRenderer(databaseRenderer.getMapDatabase(), graphicFactory, tileCacheInfoProvider);
+      databaseVectorRenderer.setRenderTheme(vectorRenderTheme);
+    }
+    return databaseVectorRenderer.renderTile(tile, 1, false, false, displayModel);
   }
 
   @NotNull

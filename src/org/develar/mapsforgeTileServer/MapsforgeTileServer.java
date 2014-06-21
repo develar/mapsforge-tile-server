@@ -17,6 +17,7 @@ import io.netty.handler.codec.http.HttpRequestDecoder;
 import io.netty.handler.codec.http.HttpResponseEncoder;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.MultithreadEventExecutorGroup;
+import org.develar.mapsforgeTileServer.pixi.PixiGraphicFactory;
 import org.jetbrains.annotations.NotNull;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
@@ -173,9 +174,10 @@ public class MapsforgeTileServer {
   private void addRenderTheme(@NotNull Path path, @NotNull DisplayModel displayModel) throws IOException, XmlPullParserException {
     String fileName = path.getFileName().toString();
     String name = fileName.substring(0, fileName.length() - ".xml".length()).toLowerCase(Locale.ENGLISH);
-    RenderTheme renderTheme = RenderThemeHandler.getRenderTheme(GRAPHIC_FACTORY, displayModel, new ExternalRenderTheme(path.toFile()), RENDER_THEME_FACTORY);
+    ExternalRenderTheme xmlRenderTheme = new ExternalRenderTheme(path.toFile());
+    RenderTheme renderTheme = RenderThemeHandler.getRenderTheme(GRAPHIC_FACTORY, displayModel, xmlRenderTheme, RENDER_THEME_FACTORY);
     String etag = name + "@" + Long.toUnsignedString(Files.getLastModifiedTime(path).toMillis(), 32);
-    renderThemes.put(name, new RenderThemeItem(renderTheme, etag));
+    renderThemes.put(name, new RenderThemeItem(renderTheme, RenderThemeHandler.getRenderTheme(PixiGraphicFactory.INSTANCE, displayModel, xmlRenderTheme, RENDER_THEME_FACTORY), etag));
   }
 
   private static long getAvailableMemory() {

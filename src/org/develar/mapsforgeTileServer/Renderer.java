@@ -21,10 +21,10 @@ public final class Renderer {
     }
 
     // todo see http://localhost:6090/3/4/2.png - we should render not only Osterreich/Monaco (Alps.map), but Germany too (Germany.map)
-    int y = (int)tile.tileY;
+    int y = tile.tileY;
     double north = tileToLat(y, tile.zoomLevel);
     double south = tileToLat(y + 1, tile.zoomLevel);
-    int x = (int)tile.tileX;
+    int x = tile.tileX;
     double west = tileToLon(x, tile.zoomLevel);
     double east = tileToLon(x + 1, tile.zoomLevel);
 
