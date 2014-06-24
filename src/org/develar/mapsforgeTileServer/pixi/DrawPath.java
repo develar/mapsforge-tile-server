@@ -43,9 +43,9 @@ public class DrawPath {
 
   protected void drawCircle(PixiCommand command, int x, int y, int radius) {
     out.write(command.ordinal());
-    out.writeUnsighedInt29(x);
-    out.writeUnsighedInt29(y);
-    out.writeUnsighedInt29(radius);
+    out.writeSignedVarInt(x);
+    out.writeSignedVarInt(y);
+    out.writeSignedVarInt(radius);
   }
 
   protected void writeCommand(PixiCommand command, int color) {

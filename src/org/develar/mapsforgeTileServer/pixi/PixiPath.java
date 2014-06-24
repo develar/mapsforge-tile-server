@@ -7,6 +7,9 @@ public class PixiPath extends DrawPath implements Path {
   private int lineToCount = 0;
   private int lineToCountOffset = -1;
 
+  private float prevX;
+  private float prevY;
+
   @Override
   public void clear() {
     out.reset();
@@ -17,11 +20,17 @@ public class PixiPath extends DrawPath implements Path {
     if (lineToCount == 0) {
       writeCommand(PixiCommand.POLYLINE);
       lineToCountOffset = out.allocateShort();
+
+      prevX = 0;
+      prevY = 0;
     }
 
     lineToCount++;
-    writeAsTwips(x);
-    writeAsTwips(y);
+    writeAsTwips(x - prevX);
+    writeAsTwips(y - prevY);
+
+    prevX = x;
+    prevY = y;
   }
 
   @Override

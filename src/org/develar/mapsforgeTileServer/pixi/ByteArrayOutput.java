@@ -90,7 +90,8 @@ public final class ByteArrayOutput extends OutputStream {
 
   public int allocateShort() {
     int c = count;
-    count += 2;
+    buffer[count++] = 0;
+    buffer[count++] = 0;
     return c;
   }
 
