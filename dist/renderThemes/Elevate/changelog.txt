@@ -1,3 +1,8 @@
+2.2.1 19/06/14
+- removed leisure=park from protected areas, wrong rendering of motorway_junction numbers at Zoom 19+
+- added ways for towers, oneway=-1, ferry_terminal, defibrillator
+- changed trail_visibility value combinations
+
 2.2.0 01/06/14
 - optimized rendering at zoom 12 and 13 for place names
 - limited poi symbols to zoom 14 and larger and added low zoom markers (zoom 12+13) for important pois
