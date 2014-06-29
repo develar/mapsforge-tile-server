@@ -19,8 +19,8 @@ public class CanvasRastererEx {
       path = graphicFactory.createPath();
   	}
 
-  	void drawWays(List<List<List<ShapePaintContainer>>> drawWays) {
-  		int levelsPerLayer = drawWays.get(0).size();
+  	void drawWays(List<List<ShapePaintContainer>>[] drawWays) {
+  		int levelsPerLayer = drawWays[0].size();
 
   		for (List<List<ShapePaintContainer>> shapePaintContainers : drawWays) {
   			for (int level = 0; level < levelsPerLayer; ++level) {

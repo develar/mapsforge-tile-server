@@ -51,7 +51,9 @@ public class TileServerDatabaseRenderer implements RenderCallback {
   private GraphicFactory graphicFactory;
   private final MapDatabase mapDatabase;
   private RenderTheme renderTheme;
-  private List<List<List<ShapePaintContainer>>> ways;
+
+  @SuppressWarnings("unchecked")
+  private final ArrayList<List<ShapePaintContainer>>[] ways = new ArrayList[LAYERS];
 
   public TileServerDatabaseRenderer(MapDatabase mapDatabase, GraphicFactory graphicFactory) {
     this.mapDatabase = mapDatabase;
@@ -63,7 +65,21 @@ public class TileServerDatabaseRenderer implements RenderCallback {
   public void setRenderTheme(RenderTheme renderTheme) {
     if (this.renderTheme != renderTheme) {
       this.renderTheme = renderTheme;
-      ways = createWayLists();
+      int levels = this.renderTheme.getLevels();
+      for (int i = 0; i < LAYERS; i++) {
+        ArrayList<List<ShapePaintContainer>> innerWayList = ways[i];
+        if (innerWayList == null) {
+          innerWayList = new ArrayList<>(levels);
+          ways[i] = innerWayList;
+        }
+        else {
+          innerWayList.ensureCapacity(levels);
+        }
+
+        for (int j = 0; j < levels; j++) {
+          innerWayList.add(new ArrayList<>(0));
+        }
+      }
     }
   }
 
@@ -93,10 +109,9 @@ public class TileServerDatabaseRenderer implements RenderCallback {
     canvasRasterer.drawMapElements(currentElementsOrdered, tile);
 
     // clear way list
-    for (int i = ways.size() - 1; i >= 0; --i) {
-      List<List<ShapePaintContainer>> innerWayList = ways.get(i);
-      for (int j = innerWayList.size() - 1; j >= 0; --j) {
-        innerWayList.get(j).clear();
+    for (List<List<ShapePaintContainer>> innerWayList : ways) {
+      for (List<ShapePaintContainer> shapePaintContainers : innerWayList) {
+        shapePaintContainers.clear();
       }
     }
 
@@ -162,20 +177,7 @@ public class TileServerDatabaseRenderer implements RenderCallback {
     WayDecorator.renderText(textKey, priority, dy, fill, stroke, way.getCoordinatesAbsolute(), currentWayLabels);
   }
 
-  private List<List<List<ShapePaintContainer>>> createWayLists() {
-    List<List<List<ShapePaintContainer>>> result = new ArrayList<>(LAYERS);
-    int levels = renderTheme.getLevels();
-    for (byte i = LAYERS - 1; i >= 0; --i) {
-      List<List<ShapePaintContainer>> innerWayList = new ArrayList<>(levels);
-      for (int j = levels - 1; j >= 0; --j) {
-        innerWayList.add(new ArrayList<>(0));
-      }
-      result.add(innerWayList);
-    }
-    return result;
-  }
-
-  private void processReadMapData(List<List<List<ShapePaintContainer>>> ways, MapReadResult mapReadResult, Tile tile) {
+  private void processReadMapData(List<List<ShapePaintContainer>>[] ways, MapReadResult mapReadResult, Tile tile) {
     if (mapReadResult == null) {
       return;
     }
@@ -193,20 +195,20 @@ public class TileServerDatabaseRenderer implements RenderCallback {
     }
   }
 
-  private void renderPointOfInterest(List<List<List<ShapePaintContainer>>> ways, PointOfInterest pointOfInterest, Tile tile) {
-    drawingLayers = ways.get(getValidLayer(pointOfInterest.layer));
+  private void renderPointOfInterest(List<List<ShapePaintContainer>>[] ways, PointOfInterest pointOfInterest, Tile tile) {
+    drawingLayers = ways[getValidLayer(pointOfInterest.layer)];
     renderTheme.matchNode(this, pointOfInterest, tile);
   }
 
-  private void renderWaterBackground(List<List<List<ShapePaintContainer>>> ways, Tile tile) {
-    drawingLayers = ways.get(0);
+  private void renderWaterBackground(List<List<ShapePaintContainer>>[] ways, Tile tile) {
+    drawingLayers = ways[0];
     Point[] coordinates = getTilePixelCoordinates(tile.tileSize);
     PolylineContainer way = new PolylineContainer(coordinates, tile, Arrays.asList(TAG_NATURAL_WATER));
     renderTheme.matchClosedWay(this, way);
   }
 
-  private void renderWay(List<List<List<ShapePaintContainer>>> ways, PolylineContainer way) {
-    drawingLayers = ways.get(getValidLayer(way.getLayer()));
+  private void renderWay(List<List<ShapePaintContainer>>[] ways, PolylineContainer way) {
+    drawingLayers = ways[getValidLayer(way.getLayer())];
 
     if (way.isClosedWay()) {
       renderTheme.matchClosedWay(this, way);
