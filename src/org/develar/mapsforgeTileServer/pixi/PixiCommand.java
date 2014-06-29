@@ -8,4 +8,6 @@ public enum PixiCommand {
   END_FILL,
 
   DRAW_CIRCLE,
+  ROTATED_TEXT,
+  TEXT
 }

@@ -11,7 +11,6 @@ import io.netty.channel.*;
 import io.netty.handler.codec.http.*;
 import io.netty.util.internal.FastThreadLocal;
 import org.develar.mapsforgeTileServer.pixi.PixiBitmap;
-import org.develar.mapsforgeTileServer.pixi.PixiGraphicFactory;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.mapsforge.core.model.Tile;
@@ -148,7 +147,7 @@ public class TileHttpRequestHandler extends SimpleChannelInboundHandler<FullHttp
         return;
       }
 
-      PixiBitmap bitmap = (PixiBitmap)renderer.render(tile, PixiGraphicFactory.INSTANCE);
+      PixiBitmap bitmap = (PixiBitmap)renderer.renderVector(tile);
       renderedTile = new RenderedTile(bitmap.build(), Math.floorDiv(System.currentTimeMillis(), 1000), "");
     }
     else {

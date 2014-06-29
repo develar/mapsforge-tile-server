@@ -102,11 +102,23 @@ public class PixiCanvas implements Canvas {
   }
 
   @Override
-  public void drawText(String text, int x, int y, Paint paint) {
+  public void drawText(String text, float x, float y, Paint paint) {
+    //System.out.println(x + " " + y);
+    bitmap.writeCommand(PixiCommand.TEXT);
+    bitmap.writeAsTwips(x);
+    bitmap.writeAsTwips(y);
+    bitmap.out.writeString(text);
   }
 
   @Override
-  public void drawTextRotated(String text, int x1, int y1, int x2, int y2, Paint paint) {
+  public void drawTextRotated(String text, float x1, float y1, float x2, float y2, Paint paint) {
+    //System.out.println(x1 + " " + y1);
+    bitmap.writeCommand(PixiCommand.ROTATED_TEXT);
+    bitmap.writeAsTwips(x1);
+    bitmap.writeAsTwips(y1);
+    bitmap.writeAsTwips(x2 - x1);
+    bitmap.writeAsTwips(y2 - y1);
+    bitmap.out.writeString(text);
   }
 
   @Override

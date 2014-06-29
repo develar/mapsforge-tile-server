@@ -1,12 +1,13 @@
 package org.develar.mapsforgeTileServer;
 
+import org.develar.mapsforgeTileServer.pixi.PixiGraphicFactory;
 import org.jetbrains.annotations.NotNull;
-import org.mapsforge.core.graphics.GraphicFactory;
 import org.mapsforge.core.graphics.TileBitmap;
 import org.mapsforge.core.model.BoundingBox;
 import org.mapsforge.core.model.Tile;
 import org.mapsforge.map.awt.AwtGraphicFactory;
 import org.mapsforge.map.layer.renderer.DatabaseRenderer;
+import org.mapsforge.map.layer.renderer.TileServerDatabaseRenderer;
 import org.mapsforge.map.model.DisplayModel;
 import org.mapsforge.map.reader.MapDatabase;
 import org.mapsforge.map.reader.header.FileOpenResult;
@@ -19,10 +20,9 @@ public class TileRenderer {
   private final DisplayModel displayModel;
 
   private final DatabaseRenderer databaseRenderer;
-  private final DatabaseRenderer.TileCacheInfoProvider tileCacheInfoProvider;
   private final RenderTheme vectorRenderTheme;
   // DatabaseRenderer keep reference to canvas and we cannot change it after creation, so, currently, we use different instances
-  private DatabaseRenderer databaseVectorRenderer;
+  private TileServerDatabaseRenderer databaseVectorRenderer;
 
   private final String mapFileLastModified;
   private final String renderThemeEtag;
@@ -30,8 +30,7 @@ public class TileRenderer {
   public TileRenderer(@NotNull DisplayModel displayModel, @NotNull File mapFile, @NotNull RenderThemeItem renderTheme, @NotNull DatabaseRenderer.TileCacheInfoProvider tileCacheInfoProvider) {
     this.displayModel = displayModel;
     MapDatabase mapDatabase = new MapDatabase();
-    this.tileCacheInfoProvider = tileCacheInfoProvider;
-    databaseRenderer = new DatabaseRenderer(mapDatabase, MapsforgeTileServer.GRAPHIC_FACTORY, this.tileCacheInfoProvider);
+    databaseRenderer = new DatabaseRenderer(mapDatabase, MapsforgeTileServer.AWT_GRAPHIC_FACTORY, tileCacheInfoProvider);
     vectorRenderTheme = renderTheme.vectorRenderTheme;
     databaseRenderer.setRenderTheme(renderTheme.awtRenderTheme);
 
@@ -60,12 +59,12 @@ public class TileRenderer {
   }
 
   @NotNull
-  public TileBitmap render(@NotNull Tile tile, @NotNull GraphicFactory graphicFactory) {
+  public TileBitmap renderVector(@NotNull Tile tile) {
     if (databaseVectorRenderer == null) {
-      databaseVectorRenderer = new DatabaseRenderer(databaseRenderer.getMapDatabase(), graphicFactory, tileCacheInfoProvider);
+      databaseVectorRenderer = new TileServerDatabaseRenderer(databaseRenderer.getMapDatabase(), PixiGraphicFactory.INSTANCE);
       databaseVectorRenderer.setRenderTheme(vectorRenderTheme);
     }
-    return databaseVectorRenderer.renderTile(tile, 1, false, false, displayModel);
+    return databaseVectorRenderer.renderTile(tile, false, false, displayModel);
   }
 
   @NotNull

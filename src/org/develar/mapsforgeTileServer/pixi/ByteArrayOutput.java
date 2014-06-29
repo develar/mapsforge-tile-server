@@ -95,7 +95,7 @@ public final class ByteArrayOutput extends OutputStream {
     return c;
   }
 
-  public final void writeUnsighedInt29(int v) {
+  public final void writeUnsighedVarInt(int v) {
     if (v < 0x80) {
       if (v < 0) {
         throw new IllegalArgumentException("Integer out of range: " + v);
@@ -133,7 +133,47 @@ public final class ByteArrayOutput extends OutputStream {
     buffer[count++] = (byte)((v) & 0xFF);
   }
 
+  public void writeString(CharSequence s) {
+    int utfLen = 0;
+    int c;
+
+    for (int i = 0, n = s.length(); i < n; i++) {
+      c = s.charAt(i);
+      if (c >= 0x0001 && c <= 0x007F) {
+        utfLen++;
+      }
+      else if (c > 0x07FF) {
+        utfLen += 3;
+      }
+      else {
+        utfLen += 2;
+      }
+    }
+
+    writeUnsighedVarInt(utfLen);
+
+    ensureCapacity(count + utfLen);
+    int count = this.count;
+    for (int i = 0, n = s.length(); i < n; i++) {
+      c = s.charAt(i);
+      if (c <= 0x007F) {
+        buffer[count++] = (byte)c;
+      }
+      else if (c > 0x07FF) {
+        buffer[count++] = (byte)(0xE0 | ((c >> 12) & 0x0F));
+        buffer[count++] = (byte)(0x80 | ((c >> 6) & 0x3F));
+        buffer[count++] = (byte)(0x80 | (c & 0x3F));
+      }
+      else {
+        buffer[count++] = (byte)(0xC0 | ((c >> 6) & 0x1F));
+        buffer[count++] = (byte)(0x80 | (c & 0x3F));
+      }
+    }
+
+    this.count = count;
+  }
+
   public void writeSignedVarInt(int v) {
-    writeUnsighedInt29((v << 1) ^ (v >> 31));
+    writeUnsighedVarInt((v << 1) ^ (v >> 31));
   }
 }
