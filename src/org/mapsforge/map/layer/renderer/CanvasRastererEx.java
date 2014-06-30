@@ -18,7 +18,7 @@ public class CanvasRastererEx {
     symbolMatrix = graphicFactory.createMatrix();
   }
 
-  void drawWays(List<List<ShapePaintContainer>>[] drawWays, Shape shape) {
+  static void drawWays(List<List<ShapePaintContainer>>[] drawWays, Shape shape) {
     int levelsPerLayer = drawWays[0].size();
     for (List<List<ShapePaintContainer>> shapePaintContainers : drawWays) {
       for (int level = 0; level < levelsPerLayer; level++) {
@@ -47,19 +47,35 @@ public class CanvasRastererEx {
     canvas.setBitmap(bitmap);
   }
 
-  private void drawCircleContainer(ShapePaintContainer shapePaintContainer) {
-    CircleContainer circleContainer = (CircleContainer)shapePaintContainer.shapeContainer;
-    Point point = circleContainer.point;
-    canvas.drawCircle((int)point.x, (int)point.y, (int)circleContainer.radius, shapePaintContainer.paint);
+  private static int beginFillOrSetLineStyle(@NotNull ShapePaintContainer shapePaintContainer, @NotNull Shape shape) {
+    if (shapePaintContainer.paint == null) {
+      int addEndFill = shapePaintContainer.fill != null && !shapePaintContainer.fill.isTransparent() && shape.beginFillOrSetLineStyle(shapePaintContainer.fill) ? 1 : 0;
+      Paint stroke = shapePaintContainer.stroke;
+      if (stroke != null && !stroke.isTransparent()) {
+        shape.beginFillOrSetLineStyle(stroke);
+      }
+      else if (addEndFill == 0) {
+        return - 1;
+      }
+      return addEndFill;
+    }
+    else {
+      if (shapePaintContainer.paint.isTransparent()) {
+        return -1;
+      }
+      else {
+        return shape.beginFillOrSetLineStyle(shapePaintContainer.paint) ? 1 : 0;
+      }
+    }
   }
 
-  private static void drawPath(ShapePaintContainer shapePaintContainer, float dy, Shape shape) {
-    if (shapePaintContainer.paint.isTransparent()) {
-      return;
-    }
+  private static void drawCircleContainer(@NotNull ShapePaintContainer shapePaintContainer, @NotNull Shape shape) {
+    CircleContainer circleContainer = (CircleContainer)shapePaintContainer.shapeContainer;
+    Point point = circleContainer.point;
+    shape.drawCircle(point.x, point.y, circleContainer.radius);
+  }
 
-    boolean addEndFill = shape.beginFillOrSetLineStyle(shapePaintContainer.paint);
-
+  private static void drawPath(@NotNull ShapePaintContainer shapePaintContainer, float dy, @NotNull Shape shape) {
     PolylineContainer shapeContainer = (PolylineContainer)shapePaintContainer.shapeContainer;
     Point[][] coordinates = dy == 0 ? shapeContainer.getCoordinatesAbsolute() : shapeContainer.getCoordinatesRelativeToTile();
     Point tileOrigin = dy == 0 ? shapeContainer.getTile().getOrigin() : null;
@@ -69,21 +85,26 @@ public class CanvasRastererEx {
         shape.drawPolyLine(points, tileOrigin);
       }
     }
-
-    if (addEndFill) {
-      shape.endFill();
-    }
   }
 
-  private void drawShapePaintContainer(ShapePaintContainer shapePaintContainer, Shape shape) {
+  private static void drawShapePaintContainer(@NotNull ShapePaintContainer shapePaintContainer, @NotNull Shape shape) {
+    int addEndFill = beginFillOrSetLineStyle(shapePaintContainer, shape);
+    if (addEndFill == -1) {
+      return;
+    }
+
     switch (shapePaintContainer.shapeContainer.getShapeType()) {
       case CIRCLE:
-        drawCircleContainer(shapePaintContainer);
+        drawCircleContainer(shapePaintContainer, shape);
         break;
 
       case POLYLINE:
         drawPath(shapePaintContainer, shapePaintContainer.dy, shape);
         break;
+    }
+
+    if (addEndFill == 1) {
+      shape.endFill();
     }
   }
 }

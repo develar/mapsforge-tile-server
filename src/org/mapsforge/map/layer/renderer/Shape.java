@@ -9,7 +9,9 @@ import org.mapsforge.core.model.Point;
 public interface Shape extends TileBitmap {
   void drawPolyLine(@NotNull Point[] points, @Nullable Point tileOrigin);
 
-  boolean beginFillOrSetLineStyle(Paint paint);
+  boolean beginFillOrSetLineStyle(@NotNull Paint paint);
 
   void endFill();
+
+  void drawCircle(double x, double y, float radius);
 }

@@ -74,11 +74,19 @@ public class PixiBitmap extends DrawPath implements Shape {
   }
 
   @Override
+  public void drawCircle(double x, double y, float radius) {
+    writeCommand(PixiCommand.DRAW_CIRCLE2);
+    writeAsTwips(x);
+    writeAsTwips(y);
+    writeAsTwips(radius);
+  }
+
+  @Override
   public void endFill() {
     writeCommand(PixiCommand.END_FILL);
   }
 
-  public final boolean beginFillOrSetLineStyle(Paint paint) {
+  public final boolean beginFillOrSetLineStyle(@NotNull Paint paint) {
     PixiPaint pixiPaint = (PixiPaint)paint;
     if (pixiPaint.style == Style.FILL) {
       beginFill(pixiPaint.color);

@@ -100,7 +100,7 @@ public class TileServerDatabaseRenderer implements RenderCallback {
       if (displayModel.getBackgroundColor() != renderTheme.getMapBackground()) {
         canvasRasterer.fill(hasAlpha ? 0 : renderTheme.getMapBackground());
       }
-      canvasRasterer.drawWays(ways, (Shape)bitmap);
+      CanvasRastererEx.drawWays(ways, (Shape)bitmap);
     }
 
     List<MapElementContainer> currentElementsOrdered = LayerUtil.collisionFreeOrdered(currentLabels);
@@ -120,9 +120,7 @@ public class TileServerDatabaseRenderer implements RenderCallback {
 
   @Override
   public void renderArea(PolylineContainer way, Paint fill, Paint stroke, int level) {
-    List<ShapePaintContainer> list = drawingLayers.get(level);
-    list.add(new ShapePaintContainer(way, stroke));
-    list.add(new ShapePaintContainer(way, fill));
+    drawingLayers.get(level).add(new ShapePaintContainer(way, fill, stroke));
   }
 
   @Override
@@ -148,10 +146,8 @@ public class TileServerDatabaseRenderer implements RenderCallback {
 
   @Override
   public void renderPointOfInterestCircle(PointOfInterest poi, float radius, Paint fill, Paint stroke, int level, Tile tile) {
-    List<ShapePaintContainer> list = drawingLayers.get(level);
     Point poiPosition = MercatorProjection.getPixelRelativeToTile(poi.position, tile);
-    list.add(new ShapePaintContainer(new CircleContainer(poiPosition, radius), stroke));
-    list.add(new ShapePaintContainer(new CircleContainer(poiPosition, radius), fill));
+    drawingLayers.get(level).add(new ShapePaintContainer(new CircleContainer(poiPosition, radius), fill, stroke));
   }
 
   @Override
