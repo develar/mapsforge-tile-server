@@ -100,7 +100,7 @@ public class TileServerDatabaseRenderer implements RenderCallback {
       if (displayModel.getBackgroundColor() != renderTheme.getMapBackground()) {
         canvasRasterer.fill(hasAlpha ? 0 : renderTheme.getMapBackground());
       }
-      canvasRasterer.drawWays(ways);
+      canvasRasterer.drawWays(ways, (Shape)bitmap);
     }
 
     List<MapElementContainer> currentElementsOrdered = LayerUtil.collisionFreeOrdered(currentLabels);

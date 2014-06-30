@@ -44,7 +44,7 @@ public class PixiCanvas implements Canvas {
       return;
     }
 
-    boolean addEndFill = beginFillOrSetLineStyle((PixiPaint)paint);
+    boolean addEndFill = bitmap.beginFillOrSetLineStyle(paint);
     bitmap.drawCircle(PixiCommand.DRAW_CIRCLE, x, y, radius);
     if (addEndFill) {
       bitmap.writeCommand(PixiCommand.END_FILL);
@@ -57,7 +57,7 @@ public class PixiCanvas implements Canvas {
       return;
     }
 
-    boolean addEndFill = beginFillOrSetLineStyle((PixiPaint)paint);
+    boolean addEndFill = bitmap.beginFillOrSetLineStyle(paint);
     bitmap.moveToOrLineTo(PixiCommand.MOVE_TO, x1, y1);
     bitmap.moveToOrLineTo(PixiCommand.LINE_TO, x2, y2);
     if (addEndFill) {
@@ -72,32 +72,10 @@ public class PixiCanvas implements Canvas {
     }
 
     PixiPaint pixiPaint = (PixiPaint)paint;
-    boolean addEndFill = beginFillOrSetLineStyle(pixiPaint);
+    boolean addEndFill = bitmap.beginFillOrSetLineStyle(pixiPaint);
     bitmap.writePath(((PixiPath)path));
     if (addEndFill) {
       bitmap.writeCommand(PixiCommand.END_FILL);
-    }
-  }
-
-  private boolean beginFillOrSetLineStyle(PixiPaint pixiPaint) {
-    if (pixiPaint.style == Style.FILL) {
-      bitmap.beginFill(pixiPaint.color);
-      return true;
-    }
-    else {
-      if (pixiPaint.getAlpha() == 255) {
-        bitmap.writeCommand(PixiCommand.LINE_STYLE_RGB);
-        bitmap.writeAsTwips(pixiPaint.lineWidth);
-        bitmap.out.write((pixiPaint.color >>> 16) & 0xFF);
-        bitmap.out.write((pixiPaint.color >>> 8) & 0xFF);
-        bitmap.out.write((pixiPaint.color) & 0xFF);
-      }
-      else {
-        bitmap.writeCommand(PixiCommand.LINE_STYLE_RGBA);
-        bitmap.writeAsTwips(pixiPaint.lineWidth);
-        bitmap.out.writeInt(pixiPaint.color);
-      }
-      return false;
     }
   }
 

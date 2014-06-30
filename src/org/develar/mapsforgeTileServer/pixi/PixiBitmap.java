@@ -1,11 +1,16 @@
 package org.develar.mapsforgeTileServer.pixi;
 
-import org.mapsforge.core.graphics.TileBitmap;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.mapsforge.core.graphics.Paint;
+import org.mapsforge.core.graphics.Style;
+import org.mapsforge.core.model.Point;
+import org.mapsforge.map.layer.renderer.Shape;
 
 import java.io.IOException;
 import java.io.OutputStream;
 
-public class PixiBitmap extends DrawPath implements TileBitmap {
+public class PixiBitmap extends DrawPath implements Shape {
   private final int width;
   private final int height;
 
@@ -43,5 +48,56 @@ public class PixiBitmap extends DrawPath implements TileBitmap {
   @Override
   public void setBackgroundColor(int color) {
     throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public void drawPolyLine(@NotNull Point[] points, @Nullable Point tileOrigin) {
+    if (tileOrigin == null) {
+      tileOrigin = new Point(0, 0);
+    }
+
+    writeCommand(PixiCommand.POLYLINE2);
+
+    Point moveTo = points[0];
+    writeAsTwips(moveTo.x - tileOrigin.x);
+    writeAsTwips(moveTo.y - tileOrigin.y);
+    Point prevPoint = moveTo;
+
+    out.writeUnsighedVarInt(points.length - 1);
+
+    for (int i = 1; i < points.length; i++) {
+      Point point = points[i];
+      writeAsTwips(point.x - prevPoint.x);
+      writeAsTwips(point.y - prevPoint.y);
+      prevPoint = point;
+    }
+  }
+
+  @Override
+  public void endFill() {
+    writeCommand(PixiCommand.END_FILL);
+  }
+
+  public final boolean beginFillOrSetLineStyle(Paint paint) {
+    PixiPaint pixiPaint = (PixiPaint)paint;
+    if (pixiPaint.style == Style.FILL) {
+      beginFill(pixiPaint.color);
+      return true;
+    }
+    else {
+      if (pixiPaint.getAlpha() == 255) {
+        writeCommand(PixiCommand.LINE_STYLE_RGB);
+        writeAsTwips(pixiPaint.lineWidth);
+        out.write((pixiPaint.color >>> 16) & 0xFF);
+        out.write((pixiPaint.color >>> 8) & 0xFF);
+        out.write((pixiPaint.color) & 0xFF);
+      }
+      else {
+        writeCommand(PixiCommand.LINE_STYLE_RGBA);
+        writeAsTwips(pixiPaint.lineWidth);
+        out.writeInt(pixiPaint.color);
+      }
+      return false;
+    }
   }
 }
