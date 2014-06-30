@@ -120,7 +120,7 @@ public class TileServerDatabaseRenderer implements RenderCallback {
 
   @Override
   public void renderArea(PolylineContainer way, Paint fill, Paint stroke, int level) {
-    drawingLayers.get(level).add(new ShapePaintContainer(way, fill, stroke));
+    drawingLayers.get(level).add(new ShapePaintContainer(way, fill, stroke, 0));
   }
 
   @Override
@@ -147,7 +147,7 @@ public class TileServerDatabaseRenderer implements RenderCallback {
   @Override
   public void renderPointOfInterestCircle(PointOfInterest poi, float radius, Paint fill, Paint stroke, int level, Tile tile) {
     Point poiPosition = MercatorProjection.getPixelRelativeToTile(poi.position, tile);
-    drawingLayers.get(level).add(new ShapePaintContainer(new CircleContainer(poiPosition, radius), fill, stroke));
+    drawingLayers.get(level).add(new ShapePaintContainer(new CircleContainer(poiPosition, radius), fill, stroke, 0));
   }
 
   @Override
@@ -158,7 +158,7 @@ public class TileServerDatabaseRenderer implements RenderCallback {
 
   @Override
   public void renderWay(PolylineContainer way, Paint stroke, float dy, int level) {
-    drawingLayers.get(level).add(new ShapePaintContainer(way, stroke, dy));
+    drawingLayers.get(level).add(new ShapePaintContainer(way, null, stroke, dy));
   }
 
   @Override

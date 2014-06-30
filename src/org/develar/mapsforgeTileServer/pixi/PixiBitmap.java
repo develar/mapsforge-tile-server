@@ -1,7 +1,6 @@
 package org.develar.mapsforgeTileServer.pixi;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.mapsforge.core.graphics.Paint;
 import org.mapsforge.core.graphics.Style;
 import org.mapsforge.core.model.Point;
@@ -51,16 +50,12 @@ public class PixiBitmap extends DrawPath implements Shape {
   }
 
   @Override
-  public void drawPolyLine(@NotNull Point[] points, @Nullable Point tileOrigin) {
-    if (tileOrigin == null) {
-      tileOrigin = new Point(0, 0);
-    }
-
+  public void drawPolyLine(@NotNull Point[] points, @NotNull Point origin) {
     writeCommand(PixiCommand.POLYLINE2);
 
     Point moveTo = points[0];
-    writeAsTwips(moveTo.x - tileOrigin.x);
-    writeAsTwips(moveTo.y - tileOrigin.y);
+    writeAsTwips(moveTo.x - origin.x);
+    writeAsTwips(moveTo.y - origin.y);
     Point prevPoint = moveTo;
 
     out.writeUnsighedVarInt(points.length - 1);
