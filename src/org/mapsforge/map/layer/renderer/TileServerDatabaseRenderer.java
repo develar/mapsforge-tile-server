@@ -7,14 +7,12 @@ import org.mapsforge.core.model.Point;
 import org.mapsforge.core.model.Tag;
 import org.mapsforge.core.model.Tile;
 import org.mapsforge.core.util.MercatorProjection;
-import org.mapsforge.map.model.DisplayModel;
 import org.mapsforge.map.reader.MapDatabase;
 import org.mapsforge.map.reader.MapReadResult;
 import org.mapsforge.map.reader.PointOfInterest;
 import org.mapsforge.map.reader.Way;
 import org.mapsforge.map.rendertheme.RenderCallback;
 import org.mapsforge.map.rendertheme.rule.RenderTheme;
-import org.mapsforge.map.util.LayerUtil;
 
 import java.util.*;
 
@@ -45,8 +43,8 @@ public class TileServerDatabaseRenderer implements RenderCallback {
   }
 
   private final CanvasRastererEx canvasRasterer;
-  private List<MapElementContainer> currentLabels;
-  private Set<MapElementContainer> currentWayLabels;
+  private final List<MapElementContainer> currentLabels = new ArrayList<>();
+  private final Set<MapElementContainer> currentWayLabels = new HashSet<>();
   private List<List<ShapePaintContainer>> drawingLayers;
   private GraphicFactory graphicFactory;
   private final MapDatabase mapDatabase;
@@ -83,30 +81,18 @@ public class TileServerDatabaseRenderer implements RenderCallback {
     }
   }
 
-  public TileBitmap renderTile(Tile tile, boolean labelsOnly, boolean hasAlpha, DisplayModel displayModel) {
-    final int tileSize = tile.tileSize;
-
-    currentLabels = new LinkedList<>();
-    currentWayLabels = new HashSet<>();
-
+  public TileBitmap renderTile(Tile tile, boolean hasAlpha) {
     if (mapDatabase != null) {
       processReadMapData(ways, mapDatabase.readMapData(tile), tile);
     }
 
-    TileBitmap bitmap = null;
-    if (!labelsOnly) {
-      bitmap = graphicFactory.createTileBitmap(tileSize, hasAlpha);
-      canvasRasterer.setCanvasBitmap(bitmap);
-      if (displayModel.getBackgroundColor() != renderTheme.getMapBackground()) {
-        canvasRasterer.fill(hasAlpha ? 0 : renderTheme.getMapBackground());
-      }
-      CanvasRastererEx.drawWays(ways, (Shape)bitmap);
-    }
+    Shape shape = (Shape)graphicFactory.createTileBitmap(tile.tileSize, hasAlpha);
+    canvasRasterer.setCanvasBitmap(shape);
+    CanvasRastererEx.drawWays(ways, shape);
 
-    List<MapElementContainer> currentElementsOrdered = LayerUtil.collisionFreeOrdered(currentLabels);
     // now draw the ways and the labels
-    canvasRasterer.drawMapElements(currentWayLabels, tile);
-    canvasRasterer.drawMapElements(currentElementsOrdered, tile);
+    canvasRasterer.drawMapElements(currentWayLabels, tile, shape);
+    canvasRasterer.drawMapElements(collisionFreeOrdered(currentLabels), tile, shape);
 
     // clear way list
     for (List<List<ShapePaintContainer>> innerWayList : ways) {
@@ -115,7 +101,32 @@ public class TileServerDatabaseRenderer implements RenderCallback {
       }
     }
 
-    return bitmap;
+    currentLabels.clear();
+    currentWayLabels.clear();
+
+    return shape;
+  }
+
+  private static List<MapElementContainer> collisionFreeOrdered(List<MapElementContainer> input) {
+    // sort items by priority (highest first)
+    input.sort(Collections.reverseOrder());
+    // in order of priority, see if an item can be drawn, i.e. none of the items
+    // in the currentItemsToDraw list clashes with it.
+    List<MapElementContainer> output = new ArrayList<>(input.size());
+    for (MapElementContainer item : input) {
+      boolean hasSpace = true;
+      for (MapElementContainer outputElement : output) {
+        if (outputElement.clashesWith(item)) {
+          hasSpace = false;
+          break;
+        }
+      }
+      if (hasSpace) {
+        item.incrementRefCount();
+        output.add(item);
+      }
+    }
+    return output;
   }
 
   @Override
@@ -164,8 +175,7 @@ public class TileServerDatabaseRenderer implements RenderCallback {
   @Override
   public void renderWaySymbol(PolylineContainer way, int priority, Bitmap symbol, float dy, boolean alignCenter, boolean repeat,
                               float repeatGap, float repeatStart, boolean rotate) {
-    WayDecorator.renderSymbol(symbol, priority, dy, alignCenter, repeat, repeatGap,
-      repeatStart, rotate, way.getCoordinatesAbsolute(), currentLabels);
+    WayDecorator.renderSymbol(symbol, priority, dy, alignCenter, repeat, repeatGap, repeatStart, rotate, way.getCoordinatesAbsolute(), currentLabels);
   }
 
   @Override
@@ -199,8 +209,7 @@ public class TileServerDatabaseRenderer implements RenderCallback {
   private void renderWaterBackground(List<List<ShapePaintContainer>>[] ways, Tile tile) {
     drawingLayers = ways[0];
     Point[] coordinates = getTilePixelCoordinates(tile.tileSize);
-    PolylineContainer way = new PolylineContainer(coordinates, tile, Arrays.asList(TAG_NATURAL_WATER));
-    renderTheme.matchClosedWay(this, way);
+    renderTheme.matchClosedWay(this, new PolylineContainer(coordinates, tile, Arrays.asList(TAG_NATURAL_WATER)));
   }
 
   private void renderWay(List<List<ShapePaintContainer>>[] ways, PolylineContainer way) {

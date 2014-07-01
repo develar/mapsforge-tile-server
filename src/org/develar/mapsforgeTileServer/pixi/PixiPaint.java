@@ -57,7 +57,7 @@ public class PixiPaint implements Paint {
     }
   }
 
-  private Rectangle2D getTextVisualBounds(String text) {
+  public Rectangle2D getTextVisualBounds(String text) {
     FontMetrics fontMetrics = TEXT_MEASURER.getGraphics().getFontMetrics(font);
     return font.createGlyphVector(fontMetrics.getFontRenderContext(), text).getVisualBounds();
   }

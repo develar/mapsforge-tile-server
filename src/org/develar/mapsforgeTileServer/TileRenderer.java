@@ -64,7 +64,7 @@ public class TileRenderer {
       databaseVectorRenderer = new TileServerDatabaseRenderer(databaseRenderer.getMapDatabase(), PixiGraphicFactory.INSTANCE);
       databaseVectorRenderer.setRenderTheme(vectorRenderTheme);
     }
-    return databaseVectorRenderer.renderTile(tile, false, false, displayModel);
+    return databaseVectorRenderer.renderTile(tile, false);
   }
 
   @NotNull

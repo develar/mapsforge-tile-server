@@ -90,13 +90,7 @@ public class PixiCanvas implements Canvas {
 
   @Override
   public void drawTextRotated(String text, float x1, float y1, float x2, float y2, Paint paint) {
-    //System.out.println(x1 + " " + y1);
-    bitmap.writeCommand(PixiCommand.ROTATED_TEXT);
-    bitmap.writeAsTwips(x1);
-    bitmap.writeAsTwips(y1);
-    bitmap.writeAsTwips(x2 - x1);
-    bitmap.writeAsTwips(y2 - y1);
-    bitmap.out.writeString(text);
+    throw new IllegalStateException("Shape.drawTextRotated must be used");
   }
 
   @Override

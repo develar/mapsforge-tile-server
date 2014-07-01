@@ -42,7 +42,7 @@ public class DrawPath {
   }
 
   protected void writeAsTwips(double v) {
-    out.writeSignedVarInt(Math.round(((float)v) * TWIP_SIZE));
+    out.writeSignedVarInt((int)Math.round(v * TWIP_SIZE));
   }
 
   protected void drawCircle(PixiCommand command, int x, int y, int radius) {
