@@ -1,0 +1,15 @@
+<component name="libraryTable">
+  <library name="mapsforge">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib/mapsforge-core-dev-SNAPSHOT.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/mapsforge-map-dev-SNAPSHOT.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/mapsforge-map-awt-dev-SNAPSHOT.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/mapsforge-map-reader-dev-SNAPSHOT.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/kxml2-2.3.0.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$PROJECT_DIR$/lib/src/mapsforge-src.jar!/" />
+    </SOURCES>
+  </library>
+</component>
