@@ -98,20 +98,18 @@ public class PixiBitmap extends DrawPath implements Shape {
     double x2 = end.x - origin.x;
     double y2 = end.y - origin.y;
 
-    double lineLength = Math.hypot(x2 - x1, y2 - y1);
+    double dx = x2 - x1;
+    double dy = y2 - y1;
+    double rotation = Math.atan2(dy, dx);
+
+    writeAsTwips(x1 + dx / 2);
+    writeAsTwips(y1 + dy / 2);
+    writeAsTwips(rotation);
+
     Rectangle2D textBounds = ((PixiPaint)paintFront).getTextVisualBounds(text);
-    double dx = (lineLength - textBounds.getWidth()) / 2;
-    double dy = textBounds.getHeight() / 3;
 
-    double theta = Math.atan2(y2 - y1, x2 - x1);
-
-    writeAsTwips(x1 + dx);
-    writeAsTwips(y1 + dy);
-
-    writeAsTwips(theta);
-
-    writeAsTwips(x1);
-    writeAsTwips(y1);
+    writeAsTwips(textBounds.getWidth());
+    writeAsTwips(textBounds.getHeight());
 
     out.writeString(text);
   }
