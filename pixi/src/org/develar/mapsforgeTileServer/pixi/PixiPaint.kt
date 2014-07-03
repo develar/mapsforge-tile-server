@@ -8,7 +8,7 @@ import java.awt.Font
 import java.awt.RenderingHints
 import java.awt.Graphics2D
 
-public class PixiPaint() : Paint {
+class PixiPaint() : Paint {
   private var font: Font? = null
   private var fontSize: Int = 0
   private var fontName: String? = null

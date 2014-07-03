@@ -9,7 +9,7 @@ import org.mapsforge.core.mapelements.SymbolContainer
 import org.mapsforge.core.model.Point
 import org.mapsforge.core.model.Rectangle
 
-public class PixiPointTextContainer(point: Point, priority: Int, text: String, paintFront: Paint, paintBack: Paint?, symbolContainer: SymbolContainer?, position: Position, maxTextWidth: Int) : PointTextContainer(point, priority, text, paintFront, paintBack, symbolContainer, position, maxTextWidth) {
+class PixiPointTextContainer(point: Point, priority: Int, text: String, paintFront: Paint, paintBack: Paint?, symbolContainer: SymbolContainer?, position: Position, maxTextWidth: Int) : PointTextContainer(point, priority, text, paintFront, paintBack, symbolContainer, position, maxTextWidth) {
   {
     boundary = computeBoundary()
   }

@@ -3,7 +3,7 @@ package org.develar.mapsforgeTileServer.pixi
 import org.mapsforge.core.graphics.FillRule
 import org.mapsforge.core.graphics.Path
 
-public class PixiPath() : DrawPath(), Path {
+class PixiPath() : DrawPath(), Path {
   private var lineToCount = 0
   private var lineToCountOffset = -1
 

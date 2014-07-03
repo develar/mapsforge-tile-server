@@ -8,7 +8,7 @@ import org.xmlpull.v1.XmlPullParser
 import java.io.IOException
 import java.io.OutputStream
 
-public class PixiSymbol(displayModel: DisplayModel, elementName: String, pullParser: XmlPullParser, relativePathPrefix: String) : Symbol(null, displayModel, elementName, pullParser), Bitmap {
+class PixiSymbol(displayModel: DisplayModel, elementName: String, pullParser: XmlPullParser, relativePathPrefix: String) : Symbol(null, displayModel, elementName, pullParser), Bitmap {
   public val path: String
 
   {

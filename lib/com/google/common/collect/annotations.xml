@@ -5,6 +5,9 @@
   <item name='com.google.common.collect.ImmutableMap.Builder com.google.common.collect.ImmutableMap.Builder&lt;K,V&gt; put(K, V)'>
     <annotation name='org.jetbrains.annotations.NotNull'/>
   </item>
+  <item name='com.google.common.collect.ImmutableSet com.google.common.collect.UnmodifiableIterator&lt;E&gt; iterator()'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
   <item name='com.google.common.collect.Iterators java.util.Enumeration&lt;T&gt; asEnumeration(java.util.Iterator&lt;T&gt;)'>
     <annotation name='org.jetbrains.annotations.NotNull'/>
   </item>

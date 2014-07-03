@@ -3,7 +3,7 @@ package org.develar.mapsforgeTileServer.pixi
 import org.mapsforge.core.graphics.*
 import org.mapsforge.core.model.Dimension
 
-public class PixiCanvas() : Canvas {
+class PixiCanvas() : Canvas {
   private var bitmap: PixiBitmap? = null
 
   override fun destroy() {

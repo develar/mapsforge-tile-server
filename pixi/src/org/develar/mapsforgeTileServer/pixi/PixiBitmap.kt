@@ -9,7 +9,7 @@ import org.mapsforge.map.layer.renderer.Shape
 import java.io.IOException
 import java.io.OutputStream
 
-public class PixiBitmap(private val w: Int, private val h: Int) : DrawPath(), Shape {
+class PixiBitmap(private val w: Int, private val h: Int) : DrawPath(), Shape {
   override fun getHeight(): Int  = w
 
   override fun getWidth(): Int = h
@@ -91,6 +91,12 @@ public class PixiBitmap(private val w: Int, private val h: Int) : DrawPath(), Sh
   }
 
   override fun drawSymbol(symbol: Bitmap, x: Double, y: Double, rotation: Float) {
+    val pixiSymbol = symbol as PixiSymbol
+    writeCommand(PixiCommand.SYMBOL)
+    out.writeString(pixiSymbol.path)
+    writeAsTwips(x)
+    writeAsTwips(y)
+    writeAsTwips(rotation)
   }
 
   override fun endFill() {

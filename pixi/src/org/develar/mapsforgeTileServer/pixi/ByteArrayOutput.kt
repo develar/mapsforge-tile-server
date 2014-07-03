@@ -3,7 +3,7 @@ package org.develar.mapsforgeTileServer.pixi
 import java.io.OutputStream
 import java.util.Arrays
 
-public class ByteArrayOutput(size: Int = 32) : OutputStream() {
+class ByteArrayOutput(size: Int = 32) : OutputStream() {
   protected var buffer: ByteArray = ByteArray(size)
   protected var count: Int = 0
 

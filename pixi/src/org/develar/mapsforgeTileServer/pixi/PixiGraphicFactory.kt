@@ -9,7 +9,7 @@ import org.mapsforge.map.awt.AwtMatrix
 import java.io.IOException
 import java.io.InputStream
 
-public class PixiGraphicFactory() : GraphicFactory {
+class PixiGraphicFactory() : GraphicFactory {
   class object {
     public val INSTANCE: GraphicFactory = PixiGraphicFactory()
   }

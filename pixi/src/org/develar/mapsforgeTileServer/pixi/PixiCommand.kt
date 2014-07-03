@@ -16,4 +16,6 @@ public enum class PixiCommand {
   DRAW_CIRCLE2
   ROTATED_TEXT
   TEXT
+
+  SYMBOL
 }
