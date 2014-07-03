@@ -14,9 +14,9 @@ class PixiGraphicFactory() : GraphicFactory {
     public val INSTANCE: GraphicFactory = PixiGraphicFactory()
   }
 
-  override fun createBitmap(width: Int, height: Int): Bitmap = PixiBitmap(width, height)
+  override fun createBitmap(width: Int, height: Int): Bitmap = PixiShape(width, height)
 
-  override fun createBitmap(width: Int, height: Int, isTransparent: Boolean): Bitmap = PixiBitmap(width, height)
+  override fun createBitmap(width: Int, height: Int, isTransparent: Boolean): Bitmap = PixiShape(width, height)
 
   override fun createCanvas(): Canvas = PixiCanvas()
 
@@ -65,7 +65,7 @@ class PixiGraphicFactory() : GraphicFactory {
   throws(javaClass<IOException>())
   override fun createTileBitmap(inputStream: InputStream, tileSize: Int, isTransparent: Boolean): TileBitmap = throw UnsupportedOperationException()
 
-  override fun createTileBitmap(tileSize: Int, isTransparent: Boolean): TileBitmap = PixiBitmap(tileSize, tileSize)
+  override fun createTileBitmap(tileSize: Int, isTransparent: Boolean): TileBitmap = PixiShape(tileSize, tileSize)
 
   throws(javaClass<IOException>())
   override fun platformSpecificSources(relativePathPrefix: String, src: String): InputStream = throw IOException()

@@ -4,7 +4,7 @@ import org.mapsforge.core.graphics.*
 import org.mapsforge.core.model.Dimension
 
 class PixiCanvas() : Canvas {
-  private var bitmap: PixiBitmap? = null
+  private var bitmap: PixiShape? = null
 
   override fun destroy() {
   }
@@ -16,7 +16,7 @@ class PixiCanvas() : Canvas {
   override fun getWidth(): Int = bitmap?.getWidth() ?: 0
 
   override fun setBitmap(bitmap: Bitmap?) {
-    this.bitmap = bitmap as PixiBitmap
+    this.bitmap = bitmap as PixiShape
   }
 
   override fun drawBitmap(bitmap: Bitmap, left: Int, top: Int) {

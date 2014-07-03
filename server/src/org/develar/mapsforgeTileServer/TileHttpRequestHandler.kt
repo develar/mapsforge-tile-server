@@ -10,7 +10,7 @@ import io.netty.buffer.Unpooled
 import io.netty.channel.*
 import io.netty.handler.codec.http.*
 import io.netty.util.internal.FastThreadLocal
-import org.develar.mapsforgeTileServer.pixi.PixiBitmap
+import org.develar.mapsforgeTileServer.pixi.PixiShape
 import org.mapsforge.core.model.Tile
 import org.mapsforge.map.layer.renderer.DatabaseRenderer
 
@@ -165,7 +165,7 @@ public class TileHttpRequestHandler(private val tileServer: MapsforgeTileServer,
         return
       }
 
-      val bitmap = renderer.renderVector(tile) as PixiBitmap
+      val bitmap = renderer.renderVector(tile) as PixiShape
       renderedTile = RenderedTile(bitmap.build(), Math.floorDiv(System.currentTimeMillis(), 1000), "")
     }
     else {
