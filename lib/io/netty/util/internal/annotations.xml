@@ -1,0 +1,5 @@
+<root>
+  <item name='io.netty.util.internal.FastThreadLocal V get()'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+</root>

@@ -38,18 +38,10 @@
         </SOURCES>
       </library>
     </orderEntry>
-    <orderEntry type="module-library">
-      <library name="slf4j-api-1.7.7">
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/lib/slf4j-api-1.7.7.jar!/" />
-          <root url="jar://$MODULE_DIR$/lib/slf4j-simple-1.7.7.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
+    <orderEntry type="library" name="slf4j" level="project" />
     <orderEntry type="module" module-name="pixi" />
     <orderEntry type="module" module-name="mapsforge-ex" />
+    <orderEntry type="library" name="KotlinJavaRuntime" level="project" />
   </component>
 </module>
 

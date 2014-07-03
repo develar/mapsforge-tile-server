@@ -1,0 +1,5 @@
+<root>
+  <item name='java.util.stream.Stream java.util.stream.Stream&lt;T&gt; filter(java.util.function.Predicate&lt;? super T&gt;)'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+</root>

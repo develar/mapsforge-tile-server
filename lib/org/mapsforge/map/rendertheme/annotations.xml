@@ -1,0 +1,102 @@
+<root>
+  <item
+    name='org.mapsforge.map.rendertheme.RenderCallback void renderArea(org.mapsforge.map.layer.renderer.PolylineContainer, org.mapsforge.core.graphics.Paint, org.mapsforge.core.graphics.Paint, int) 0'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item
+    name='org.mapsforge.map.rendertheme.RenderCallback void renderArea(org.mapsforge.map.layer.renderer.PolylineContainer, org.mapsforge.core.graphics.Paint, org.mapsforge.core.graphics.Paint, int) 1'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item
+    name='org.mapsforge.map.rendertheme.RenderCallback void renderAreaCaption(org.mapsforge.map.layer.renderer.PolylineContainer, int, java.lang.String, float, float, org.mapsforge.core.graphics.Paint, org.mapsforge.core.graphics.Paint, org.mapsforge.core.graphics.Position, int) 0'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item
+    name='org.mapsforge.map.rendertheme.RenderCallback void renderAreaCaption(org.mapsforge.map.layer.renderer.PolylineContainer, int, java.lang.String, float, float, org.mapsforge.core.graphics.Paint, org.mapsforge.core.graphics.Paint, org.mapsforge.core.graphics.Position, int) 2'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item
+    name='org.mapsforge.map.rendertheme.RenderCallback void renderAreaCaption(org.mapsforge.map.layer.renderer.PolylineContainer, int, java.lang.String, float, float, org.mapsforge.core.graphics.Paint, org.mapsforge.core.graphics.Paint, org.mapsforge.core.graphics.Position, int) 5'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item
+    name='org.mapsforge.map.rendertheme.RenderCallback void renderAreaCaption(org.mapsforge.map.layer.renderer.PolylineContainer, int, java.lang.String, float, float, org.mapsforge.core.graphics.Paint, org.mapsforge.core.graphics.Paint, org.mapsforge.core.graphics.Position, int) 7'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='org.mapsforge.map.rendertheme.RenderCallback void renderAreaSymbol(org.mapsforge.map.layer.renderer.PolylineContainer, int, org.mapsforge.core.graphics.Bitmap) 0'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='org.mapsforge.map.rendertheme.RenderCallback void renderAreaSymbol(org.mapsforge.map.layer.renderer.PolylineContainer, int, org.mapsforge.core.graphics.Bitmap) 2'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item
+    name='org.mapsforge.map.rendertheme.RenderCallback void renderPointOfInterestCaption(org.mapsforge.map.reader.PointOfInterest, int, java.lang.String, float, float, org.mapsforge.core.graphics.Paint, org.mapsforge.core.graphics.Paint, org.mapsforge.core.graphics.Position, int, org.mapsforge.core.model.Tile) 0'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item
+    name='org.mapsforge.map.rendertheme.RenderCallback void renderPointOfInterestCaption(org.mapsforge.map.reader.PointOfInterest, int, java.lang.String, float, float, org.mapsforge.core.graphics.Paint, org.mapsforge.core.graphics.Paint, org.mapsforge.core.graphics.Position, int, org.mapsforge.core.model.Tile) 2'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item
+    name='org.mapsforge.map.rendertheme.RenderCallback void renderPointOfInterestCaption(org.mapsforge.map.reader.PointOfInterest, int, java.lang.String, float, float, org.mapsforge.core.graphics.Paint, org.mapsforge.core.graphics.Paint, org.mapsforge.core.graphics.Position, int, org.mapsforge.core.model.Tile) 5'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item
+    name='org.mapsforge.map.rendertheme.RenderCallback void renderPointOfInterestCaption(org.mapsforge.map.reader.PointOfInterest, int, java.lang.String, float, float, org.mapsforge.core.graphics.Paint, org.mapsforge.core.graphics.Paint, org.mapsforge.core.graphics.Position, int, org.mapsforge.core.model.Tile) 7'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item
+    name='org.mapsforge.map.rendertheme.RenderCallback void renderPointOfInterestCaption(org.mapsforge.map.reader.PointOfInterest, int, java.lang.String, float, float, org.mapsforge.core.graphics.Paint, org.mapsforge.core.graphics.Paint, org.mapsforge.core.graphics.Position, int, org.mapsforge.core.model.Tile) 9'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item
+    name='org.mapsforge.map.rendertheme.RenderCallback void renderPointOfInterestCircle(org.mapsforge.map.reader.PointOfInterest, float, org.mapsforge.core.graphics.Paint, org.mapsforge.core.graphics.Paint, int, org.mapsforge.core.model.Tile) 0'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item
+    name='org.mapsforge.map.rendertheme.RenderCallback void renderPointOfInterestCircle(org.mapsforge.map.reader.PointOfInterest, float, org.mapsforge.core.graphics.Paint, org.mapsforge.core.graphics.Paint, int, org.mapsforge.core.model.Tile) 2'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item
+    name='org.mapsforge.map.rendertheme.RenderCallback void renderPointOfInterestCircle(org.mapsforge.map.reader.PointOfInterest, float, org.mapsforge.core.graphics.Paint, org.mapsforge.core.graphics.Paint, int, org.mapsforge.core.model.Tile) 5'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item
+    name='org.mapsforge.map.rendertheme.RenderCallback void renderPointOfInterestSymbol(org.mapsforge.map.reader.PointOfInterest, int, org.mapsforge.core.graphics.Bitmap, org.mapsforge.core.model.Tile) 0'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item
+    name='org.mapsforge.map.rendertheme.RenderCallback void renderPointOfInterestSymbol(org.mapsforge.map.reader.PointOfInterest, int, org.mapsforge.core.graphics.Bitmap, org.mapsforge.core.model.Tile) 2'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item
+    name='org.mapsforge.map.rendertheme.RenderCallback void renderPointOfInterestSymbol(org.mapsforge.map.reader.PointOfInterest, int, org.mapsforge.core.graphics.Bitmap, org.mapsforge.core.model.Tile) 3'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='org.mapsforge.map.rendertheme.RenderCallback void renderWay(org.mapsforge.map.layer.renderer.PolylineContainer, org.mapsforge.core.graphics.Paint, float, int) 0'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='org.mapsforge.map.rendertheme.RenderCallback void renderWay(org.mapsforge.map.layer.renderer.PolylineContainer, org.mapsforge.core.graphics.Paint, float, int) 1'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item
+    name='org.mapsforge.map.rendertheme.RenderCallback void renderWaySymbol(org.mapsforge.map.layer.renderer.PolylineContainer, int, org.mapsforge.core.graphics.Bitmap, float, boolean, boolean, float, float, boolean) 0'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item
+    name='org.mapsforge.map.rendertheme.RenderCallback void renderWaySymbol(org.mapsforge.map.layer.renderer.PolylineContainer, int, org.mapsforge.core.graphics.Bitmap, float, boolean, boolean, float, float, boolean) 2'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item
+    name='org.mapsforge.map.rendertheme.RenderCallback void renderWayText(org.mapsforge.map.layer.renderer.PolylineContainer, int, java.lang.String, float, org.mapsforge.core.graphics.Paint, org.mapsforge.core.graphics.Paint) 0'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item
+    name='org.mapsforge.map.rendertheme.RenderCallback void renderWayText(org.mapsforge.map.layer.renderer.PolylineContainer, int, java.lang.String, float, org.mapsforge.core.graphics.Paint, org.mapsforge.core.graphics.Paint) 2'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item
+    name='org.mapsforge.map.rendertheme.RenderCallback void renderWayText(org.mapsforge.map.layer.renderer.PolylineContainer, int, java.lang.String, float, org.mapsforge.core.graphics.Paint, org.mapsforge.core.graphics.Paint) 4'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+</root>

@@ -1,0 +1,124 @@
+<root>
+  <item name='org.mapsforge.core.graphics.Color'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='org.mapsforge.core.graphics.GraphicContext void drawBitmap(org.mapsforge.core.graphics.Bitmap, int, int) 0'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='org.mapsforge.core.graphics.GraphicContext void drawBitmap(org.mapsforge.core.graphics.Bitmap, org.mapsforge.core.graphics.Matrix) 0'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='org.mapsforge.core.graphics.GraphicContext void drawBitmap(org.mapsforge.core.graphics.Bitmap, org.mapsforge.core.graphics.Matrix) 1'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='org.mapsforge.core.graphics.GraphicContext void drawCircle(int, int, int, org.mapsforge.core.graphics.Paint) 3'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='org.mapsforge.core.graphics.GraphicContext void drawLine(int, int, int, int, org.mapsforge.core.graphics.Paint) 4'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='org.mapsforge.core.graphics.GraphicContext void drawPath(org.mapsforge.core.graphics.Path, org.mapsforge.core.graphics.Paint) 0'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='org.mapsforge.core.graphics.GraphicContext void drawPath(org.mapsforge.core.graphics.Path, org.mapsforge.core.graphics.Paint) 1'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='org.mapsforge.core.graphics.GraphicContext void drawText(java.lang.String, float, float, org.mapsforge.core.graphics.Paint) 0'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='org.mapsforge.core.graphics.GraphicContext void drawText(java.lang.String, float, float, org.mapsforge.core.graphics.Paint) 3'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='org.mapsforge.core.graphics.GraphicContext void drawTextRotated(java.lang.String, float, float, float, float, org.mapsforge.core.graphics.Paint) 0'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='org.mapsforge.core.graphics.GraphicContext void drawTextRotated(java.lang.String, float, float, float, float, org.mapsforge.core.graphics.Paint) 5'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='org.mapsforge.core.graphics.GraphicContext void fillColor(org.mapsforge.core.graphics.Color) 0'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='org.mapsforge.core.graphics.GraphicFactory int createColor(org.mapsforge.core.graphics.Color) 0'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='org.mapsforge.core.graphics.GraphicFactory java.io.InputStream platformSpecificSources(java.lang.String, java.lang.String) 0'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='org.mapsforge.core.graphics.GraphicFactory java.io.InputStream platformSpecificSources(java.lang.String, java.lang.String) 1'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='org.mapsforge.core.graphics.GraphicFactory org.mapsforge.core.graphics.Canvas createCanvas()'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='org.mapsforge.core.graphics.GraphicFactory org.mapsforge.core.graphics.Matrix createMatrix()'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='org.mapsforge.core.graphics.GraphicFactory org.mapsforge.core.graphics.ResourceBitmap createResourceBitmap(java.io.InputStream, int) 0'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='org.mapsforge.core.graphics.GraphicFactory org.mapsforge.core.graphics.ResourceBitmap renderSvg(java.io.InputStream, float, int, int, int, int) 0'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='org.mapsforge.core.graphics.GraphicFactory org.mapsforge.core.graphics.TileBitmap createTileBitmap(int, boolean)'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='org.mapsforge.core.graphics.GraphicFactory org.mapsforge.core.graphics.TileBitmap createTileBitmap(java.io.InputStream, int, boolean) 0'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item
+    name='org.mapsforge.core.graphics.GraphicFactory org.mapsforge.core.mapelements.PointTextContainer createPointTextContainer(org.mapsforge.core.model.Point, int, java.lang.String, org.mapsforge.core.graphics.Paint, org.mapsforge.core.graphics.Paint, org.mapsforge.core.mapelements.SymbolContainer, org.mapsforge.core.graphics.Position, int)'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item
+    name='org.mapsforge.core.graphics.GraphicFactory org.mapsforge.core.mapelements.PointTextContainer createPointTextContainer(org.mapsforge.core.model.Point, int, java.lang.String, org.mapsforge.core.graphics.Paint, org.mapsforge.core.graphics.Paint, org.mapsforge.core.mapelements.SymbolContainer, org.mapsforge.core.graphics.Position, int) 0'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item
+    name='org.mapsforge.core.graphics.GraphicFactory org.mapsforge.core.mapelements.PointTextContainer createPointTextContainer(org.mapsforge.core.model.Point, int, java.lang.String, org.mapsforge.core.graphics.Paint, org.mapsforge.core.graphics.Paint, org.mapsforge.core.mapelements.SymbolContainer, org.mapsforge.core.graphics.Position, int) 2'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item
+    name='org.mapsforge.core.graphics.GraphicFactory org.mapsforge.core.mapelements.PointTextContainer createPointTextContainer(org.mapsforge.core.model.Point, int, java.lang.String, org.mapsforge.core.graphics.Paint, org.mapsforge.core.graphics.Paint, org.mapsforge.core.mapelements.SymbolContainer, org.mapsforge.core.graphics.Position, int) 3'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item
+    name='org.mapsforge.core.graphics.GraphicFactory org.mapsforge.core.mapelements.PointTextContainer createPointTextContainer(org.mapsforge.core.model.Point, int, java.lang.String, org.mapsforge.core.graphics.Paint, org.mapsforge.core.graphics.Paint, org.mapsforge.core.mapelements.SymbolContainer, org.mapsforge.core.graphics.Position, int) 6'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='org.mapsforge.core.graphics.Paint int getTextHeight(java.lang.String) 0'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='org.mapsforge.core.graphics.Paint int getTextWidth(java.lang.String) 0'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='org.mapsforge.core.graphics.Paint void setBitmapShader(org.mapsforge.core.graphics.Bitmap) 0'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='org.mapsforge.core.graphics.Paint void setColor(org.mapsforge.core.graphics.Color) 0'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='org.mapsforge.core.graphics.Paint void setDashPathEffect(float[]) 0'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='org.mapsforge.core.graphics.Paint void setStrokeCap(org.mapsforge.core.graphics.Cap) 0'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='org.mapsforge.core.graphics.Paint void setStrokeJoin(org.mapsforge.core.graphics.Join) 0'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='org.mapsforge.core.graphics.Paint void setStyle(org.mapsforge.core.graphics.Style) 0'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='org.mapsforge.core.graphics.Paint void setTextAlign(org.mapsforge.core.graphics.Align) 0'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='org.mapsforge.core.graphics.Paint void setTypeface(org.mapsforge.core.graphics.FontFamily, org.mapsforge.core.graphics.FontStyle) 0'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='org.mapsforge.core.graphics.Paint void setTypeface(org.mapsforge.core.graphics.FontFamily, org.mapsforge.core.graphics.FontStyle) 1'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='org.mapsforge.core.graphics.Path void setFillRule(org.mapsforge.core.graphics.FillRule) 0'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+</root>

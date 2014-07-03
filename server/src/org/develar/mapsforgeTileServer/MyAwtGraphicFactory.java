@@ -1,5 +1,6 @@
 package org.develar.mapsforgeTileServer;
 
+import org.jetbrains.annotations.NotNull;
 import org.mapsforge.core.graphics.TileBitmap;
 import org.mapsforge.map.awt.AwtGraphicFactory;
 import org.mapsforge.map.awt.AwtPaint;
@@ -46,6 +47,7 @@ class MyAwtGraphicFactory extends AwtGraphicFactory {
     };
   }
 
+  @NotNull
   @Override
   public TileBitmap createTileBitmap(int tileSize, boolean hasAlpha) {
     return new AwtTileBitmap(new BufferedImage(tileSize, tileSize, hasAlpha ? BufferedImage.TYPE_INT_ARGB : BufferedImage.TYPE_3BYTE_BGR));

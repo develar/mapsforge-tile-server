@@ -1,0 +1,5 @@
+<root>
+  <item name='java.awt.image.BufferedImage java.awt.Graphics getGraphics()'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+</root>

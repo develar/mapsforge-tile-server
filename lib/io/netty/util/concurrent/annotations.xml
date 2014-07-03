@@ -1,0 +1,5 @@
+<root>
+  <item name='io.netty.util.concurrent.Future io.netty.util.concurrent.Future&lt;V&gt; syncUninterruptibly()'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+</root>

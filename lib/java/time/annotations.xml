@@ -1,0 +1,8 @@
+<root>
+  <item name='java.time.ZonedDateTime java.time.ZonedDateTime from(java.time.temporal.TemporalAccessor)'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='java.time.ZonedDateTime java.time.ZonedDateTime now(java.time.ZoneId)'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+</root>

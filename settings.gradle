@@ -1,1 +1,2 @@
+rootProject.buildFileName = '_build.gradle'
 include 'mapsforge-ex', 'pixi', 'server'

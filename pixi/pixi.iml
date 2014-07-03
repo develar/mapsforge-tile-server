@@ -11,6 +11,7 @@
     <orderEntry type="module" module-name="mapsforge-ex" />
     <orderEntry type="library" name="annotations" level="project" />
     <orderEntry type="library" name="mapsforge" level="project" />
+    <orderEntry type="library" name="KotlinJavaRuntime" level="project" />
   </component>
 </module>
 

@@ -1,0 +1,29 @@
+<root>
+  <item
+    name='org.mapsforge.map.rendertheme.rule.RenderThemeFactory org.mapsforge.map.rendertheme.renderinstruction.Symbol createSymbol(org.mapsforge.core.graphics.GraphicFactory, org.mapsforge.map.model.DisplayModel, java.lang.String, org.xmlpull.v1.XmlPullParser, java.lang.String) 0'>
+    <annotation name='org.jetbrains.annotations.Nullable'/>
+  </item>
+  <item
+    name='org.mapsforge.map.rendertheme.rule.RenderThemeFactory org.mapsforge.map.rendertheme.renderinstruction.Symbol createSymbol(org.mapsforge.core.graphics.GraphicFactory, org.mapsforge.map.model.DisplayModel, java.lang.String, org.xmlpull.v1.XmlPullParser, java.lang.String) 1'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item
+    name='org.mapsforge.map.rendertheme.rule.RenderThemeFactory org.mapsforge.map.rendertheme.renderinstruction.Symbol createSymbol(org.mapsforge.core.graphics.GraphicFactory, org.mapsforge.map.model.DisplayModel, java.lang.String, org.xmlpull.v1.XmlPullParser, java.lang.String) 2'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item
+    name='org.mapsforge.map.rendertheme.rule.RenderThemeFactory org.mapsforge.map.rendertheme.renderinstruction.Symbol createSymbol(org.mapsforge.core.graphics.GraphicFactory, org.mapsforge.map.model.DisplayModel, java.lang.String, org.xmlpull.v1.XmlPullParser, java.lang.String) 3'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item
+    name='org.mapsforge.map.rendertheme.rule.RenderThemeFactory org.mapsforge.map.rendertheme.renderinstruction.Symbol createSymbol(org.mapsforge.core.graphics.GraphicFactory, org.mapsforge.map.model.DisplayModel, java.lang.String, org.xmlpull.v1.XmlPullParser, java.lang.String) 4'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='org.mapsforge.map.rendertheme.rule.RenderThemeFactory org.mapsforge.map.rendertheme.rule.RenderTheme create(org.mapsforge.map.rendertheme.rule.RenderThemeBuilder) 0'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item
+    name='org.mapsforge.map.rendertheme.rule.RenderThemeHandler org.mapsforge.map.rendertheme.rule.RenderTheme getRenderTheme(org.mapsforge.core.graphics.GraphicFactory, org.mapsforge.map.model.DisplayModel, org.mapsforge.map.rendertheme.XmlRenderTheme, org.mapsforge.map.rendertheme.rule.RenderThemeFactory)'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+</root>

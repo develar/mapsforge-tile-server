@@ -1,0 +1,17 @@
+<root>
+  <item name='com.google.common.base.Splitter com.google.common.base.Splitter omitEmptyStrings()'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='com.google.common.base.Splitter com.google.common.base.Splitter on(com.google.common.base.CharMatcher)'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='com.google.common.base.Splitter com.google.common.base.Splitter trimResults()'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='com.google.common.base.Splitter java.lang.Iterable&lt;java.lang.String&gt; split(java.lang.CharSequence)'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='com.google.common.base.Splitter java.lang.Iterable&lt;java.lang.String&gt; split(java.lang.CharSequence) 0'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+</root>

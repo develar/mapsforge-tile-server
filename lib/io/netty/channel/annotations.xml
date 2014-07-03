@@ -1,0 +1,104 @@
+<root>
+  <item name='io.netty.channel.Channel io.netty.channel.ChannelFuture closeFuture()'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='io.netty.channel.Channel io.netty.channel.ChannelFuture write(java.lang.Object)'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='io.netty.channel.Channel io.netty.channel.ChannelFuture writeAndFlush(java.lang.Object)'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='io.netty.channel.Channel io.netty.channel.ChannelPipeline pipeline()'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='io.netty.channel.ChannelFuture io.netty.channel.Channel channel()'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='io.netty.channel.ChannelFuture io.netty.channel.ChannelFuture syncUninterruptibly()'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='io.netty.channel.ChannelHandler void exceptionCaught(io.netty.channel.ChannelHandlerContext, java.lang.Throwable) 0'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='io.netty.channel.ChannelHandler void exceptionCaught(io.netty.channel.ChannelHandlerContext, java.lang.Throwable) 1'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='io.netty.channel.ChannelHandler void handlerAdded(io.netty.channel.ChannelHandlerContext) 0'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='io.netty.channel.ChannelHandler void handlerRemoved(io.netty.channel.ChannelHandlerContext) 0'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='io.netty.channel.ChannelHandlerAdapter void exceptionCaught(io.netty.channel.ChannelHandlerContext, java.lang.Throwable) 0'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='io.netty.channel.ChannelHandlerAdapter void exceptionCaught(io.netty.channel.ChannelHandlerContext, java.lang.Throwable) 1'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='io.netty.channel.ChannelHandlerContext io.netty.channel.Channel channel()'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='io.netty.channel.ChannelInboundHandler void channelActive(io.netty.channel.ChannelHandlerContext) 0'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='io.netty.channel.ChannelInboundHandler void channelInactive(io.netty.channel.ChannelHandlerContext) 0'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='io.netty.channel.ChannelInboundHandler void channelRead(io.netty.channel.ChannelHandlerContext, java.lang.Object) 0'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='io.netty.channel.ChannelInboundHandler void channelRead(io.netty.channel.ChannelHandlerContext, java.lang.Object) 1'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='io.netty.channel.ChannelInboundHandler void channelReadComplete(io.netty.channel.ChannelHandlerContext) 0'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='io.netty.channel.ChannelInboundHandler void channelRegistered(io.netty.channel.ChannelHandlerContext) 0'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='io.netty.channel.ChannelInboundHandler void channelUnregistered(io.netty.channel.ChannelHandlerContext) 0'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='io.netty.channel.ChannelInboundHandler void exceptionCaught(io.netty.channel.ChannelHandlerContext, java.lang.Throwable) 0'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='io.netty.channel.ChannelInboundHandler void exceptionCaught(io.netty.channel.ChannelHandlerContext, java.lang.Throwable) 1'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='io.netty.channel.ChannelInboundHandlerAdapter void channelRead(io.netty.channel.ChannelHandlerContext, java.lang.Object) 0'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='io.netty.channel.ChannelInboundHandlerAdapter void channelRegistered(io.netty.channel.ChannelHandlerContext) 0'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='io.netty.channel.ChannelInboundHandlerAdapter void exceptionCaught(io.netty.channel.ChannelHandlerContext, java.lang.Throwable) 0'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='io.netty.channel.ChannelInboundHandlerAdapter void exceptionCaught(io.netty.channel.ChannelHandlerContext, java.lang.Throwable) 1'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='io.netty.channel.ChannelInitializer void channelRegistered(io.netty.channel.ChannelHandlerContext) 0'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='io.netty.channel.ChannelInitializer void initChannel(C) 0'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='io.netty.channel.SimpleChannelInboundHandler SimpleChannelInboundHandler(java.lang.Class&lt;? extends I&gt;) 0'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='io.netty.channel.SimpleChannelInboundHandler boolean acceptInboundMessage(java.lang.Object) 0'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='io.netty.channel.SimpleChannelInboundHandler void channelRead(io.netty.channel.ChannelHandlerContext, java.lang.Object) 0'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='io.netty.channel.SimpleChannelInboundHandler void channelRead(io.netty.channel.ChannelHandlerContext, java.lang.Object) 1'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='io.netty.channel.SimpleChannelInboundHandler void channelRead0(io.netty.channel.ChannelHandlerContext, I) 0'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='io.netty.channel.SimpleChannelInboundHandler void channelRead0(io.netty.channel.ChannelHandlerContext, I) 1'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+</root>

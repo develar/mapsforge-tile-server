@@ -1,0 +1,41 @@
+<root>
+  <item name='org.mapsforge.core.mapelements.MapElementContainer boolean clashesWith(org.mapsforge.core.mapelements.MapElementContainer) 0'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='org.mapsforge.core.mapelements.MapElementContainer boolean intersects(org.mapsforge.core.model.Rectangle) 0'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='org.mapsforge.core.mapelements.MapElementContainer int compareTo(org.mapsforge.core.mapelements.MapElementContainer) 0'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='org.mapsforge.core.mapelements.MapElementContainer org.mapsforge.core.model.Point getPoint()'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='org.mapsforge.core.mapelements.MapElementContainer org.mapsforge.core.model.Rectangle getBoundary()'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='org.mapsforge.core.mapelements.MapElementContainer void draw(org.mapsforge.core.graphics.Canvas, org.mapsforge.core.model.Point, org.mapsforge.core.graphics.Matrix) 0'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='org.mapsforge.core.mapelements.MapElementContainer void draw(org.mapsforge.core.graphics.Canvas, org.mapsforge.core.model.Point, org.mapsforge.core.graphics.Matrix) 1'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='org.mapsforge.core.mapelements.MapElementContainer void draw(org.mapsforge.core.graphics.Canvas, org.mapsforge.core.model.Point, org.mapsforge.core.graphics.Matrix) 2'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='org.mapsforge.core.mapelements.PointTextContainer boolean clashesWith(org.mapsforge.core.mapelements.MapElementContainer) 0'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='org.mapsforge.core.mapelements.SymbolContainer symbol'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='org.mapsforge.core.mapelements.WayTextContainer end'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='org.mapsforge.core.mapelements.WayTextContainer paintFront'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='org.mapsforge.core.mapelements.WayTextContainer text'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+</root>

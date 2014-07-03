@@ -1,0 +1,5 @@
+<root>
+  <item name='org.mapsforge.map.reader.header.MapFileInfo boundingBox'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+</root>

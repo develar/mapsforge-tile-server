@@ -1,0 +1,5 @@
+<root>
+  <item name='io.netty.buffer.ByteBufHolder io.netty.buffer.ByteBuf content()'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+</root>

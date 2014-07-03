@@ -1,0 +1,5 @@
+<root>
+  <item name='java.lang.Long java.lang.String toUnsignedString(long, int)'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+</root>

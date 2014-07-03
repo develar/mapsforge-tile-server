@@ -1,0 +1,8 @@
+<root>
+  <item name='java.nio.file.Files java.nio.file.attribute.FileTime getLastModifiedTime(java.nio.file.Path, java.nio.file.LinkOption...)'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='java.nio.file.Files java.util.stream.Stream&lt;java.nio.file.Path&gt; walk(java.nio.file.Path, int, java.nio.file.FileVisitOption...)'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+</root>

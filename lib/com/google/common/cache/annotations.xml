@@ -1,0 +1,44 @@
+<root>
+  <item name='com.google.common.cache.Cache java.util.concurrent.ConcurrentMap&lt;K,V&gt; asMap()'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='com.google.common.cache.CacheBuilder com.google.common.cache.Cache&lt;K1,V1&gt; build()'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='com.google.common.cache.CacheBuilder com.google.common.cache.CacheBuilder&lt;K,V&gt; concurrencyLevel(int)'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='com.google.common.cache.CacheBuilder com.google.common.cache.CacheBuilder&lt;K,V&gt; maximumSize(long)'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='com.google.common.cache.CacheBuilder com.google.common.cache.CacheBuilder&lt;K,V&gt; maximumWeight(long)'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='com.google.common.cache.CacheBuilder com.google.common.cache.CacheBuilder&lt;K1,V1&gt; weigher(com.google.common.cache.Weigher&lt;? super K1,? super V1&gt;)'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='com.google.common.cache.CacheBuilder com.google.common.cache.CacheBuilder&lt;java.lang.Object,java.lang.Object&gt; newBuilder()'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='com.google.common.cache.CacheBuilder com.google.common.cache.LoadingCache&lt;K1,V1&gt; build(com.google.common.cache.CacheLoader&lt;? super K1,V1&gt;)'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='com.google.common.cache.CacheLoader V load(K)'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='com.google.common.cache.CacheLoader V load(K) 0'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='com.google.common.cache.LoadingCache V get(K)'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='com.google.common.cache.LoadingCache java.util.concurrent.ConcurrentMap&lt;K,V&gt; asMap()'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='com.google.common.cache.Weigher int weigh(K, V) 0'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='com.google.common.cache.Weigher int weigh(K, V) 1'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+</root>

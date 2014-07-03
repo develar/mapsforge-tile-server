@@ -1,0 +1,8 @@
+<root>
+  <item name='io.netty.handler.codec.http.HttpMessage io.netty.handler.codec.http.HttpHeaders headers()'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='io.netty.handler.codec.http.HttpRequest java.lang.String getUri()'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+</root>

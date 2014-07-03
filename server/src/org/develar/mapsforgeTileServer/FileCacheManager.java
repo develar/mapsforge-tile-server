@@ -17,8 +17,6 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentMap;
 
-import static org.develar.mapsforgeTileServer.MapsforgeTileServer.LOG;
-
 public class FileCacheManager {
   private final DB db;
   private final HTreeMap<TileRequest, RenderedTile> fileCache;
@@ -52,13 +50,14 @@ public class FileCacheManager {
     flushThread.setPriority(Thread.MIN_PRIORITY);
 
     shutdownHooks.add(() -> {
-      LOG.info("Stop 'Memory to file cache writer' thread");
+      org.develar.mapsforgeTileServer.MapsforgeTileServerPackage.getLOG().info("Stop 'Memory to file cache writer' thread");
       flushThread.interrupt();
     });
 
     flushThread.start();
   }
 
+  @NotNull
   public CacheBuilder<TileRequest, RenderedTile> configureMemoryCache(@NotNull CacheBuilder<TileRequest, RenderedTile> cacheBuilder) {
     return cacheBuilder
       .removalListener((RemovalNotification<TileRequest, RenderedTile> notification) -> {
@@ -88,7 +87,7 @@ public class FileCacheManager {
       return dbMaker.make();
     }
     catch (Throwable e) {
-      LOG.error("Cannot open file cache db, db will be recreated", e);
+      org.develar.mapsforgeTileServer.MapsforgeTileServerPackage.getLOG().error("Cannot open file cache db, db will be recreated", e);
       //noinspection ResultOfMethodCallIgnored
       cacheFile.delete();
       Files.deleteIfExists(Paths.get(cacheFile.getPath(), ".p"));

@@ -1,0 +1,5 @@
+<root>
+  <item name='org.mapsforge.map.awt.AwtGraphicFactory java.awt.image.BufferedImage getBitmap(org.mapsforge.core.graphics.Bitmap)'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+</root>

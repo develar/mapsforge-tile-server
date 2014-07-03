@@ -1,0 +1,14 @@
+<root>
+  <item name='org.mapdb.Serializer A deserialize(java.io.DataInput, int)'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='org.mapdb.Serializer A deserialize(java.io.DataInput, int) 0'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='org.mapdb.Serializer void serialize(java.io.DataOutput, A) 0'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='org.mapdb.Serializer void serialize(java.io.DataOutput, A) 1'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+</root>

@@ -1,0 +1,17 @@
+<root>
+  <item name='io.netty.bootstrap.AbstractBootstrap B channel(java.lang.Class&lt;? extends C&gt;)'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='io.netty.bootstrap.AbstractBootstrap io.netty.channel.ChannelFuture bind(java.net.SocketAddress)'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='io.netty.bootstrap.ServerBootstrap io.netty.bootstrap.ServerBootstrap childHandler(io.netty.channel.ChannelHandler)'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='io.netty.bootstrap.ServerBootstrap io.netty.bootstrap.ServerBootstrap childOption(io.netty.channel.ChannelOption&lt;T&gt;, T)'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='io.netty.bootstrap.ServerBootstrap io.netty.bootstrap.ServerBootstrap group(io.netty.channel.EventLoopGroup)'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+</root>

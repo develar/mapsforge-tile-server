@@ -1,0 +1,8 @@
+<root>
+  <item name='org.mapsforge.core.model.Point org.mapsforge.core.model.Point offset(double, double)'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='org.mapsforge.core.model.Tile org.mapsforge.core.model.Point getOrigin()'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+</root>

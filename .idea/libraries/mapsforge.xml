@@ -1,5 +1,8 @@
 <component name="libraryTable">
   <library name="mapsforge">
+    <ANNOTATIONS>
+      <root url="file://$PROJECT_DIR$/lib" />
+    </ANNOTATIONS>
     <CLASSES>
       <root url="jar://$PROJECT_DIR$/lib/mapsforge-core-dev-SNAPSHOT.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/mapsforge-map-dev-SNAPSHOT.jar!/" />

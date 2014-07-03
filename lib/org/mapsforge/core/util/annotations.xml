@@ -1,0 +1,5 @@
+<root>
+  <item name='org.mapsforge.core.util.MercatorProjection org.mapsforge.core.model.Point getPixelAbsolute(org.mapsforge.core.model.LatLong, byte, int)'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+</root>

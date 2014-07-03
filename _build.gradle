@@ -1,0 +1,129 @@
+def libPath = file('lib').absolutePath
+
+buildscript {
+  //flatDir {
+  //  dirs libPath
+  //}
+  //dependencies {
+  //  classpath 'kotlin-gradle-plugin', version: '0.8.+'
+  //}
+
+  repositories {
+      mavenCentral()
+      maven {
+        url 'http://oss.sonatype.org/content/repositories/releases'
+      }
+    }
+    dependencies {
+      classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:0.8.11'
+    }
+}
+
+subprojects {
+  apply plugin: 'java'
+  apply plugin: 'kotlin'
+
+  compileKotlin {
+    kotlinOptions.annotations = file(libPath)
+  }
+
+  sourceCompatibility = 1.8
+  targetCompatibility = 1.8
+  version = '0.3'
+
+  sourceSets {
+    main {
+      java {
+        srcDir 'src'
+      }
+      kotlin {
+        srcDir 'src'
+      }
+    }
+  }
+
+  repositories {
+    flatDir {
+      dirs libPath
+    }
+  }
+
+  dependencies {
+    compile name: 'annotations'
+    compile name: 'kotlin-runtime'
+  }
+}
+
+project(':mapsforge-ex') {
+  dependencies {
+    compile 'org.mapsforge:mapsforge-core:dev-SNAPSHOT'
+    compile 'org.mapsforge:mapsforge-map:dev-SNAPSHOT'
+    compile 'org.mapsforge:mapsforge-map-reader:dev-SNAPSHOT'
+    compile 'org.mapsforge:mapsforge-map-awt:dev-SNAPSHOT'
+  }
+}
+
+project(':pixi') {
+  dependencies {
+    compile project(':mapsforge-ex')
+
+    compile 'org.mapsforge:mapsforge-core:dev-SNAPSHOT'
+    compile 'org.mapsforge:mapsforge-map:dev-SNAPSHOT'
+    compile 'org.mapsforge:mapsforge-map-reader:dev-SNAPSHOT'
+    compile 'org.mapsforge:mapsforge-map-awt:dev-SNAPSHOT'
+    compile name: 'kxml2', version: '2.+'
+  }
+}
+
+project(':server') {
+  apply plugin: 'java'
+  apply plugin: 'distribution'
+
+  dependencies {
+    compile project(':mapsforge-ex')
+    compile project(':pixi')
+
+    compile 'org.mapsforge:mapsforge-core:dev-SNAPSHOT'
+    compile 'org.mapsforge:mapsforge-map:dev-SNAPSHOT'
+    compile 'org.mapsforge:mapsforge-map-reader:dev-SNAPSHOT'
+    compile 'org.mapsforge:mapsforge-map-awt:dev-SNAPSHOT'
+
+    compile name: 'slf4j-api', version: '1.+'
+    compile name: 'slf4j-simple', version: '1.+'
+    compile name: 'args4j', version: '2.+'
+    compile 'guava:guava:17.+'
+    compile name: 'mapdb', version: '1.+'
+
+    compile name: 'kxml2', version: '2.+'
+    compile name: 'netty-all', version: '4.+'
+    compile name: 'webp-imageio'
+  }
+
+  jar {
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    manifest.attributes("Main-Class": "org.develar.mapsforgeTileServer.MapsforgeTileServer")
+    archiveName 'mapsforge-tile-server.jar'
+  }
+
+  distributions {
+    main {
+      contents {
+        from { 'dist' }
+
+        from('dist') {
+          include('mapsforge-tile-server')
+          fileMode = 0755
+        }
+
+        from jar
+
+        into('lib') {
+          from('lib') {
+            exclude '**/src'
+            include '**/*.so', '**/*.dylib', '**/*.dll', '**/marlin-*', '**/wrapper/*'
+          }
+        }
+      }
+    }
+  }
+}

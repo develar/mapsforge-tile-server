@@ -1,0 +1,11 @@
+<root>
+  <item name='java.time.format.DateTimeFormatter java.lang.String format(java.time.temporal.TemporalAccessor)'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='java.time.format.DateTimeFormatter java.time.format.DateTimeFormatter ofPattern(java.lang.String, java.util.Locale)'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='java.time.format.DateTimeFormatter java.time.temporal.TemporalAccessor parse(java.lang.CharSequence)'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+</root>

@@ -1,0 +1,5 @@
+<root>
+  <item name='com.luciad.imageio.webp.WebP byte[] encode(com.luciad.imageio.webp.WebPWriteParam, java.awt.image.RenderedImage)'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+</root>

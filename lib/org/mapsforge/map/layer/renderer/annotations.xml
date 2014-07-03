@@ -1,0 +1,45 @@
+<root>
+  <item name='org.mapsforge.map.layer.renderer.CircleContainer point'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='org.mapsforge.map.layer.renderer.DatabaseRenderer org.mapsforge.map.reader.MapDatabase getMapDatabase()'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='org.mapsforge.map.layer.renderer.DatabaseRenderer.TileCacheInfoProvider boolean contains(org.mapsforge.core.model.Tile, org.mapsforge.map.layer.renderer.RendererJob) 0'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='org.mapsforge.map.layer.renderer.PolylineContainer org.mapsforge.core.model.Point getCenterAbsolute()'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='org.mapsforge.map.layer.renderer.PolylineContainer org.mapsforge.core.model.Point[][] getCoordinatesAbsolute()'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='org.mapsforge.map.layer.renderer.PolylineContainer org.mapsforge.core.model.Point[][] getCoordinatesRelativeToTile()'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='org.mapsforge.map.layer.renderer.PolylineContainer org.mapsforge.core.model.Tile getTile()'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='org.mapsforge.map.layer.renderer.ShapePaintContainer ShapePaintContainer(org.mapsforge.map.layer.renderer.ShapeContainer, org.mapsforge.core.graphics.Paint) 0'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='org.mapsforge.map.layer.renderer.ShapePaintContainer ShapePaintContainer(org.mapsforge.map.layer.renderer.ShapeContainer, org.mapsforge.core.graphics.Paint) 1'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='org.mapsforge.map.layer.renderer.ShapePaintContainer ShapePaintContainer(org.mapsforge.map.layer.renderer.ShapeContainer, org.mapsforge.core.graphics.Paint, float) 0'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='org.mapsforge.map.layer.renderer.ShapePaintContainer ShapePaintContainer(org.mapsforge.map.layer.renderer.ShapeContainer, org.mapsforge.core.graphics.Paint, float) 1'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item
+    name='org.mapsforge.map.layer.renderer.ShapePaintContainer ShapePaintContainer(org.mapsforge.map.layer.renderer.ShapeContainer, org.mapsforge.core.graphics.Paint, org.mapsforge.core.graphics.Paint, float) 0'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='org.mapsforge.map.layer.renderer.ShapePaintContainer shapeContainer'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='org.mapsforge.map.layer.renderer.ShapePaintContainer stroke'>
+    <annotation name='org.jetbrains.annotations.Nullable'/>
+  </item>
+</root>

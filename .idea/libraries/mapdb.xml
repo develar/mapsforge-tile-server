@@ -1,5 +1,8 @@
 <component name="libraryTable">
   <library name="mapdb">
+    <ANNOTATIONS>
+      <root url="file://$PROJECT_DIR$/lib" />
+    </ANNOTATIONS>
     <CLASSES>
       <root url="jar://$PROJECT_DIR$/lib/mapdb-1.0.3.jar!/" />
     </CLASSES>

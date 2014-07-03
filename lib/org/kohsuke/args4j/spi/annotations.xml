@@ -1,0 +1,14 @@
+<root>
+  <item name='org.kohsuke.args4j.spi.OptionHandler int parseArguments(org.kohsuke.args4j.spi.Parameters) 0'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='org.kohsuke.args4j.spi.OptionHandler java.lang.String getDefaultMetaVariable()'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='org.kohsuke.args4j.spi.OptionHandler setter'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='org.kohsuke.args4j.spi.Parameters java.lang.String getParameter(int)'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+</root>

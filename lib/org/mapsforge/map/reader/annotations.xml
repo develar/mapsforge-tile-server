@@ -1,0 +1,14 @@
+<root>
+  <item name='org.mapsforge.map.reader.MapDatabase org.mapsforge.map.reader.header.FileOpenResult openFile(java.io.File)'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='org.mapsforge.map.reader.MapDatabase org.mapsforge.map.reader.header.MapFileInfo getMapFileInfo()'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='org.mapsforge.map.reader.MapReadResult pointOfInterests'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='org.mapsforge.map.reader.MapReadResult ways'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+</root>

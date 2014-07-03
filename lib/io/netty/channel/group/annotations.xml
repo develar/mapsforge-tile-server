@@ -1,0 +1,5 @@
+<root>
+  <item name='io.netty.channel.group.ChannelGroup io.netty.channel.group.ChannelGroupFuture close()'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+</root>

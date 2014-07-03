@@ -1,0 +1,5 @@
+<root>
+  <item name='java.awt.Graphics java.awt.FontMetrics getFontMetrics(java.awt.Font)'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+</root>
