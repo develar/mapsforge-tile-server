@@ -5,4 +5,7 @@
   <item name='io.netty.handler.codec.http.HttpRequest java.lang.String getUri()'>
     <annotation name='org.jetbrains.annotations.NotNull'/>
   </item>
+  <item name='io.netty.handler.codec.http.HttpRequest java.lang.String uri()'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
 </root>

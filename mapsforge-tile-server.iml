@@ -15,29 +15,9 @@
     <orderEntry type="library" name="mapsforge" level="project" />
     <orderEntry type="library" name="netty" level="project" />
     <orderEntry type="library" name="args4j" level="project" />
-    <orderEntry type="module-library">
-      <library name="webp">
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/lib/webp-imageio.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES>
-          <root url="jar://$MODULE_DIR$/lib/src/webp-imageio-sources.zip!/" />
-        </SOURCES>
-      </library>
-    </orderEntry>
+    <orderEntry type="library" name="webp" level="project" />
     <orderEntry type="library" name="mapdb" level="project" />
-    <orderEntry type="module-library">
-      <library name="guava">
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/lib/guava-17.0.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES>
-          <root url="jar://$MODULE_DIR$/lib/src/guava-17.0-sources.jar!/" />
-        </SOURCES>
-      </library>
-    </orderEntry>
+    <orderEntry type="library" name="guava" level="project" />
     <orderEntry type="library" name="slf4j" level="project" />
     <orderEntry type="module" module-name="pixi" />
     <orderEntry type="module" module-name="mapsforge-ex" />

@@ -1,0 +1,14 @@
+<component name="libraryTable">
+  <library name="webp">
+    <ANNOTATIONS>
+      <root url="file://$PROJECT_DIR$/lib" />
+    </ANNOTATIONS>
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib/webp-imageio.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$PROJECT_DIR$/lib/src/webp-imageio-sources.zip!/" />
+    </SOURCES>
+  </library>
+</component>

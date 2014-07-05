@@ -123,10 +123,8 @@ class ByteArrayOutput(size: Int = 32) : OutputStream() {
 
   public fun writeString(s: CharSequence) {
     var utfLen = 0
-    var c: Int
-
-    for (i in 0..s.length() - 1) {
-      c = s.charAt(i).toInt()
+    for (i in 0..s.length - 1) {
+      var c = s.charAt(i).toInt()
       if (c >= 1 && c <= 127) {
         utfLen++
       }
@@ -139,12 +137,12 @@ class ByteArrayOutput(size: Int = 32) : OutputStream() {
         }
     }
 
-    writeUnsighedVarInt(utfLen)
+    writeUnsighedVarInt(s.length)
 
     ensureCapacity(count + utfLen)
     var count = this.count
-    for (i in 0..s.length() - 1) {
-      c = s.charAt(i).toInt()
+    for (i in 0..s.length - 1) {
+      var c = s.charAt(i).toInt()
       if (c <= 127) {
         buffer[count++] = c.toByte()
       }
