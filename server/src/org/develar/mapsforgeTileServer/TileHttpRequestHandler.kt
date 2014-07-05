@@ -9,7 +9,6 @@ import com.luciad.imageio.webp.WebPWriteParam
 import io.netty.buffer.Unpooled
 import io.netty.channel.*
 import io.netty.handler.codec.http.*
-import io.netty.util.internal.FastThreadLocal
 import org.develar.mapsforgeTileServer.pixi.PixiShape
 import org.mapsforge.core.model.Tile
 import org.mapsforge.map.layer.renderer.DatabaseRenderer
@@ -25,6 +24,7 @@ import java.util.regex.Pattern
 import io.netty.handler.codec.http.HttpHeaders.Names.*
 import org.mapsforge.map.layer.renderer.RendererJob
 import com.google.common.cache.Weigher
+import io.netty.util.concurrent.FastThreadLocal
 
 class TileNotFound() : RuntimeException() {
   class object {
