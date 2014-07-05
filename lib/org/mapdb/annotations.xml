@@ -1,4 +1,37 @@
 <root>
+  <item name='org.mapdb.DB org.mapdb.DB.HTreeMapMaker createHashMap(java.lang.String)'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='org.mapdb.DB.HTreeMapMaker org.mapdb.DB.HTreeMapMaker keySerializer(org.mapdb.Serializer&lt;?&gt;)'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='org.mapdb.DB.HTreeMapMaker org.mapdb.DB.HTreeMapMaker valueSerializer(org.mapdb.Serializer&lt;?&gt;)'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='org.mapdb.DB.HTreeMapMaker org.mapdb.HTreeMap&lt;K,V&gt; makeOrGet()'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='org.mapdb.DBMaker DBMakerT cacheDisable()'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='org.mapdb.DBMaker DBMakerT getThis()'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='org.mapdb.DBMaker DBMakerT mmapFileEnablePartial()'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='org.mapdb.DBMaker DBMakerT transactionDisable()'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='org.mapdb.DBMaker org.mapdb.DB make()'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='org.mapdb.DBMaker org.mapdb.DBMaker newFileDB(java.io.File)'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='org.mapdb.DBMaker org.mapdb.DBMaker newFileDB(java.io.File) 0'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
   <item name='org.mapdb.Serializer A deserialize(java.io.DataInput, int)'>
     <annotation name='org.jetbrains.annotations.NotNull'/>
   </item>

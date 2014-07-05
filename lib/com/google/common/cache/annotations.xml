@@ -14,6 +14,12 @@
   <item name='com.google.common.cache.CacheBuilder com.google.common.cache.CacheBuilder&lt;K,V&gt; maximumWeight(long)'>
     <annotation name='org.jetbrains.annotations.NotNull'/>
   </item>
+  <item name='com.google.common.cache.CacheBuilder com.google.common.cache.CacheBuilder&lt;K1,V1&gt; removalListener(com.google.common.cache.RemovalListener&lt;? super K1,? super V1&gt;)'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='com.google.common.cache.CacheBuilder com.google.common.cache.CacheBuilder&lt;K1,V1&gt; removalListener(com.google.common.cache.RemovalListener&lt;? super K1,? super V1&gt;) 0'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
   <item name='com.google.common.cache.CacheBuilder com.google.common.cache.CacheBuilder&lt;K1,V1&gt; weigher(com.google.common.cache.Weigher&lt;? super K1,? super V1&gt;)'>
     <annotation name='org.jetbrains.annotations.NotNull'/>
   </item>
@@ -33,6 +39,9 @@
     <annotation name='org.jetbrains.annotations.NotNull'/>
   </item>
   <item name='com.google.common.cache.LoadingCache java.util.concurrent.ConcurrentMap&lt;K,V&gt; asMap()'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='com.google.common.cache.RemovalListener void onRemoval(com.google.common.cache.RemovalNotification&lt;K,V&gt;) 0'>
     <annotation name='org.jetbrains.annotations.NotNull'/>
   </item>
   <item name='com.google.common.cache.Weigher int weigh(K, V) 0'>

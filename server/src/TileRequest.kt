@@ -30,7 +30,7 @@ class TileRequest(tileX: Int, tileY: Int, zoomLevel: Byte, private val imageForm
     return super<Tile>.equals(other) && (other as TileRequest).imageFormat == imageFormat
   }
 
-  public class TileRequestSerializer() : Serializer<TileRequest>, Serializable {
+  class TileRequestSerializer() : Serializer<TileRequest>, Serializable {
     throws(javaClass<IOException>())
     override fun serialize(out: DataOutput, value: TileRequest) {
       DataOutput2.packInt(out, value.tileX)

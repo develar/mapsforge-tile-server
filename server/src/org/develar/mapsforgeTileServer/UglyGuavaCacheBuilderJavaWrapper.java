@@ -1,6 +1,8 @@
 package org.develar.mapsforgeTileServer;
 
 import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.RemovalListener;
+import org.jetbrains.annotations.NotNull;
 import org.mapsforge.map.rendertheme.renderinstruction.RenderInstruction;
 import org.mapsforge.map.rendertheme.rule.MatchingCacheKey;
 
@@ -12,5 +14,10 @@ public final class UglyGuavaCacheBuilderJavaWrapper {
 
   public static Map<MatchingCacheKey, List<RenderInstruction>> createCache() {
     return CACHE_BUILDER.<MatchingCacheKey, List<RenderInstruction>>build().asMap();
+  }
+
+  @NotNull
+  public static CacheBuilder<TileRequest, RenderedTile> removalListener(@NotNull CacheBuilder<TileRequest, RenderedTile> cacheBuilder, @NotNull RemovalListener<TileRequest, RenderedTile> listener) {
+    return cacheBuilder.removalListener(listener);
   }
 }

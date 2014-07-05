@@ -63,7 +63,7 @@ private fun encodePng(bufferedImage: BufferedImage): ByteArray {
 }
 
 ChannelHandler.Sharable
-public class TileHttpRequestHandler(private val tileServer: MapsforgeTileServer, fileCacheManager: FileCacheManager?, executorCount: Int, maxMemoryCacheSize: Long, shutdownHooks: MutableList<Runnable>) : SimpleChannelInboundHandler<FullHttpRequest>() {
+class TileHttpRequestHandler(private val tileServer: MapsforgeTileServer, fileCacheManager: FileCacheManager?, executorCount: Int, maxMemoryCacheSize: Long, shutdownHooks: MutableList<()->Unit>) : SimpleChannelInboundHandler<FullHttpRequest>() {
   private val tileCache: LoadingCache<TileRequest, RenderedTile>
 
   private val threadLocalRenderer = object : FastThreadLocal<Renderer>() {
@@ -98,12 +98,10 @@ public class TileHttpRequestHandler(private val tileServer: MapsforgeTileServer,
         }
       })
 
-      shutdownHooks.add(object : Runnable {
-        override fun run() {
-          LOG.info("Flush unwritten data");
-          fileCacheManager.close(tileCache.asMap());
-        }
-      })
+      shutdownHooks.add {
+        LOG.info("Flush unwritten data");
+        fileCacheManager.close(tileCache.asMap());
+      }
     }
 
     tileCacheInfoProvider = object: DatabaseRenderer.TileCacheInfoProvider {

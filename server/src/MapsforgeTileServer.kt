@@ -159,7 +159,7 @@ private fun getAvailableMemory(): Long {
   return maxMemory - usedMemory
 }
 
-public class MapsforgeTileServer(val maps: List<File>, renderThemeFiles: Array<Path>) {
+class MapsforgeTileServer(val maps: List<File>, renderThemeFiles: Array<Path>) {
   val renderThemes = LinkedHashMap<String, RenderThemeItem>()
   val displayModel: DisplayModel = DisplayModel()
   val defaultRenderTheme: RenderThemeItem;
@@ -217,31 +217,27 @@ public class MapsforgeTileServer(val maps: List<File>, renderThemeFiles: Array<P
     val channelRegistrar = ChannelRegistrar()
 
     val eventGroupShutdownFeature = AtomicReference<Future<*>>()
-    val shutdownHooks = ArrayList<Runnable>(4)
-    shutdownHooks.add(object: Runnable {
-      override fun run() {
-        LOG.info("Shutdown server");
-        try {
-          channelRegistrar.closeAndSyncUninterruptibly();
-        }
-        finally {
-          if (!eventGroupShutdownFeature.compareAndSet(null, eventGroup.shutdownGracefully())) {
-            LOG.error("ereventGroupShutdownFeature was already set");
-          }
+    val shutdownHooks = ArrayList<()->Unit>(4)
+    shutdownHooks.add {
+      LOG.info("Shutdown server");
+      try {
+        channelRegistrar.closeAndSyncUninterruptibly();
+      }
+      finally {
+        if (!eventGroupShutdownFeature.compareAndSet(null, eventGroup.shutdownGracefully())) {
+          LOG.error("ereventGroupShutdownFeature was already set");
         }
       }
-    })
+    }
 
     val executorCount = (eventGroup : MultithreadEventExecutorGroup).executorCount()
     val fileCacheManager = if (options.maxFileCacheSize == 0.0) null else FileCacheManager(options, executorCount, shutdownHooks)
     val tileHttpRequestHandler = TileHttpRequestHandler(this, fileCacheManager, executorCount, maxMemoryCacheSize, shutdownHooks)
 
     // task "sync eventGroupShutdownFeature only" must be last
-    shutdownHooks.add(object: Runnable {
-      override fun run() {
-        eventGroupShutdownFeature.getAndSet(null)!!.syncUninterruptibly()
-      }
-    })
+    shutdownHooks.add {
+      eventGroupShutdownFeature.getAndSet(null)!!.syncUninterruptibly()
+    }
 
     val serverBootstrap = ServerBootstrap()
     serverBootstrap.group(eventGroup).channel(if (isLinux) javaClass<EpollServerSocketChannel>() else javaClass<NioServerSocketChannel>()).childHandler(object : ChannelInitializer<Channel>() {

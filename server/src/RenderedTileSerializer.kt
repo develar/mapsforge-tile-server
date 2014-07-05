@@ -9,7 +9,7 @@ import java.io.DataOutput
 import java.io.IOException
 import java.io.Serializable
 
-public class RenderedTileSerializer() : Serializer<RenderedTile>, Serializable {
+class RenderedTileSerializer() : Serializer<RenderedTile>, Serializable {
   throws(javaClass<IOException>())
   override fun serialize(out: DataOutput, value: RenderedTile) {
     DataOutput2.packLong(out, value.lastModified)
