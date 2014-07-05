@@ -47,7 +47,6 @@ private fun checkClientCache(request: HttpRequest, lastModified: Long, etag: Str
     }
     catch (ignored: DateTimeParseException) {
     }
-
   }
 
   return etag == request.headers().get(IF_NONE_MATCH)
@@ -130,7 +129,7 @@ public class TileHttpRequestHandler(private val tileServer: MapsforgeTileServer,
 
   throws(javaClass<Exception>())
   override fun channelRead0(context: ChannelHandlerContext, request: FullHttpRequest) {
-    val matcher = MAP_TILE_NAME_PATTERN.matcher(request.getUri())
+    val matcher = MAP_TILE_NAME_PATTERN.matcher(request.uri())
     val channel = context.channel()
     if (!matcher.find()) {
       sendStatus(HttpResponseStatus.BAD_REQUEST, channel, request)
@@ -190,7 +189,7 @@ public class TileHttpRequestHandler(private val tileServer: MapsforgeTileServer,
       return
     }
 
-    val isHeadRequest = request.getMethod() == HttpMethod.HEAD
+    val isHeadRequest = request.method() == HttpMethod.HEAD
     val response = DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK, if (isHeadRequest) Unpooled.EMPTY_BUFFER else Unpooled.wrappedBuffer(renderedTile.data))
     //noinspection ConstantConditions
     response.headers().set(CONTENT_TYPE, imageFormat!!.getContentType())
