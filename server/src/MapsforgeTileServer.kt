@@ -42,10 +42,9 @@ import java.util.function.Predicate
 import org.mapsforge.core.graphics.Bitmap
 import org.slf4j.Logger
 
-public val LOG:Logger = LoggerFactory.getLogger(javaClass<MapsforgeTileServer>())
+val LOG:Logger = LoggerFactory.getLogger(javaClass<MapsforgeTileServer>())
 val AWT_GRAPHIC_FACTORY: GraphicFactory = MyAwtGraphicFactory()
 
-throws(javaClass<IOException>())
 public fun main(args: Array<String>) {
   val options = Options()
   //printUsage(options);
@@ -56,7 +55,6 @@ public fun main(args: Array<String>) {
     System.err.print(e.getMessage())
     System.exit(64)
   }
-
 
   val maps = ArrayList<File>(options.maps!!.size)
   processPaths(options.maps!!, ".map", Integer.MAX_VALUE, object: Consumer<Path> {
@@ -78,7 +76,6 @@ public fun main(args: Array<String>) {
     LOG.error(e.getMessage())
     return
   }
-
 
   mapsforgeTileServer.startServer(options)
 }
@@ -160,9 +157,11 @@ private fun getAvailableMemory(): Long {
 }
 
 class MapsforgeTileServer(val maps: List<File>, renderThemeFiles: Array<Path>) {
-  val renderThemes = LinkedHashMap<String, RenderThemeItem>()
   val displayModel: DisplayModel = DisplayModel()
-  val defaultRenderTheme: RenderThemeItem;
+
+  val renderThemes = LinkedHashMap<String, RenderThemeItem>()
+  val renderThemeResourceRoots = HashMap<File, String>()
+  val defaultRenderTheme: RenderThemeItem
 
   {
     processPaths(renderThemeFiles, ".xml", 2, object: Consumer<Path> {
@@ -187,12 +186,11 @@ class MapsforgeTileServer(val maps: List<File>, renderThemeFiles: Array<Path>) {
     this.defaultRenderTheme = defaultRenderTheme!!
   }
 
-  throws(javaClass<IOException>(), javaClass<XmlPullParserException>())
   private fun addRenderTheme(path: Path, displayModel: DisplayModel) {
     val fileName = path.getFileName().toString()
     val name = fileName.substring(0, fileName.length() - ".xml".length()).toLowerCase(Locale.ENGLISH)
     val xmlRenderTheme = ExternalRenderTheme(path.toFile())
-    val etag = name + "@" + java.lang.Long.toUnsignedString(Files.getLastModifiedTime(path).toMillis(), 32)
+    val etag = "$name@${java.lang.Long.toUnsignedString(Files.getLastModifiedTime(path).toMillis(), 32)}"
 
     val vectorRenderTheme = createRenderTheme(PixiGraphicFactory.INSTANCE, displayModel, xmlRenderTheme)
     // scale depends on zoom, but we cannot set it on each "render tile" invocation - render theme must be immutable,
@@ -200,9 +198,10 @@ class MapsforgeTileServer(val maps: List<File>, renderThemeFiles: Array<Path>) {
     vectorRenderTheme.scaleStrokeWidth(1f)
 
     renderThemes.put(name, RenderThemeItem(createRenderTheme(AWT_GRAPHIC_FACTORY, displayModel, xmlRenderTheme), vectorRenderTheme, etag))
+    val parent = path.getParent()!!.toFile()
+    renderThemeResourceRoots.put(parent, parent.getName())
   }
 
-  throws(javaClass<IOException>())
   fun startServer(options: Options) {
     val runtime = Runtime.getRuntime()
     val freeMemory = runtime.freeMemory()
@@ -212,7 +211,7 @@ class MapsforgeTileServer(val maps: List<File>, renderThemeFiles: Array<Path>) {
       return
     }
 
-    val isLinux = System.getProperty("os.name")!!.toLowerCase(Locale.US).startsWith("linux")
+    val isLinux = System.getProperty("os.name")!!.toLowerCase(Locale.ENGLISH).startsWith("linux")
     val eventGroup = if (isLinux) EpollEventLoopGroup() else NioEventLoopGroup()
     val channelRegistrar = ChannelRegistrar()
 

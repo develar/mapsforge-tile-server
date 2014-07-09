@@ -17,7 +17,6 @@ import javax.imageio.ImageIO
 import java.awt.image.BufferedImage
 import java.io.ByteArrayOutputStream
 import java.io.IOException
-import java.time.format.DateTimeParseException
 import java.util.Locale
 import java.util.regex.Pattern
 
@@ -25,6 +24,15 @@ import io.netty.handler.codec.http.HttpHeaders.Names.*
 import org.mapsforge.map.layer.renderer.RendererJob
 import com.google.common.cache.Weigher
 import io.netty.util.concurrent.FastThreadLocal
+import org.develar.mapsforgeTileServer.http.checkCache
+import org.develar.mapsforgeTileServer.http.sendStatus
+import org.develar.mapsforgeTileServer.http.send
+import org.develar.mapsforgeTileServer.http.response
+import org.develar.mapsforgeTileServer.http.formatTime
+import org.develar.mapsforgeTileServer.http.addCommonHeaders
+import org.develar.mapsforgeTileServer.http.addKeepAliveIfNeed
+import org.develar.mapsforgeTileServer.http.sendFile
+import java.io.File
 
 class TileNotFound() : RuntimeException() {
   class object {
@@ -38,21 +46,9 @@ private val WRITE_PARAM = WebPWriteParam(Locale.ENGLISH)
 private val MAP_TILE_NAME_PATTERN = Pattern.compile("^/(\\d+)/(\\d+)/(\\d+)(?:\\.(png|webp|v))?(?:\\?theme=(\\w+))?")
 
 private fun checkClientCache(request: HttpRequest, lastModified: Long, etag: String): Boolean {
-  val ifModifiedSince = request.headers().get(IF_MODIFIED_SINCE)
-  if (ifModifiedSince != null && !ifModifiedSince.isEmpty()) {
-    try {
-      if (parseTime(ifModifiedSince) >= lastModified) {
-        return true
-      }
-    }
-    catch (ignored: DateTimeParseException) {
-    }
-  }
-
-  return etag == request.headers().get(IF_NONE_MATCH)
+  return checkCache(request, lastModified) || etag == request.headers().get(IF_NONE_MATCH)
 }
 
-throws(javaClass<IOException>())
 private fun encodePng(bufferedImage: BufferedImage): ByteArray {
   val bytes: ByteArray
   val out = ByteArrayOutputStream(8 * 1024)
@@ -115,7 +111,6 @@ class TileHttpRequestHandler(private val tileServer: MapsforgeTileServer, fileCa
     }
   }
 
-  throws(javaClass<Exception>())
   override fun exceptionCaught(context: ChannelHandlerContext, cause: Throwable) {
     if (cause is IOException && cause.getMessage() == "Connection reset by peer") {
       // ignore Connection reset by peer
@@ -125,11 +120,18 @@ class TileHttpRequestHandler(private val tileServer: MapsforgeTileServer, fileCa
     LOG.error(cause.getMessage(), cause)
   }
 
-  throws(javaClass<Exception>())
   override fun channelRead0(context: ChannelHandlerContext, request: FullHttpRequest) {
-    val matcher = MAP_TILE_NAME_PATTERN.matcher(request.uri())
+    val uri = request.uri()
+    val matcher = MAP_TILE_NAME_PATTERN.matcher(uri)
     val channel = context.channel()
     if (!matcher.find()) {
+      for ((file, name) in tileServer.renderThemeResourceRoots) {
+        if (uri.length > name.length && uri.charAt(name.length + 1) == '/' && uri.startsWith(name, 1)) {
+          sendFile(request, channel, File(file, uri.substring(name.length + 2)))
+          return
+        }
+      }
+
       sendStatus(HttpResponseStatus.BAD_REQUEST, channel, request)
       return
     }
@@ -182,7 +184,7 @@ class TileHttpRequestHandler(private val tileServer: MapsforgeTileServer, fileCa
 
     }
 
-    if (checkClientCache(request, renderedTile.lastModified, renderedTile.etag)) {
+    if (checkCache(request, renderedTile.lastModified) || renderedTile.etag == request.headers().get(IF_NONE_MATCH)) {
       send(response(HttpResponseStatus.NOT_MODIFIED), channel, request)
       return
     }

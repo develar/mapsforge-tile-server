@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.develar.mapsforgeTileServer
+package org.develar.mapsforgeTileServer.http
 
 import io.netty.buffer.ByteBuf
 import io.netty.buffer.Unpooled
@@ -32,7 +32,6 @@ import java.time.temporal.ChronoField
 import java.util.Locale
 
 import io.netty.handler.codec.http.HttpHeaders.Names.*
-
 
 private val DATE_FORMAT = DateTimeFormatter.ofPattern("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.US)
 
@@ -88,7 +87,7 @@ public fun addServer(response: HttpResponse) {
 }
 
 public fun send(response: HttpResponse, channel: Channel, request: HttpRequest?) {
-  if (response.getStatus() != HttpResponseStatus.NOT_MODIFIED && !HttpHeaders.isContentLengthSet(response)) {
+  if (response.status() != HttpResponseStatus.NOT_MODIFIED && !HttpHeaders.isContentLengthSet(response)) {
     HttpHeaders.setContentLength(response, (if (response is FullHttpResponse) (response as FullHttpResponse).content().readableBytes() else 0).toLong())
   }
 
@@ -146,7 +145,7 @@ public fun sendStatus(responseStatus: HttpResponseStatus, channel: Channel, desc
 }
 
 private fun createStatusResponse(responseStatus: HttpResponseStatus, request: HttpRequest?, description: String?): HttpResponse {
-  if (request != null && request.getMethod() == HttpMethod.HEAD) {
+  if (request != null && request.method() == HttpMethod.HEAD) {
     return response(responseStatus)
   }
 

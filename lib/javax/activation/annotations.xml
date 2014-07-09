@@ -1,0 +1,5 @@
+<root>
+  <item name='javax.activation.MimetypesFileTypeMap java.lang.String getContentType(java.lang.String)'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+</root>

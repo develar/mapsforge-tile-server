@@ -9,9 +9,10 @@ import java.io.IOException
 import java.io.OutputStream
 
 class PixiSymbol(displayModel: DisplayModel, elementName: String, pullParser: XmlPullParser, relativePathPrefix: String) : Symbol(null, displayModel, elementName, pullParser), Bitmap {
-  public val path: String
+  val path: String
 
   {
+    // relativePathPrefix = dist/renderThemes/Elevate => Elevate as renderer theme file parent directory name
     var lastSlahIndex = relativePathPrefix.lastIndexOf('/')
     if (lastSlahIndex == -1) {
       lastSlahIndex = relativePathPrefix.lastIndexOf('\\')
