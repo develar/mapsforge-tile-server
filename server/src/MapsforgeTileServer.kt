@@ -19,17 +19,9 @@ import org.kohsuke.args4j.CmdLineException
 import org.kohsuke.args4j.CmdLineParser
 import org.mapsforge.core.graphics.GraphicFactory
 import org.mapsforge.map.model.DisplayModel
-import org.mapsforge.map.rendertheme.ExternalRenderTheme
-import org.mapsforge.map.rendertheme.renderinstruction.Symbol
-import org.mapsforge.map.rendertheme.rule.*
 import org.slf4j.LoggerFactory
-import org.xmlpull.v1.XmlPullParser
-import org.xmlpull.v1.XmlPullParserException
-
-import org.develar.mapsforgeTileServer.pixi.*
 
 import java.io.File
-import java.io.IOException
 import java.io.OutputStreamWriter
 import java.net.InetAddress
 import java.net.InetSocketAddress
@@ -39,7 +31,6 @@ import java.util.*
 import java.util.concurrent.atomic.AtomicReference
 import java.util.function.Consumer
 import java.util.function.Predicate
-import org.mapsforge.core.graphics.Bitmap
 import org.slf4j.Logger
 
 val LOG:Logger = LoggerFactory.getLogger(javaClass<MapsforgeTileServer>())
@@ -80,29 +71,6 @@ public fun main(args: Array<String>) {
   mapsforgeTileServer.startServer(options)
 }
 
-private val RENDER_THEME_FACTORY = object : RenderThemeFactory {
-  class AwtSymbol(graphicFactory: GraphicFactory?, displayModel: DisplayModel, qName: String, pullParser: XmlPullParser, relativePathPrefix: String) : Symbol(graphicFactory, displayModel, qName, pullParser) {
-    private val _bitmap = createBitmap(relativePathPrefix, src)
-
-    override fun getBitmap(): Bitmap? = _bitmap
-  }
-
-  override fun create(renderThemeBuilder: RenderThemeBuilder): RenderTheme {
-    return RenderTheme(renderThemeBuilder, UglyGuavaCacheBuilderJavaWrapper.createCache(), UglyGuavaCacheBuilderJavaWrapper.createCache())
-  }
-
-  throws(javaClass<IOException>(), javaClass<XmlPullParserException>())
-  override fun createSymbol(graphicFactory: GraphicFactory?, displayModel: DisplayModel, qName: String, pullParser: XmlPullParser, relativePathPrefix: String): Symbol {
-    if (graphicFactory == AWT_GRAPHIC_FACTORY) {
-      return AwtSymbol(graphicFactory, displayModel, qName, pullParser, relativePathPrefix)
-    }
-    else {
-      return PixiSymbol(displayModel, qName, pullParser, relativePathPrefix)
-    }
-  }
-}
-
-throws(javaClass<IOException>())
 private fun processPaths(paths: Array<Path>, ext: String, maxDepth: Int, action: Consumer<Path>) {
   for (specifiedPath in paths) {
     if (!Files.exists(specifiedPath)) {
@@ -139,13 +107,6 @@ private fun printUsage(options: Options) {
   })
 }
 
-throws(javaClass<IOException>(), javaClass<XmlPullParserException>())
-private fun createRenderTheme(graphicFactory: GraphicFactory, displayModel: DisplayModel, xmlRenderTheme: ExternalRenderTheme): RenderTheme {
-  val renderTheme = RenderThemeHandler.getRenderTheme(graphicFactory, displayModel, xmlRenderTheme, RENDER_THEME_FACTORY)
-  renderTheme.scaleTextSize(1f)
-  return renderTheme
-}
-
 private fun getAvailableMemory(): Long {
   val runtime = Runtime.getRuntime()
   val totalMemory = runtime.totalMemory() // current heap allocated to the VM process
@@ -157,50 +118,8 @@ private fun getAvailableMemory(): Long {
 }
 
 class MapsforgeTileServer(val maps: List<File>, renderThemeFiles: Array<Path>) {
-  val displayModel: DisplayModel = DisplayModel()
-
-  val renderThemes = LinkedHashMap<String, RenderThemeItem>()
-  val renderThemeResourceRoots = HashMap<File, String>()
-  val defaultRenderTheme: RenderThemeItem
-
-  {
-    processPaths(renderThemeFiles, ".xml", 2, object: Consumer<Path> {
-      override fun accept(path: Path) {
-        addRenderTheme(path, displayModel)
-      }
-    })
-
-    if (renderThemes.isEmpty()) {
-      throw IllegalStateException("No render theme specified")
-    }
-
-    var themeName = "elevate"
-    var defaultRenderTheme = renderThemes.get(themeName)
-    if (defaultRenderTheme == null) {
-      themeName = renderThemes.keySet().iterator().next()
-      defaultRenderTheme = renderThemes.get(themeName)
-    }
-
-    LOG.info("Use " + themeName + " as default theme")
-
-    this.defaultRenderTheme = defaultRenderTheme!!
-  }
-
-  private fun addRenderTheme(path: Path, displayModel: DisplayModel) {
-    val fileName = path.getFileName().toString()
-    val name = fileName.substring(0, fileName.length() - ".xml".length()).toLowerCase(Locale.ENGLISH)
-    val xmlRenderTheme = ExternalRenderTheme(path.toFile())
-    val etag = "$name@${java.lang.Long.toUnsignedString(Files.getLastModifiedTime(path).toMillis(), 32)}"
-
-    val vectorRenderTheme = createRenderTheme(PixiGraphicFactory.INSTANCE, displayModel, xmlRenderTheme)
-    // scale depends on zoom, but we cannot set it on each "render tile" invocation - render theme must be immutable,
-    // it is client reponsibility to do scaling
-    vectorRenderTheme.scaleStrokeWidth(1f)
-
-    renderThemes.put(name, RenderThemeItem(createRenderTheme(AWT_GRAPHIC_FACTORY, displayModel, xmlRenderTheme), vectorRenderTheme, etag))
-    val parent = path.getParent()!!.toFile()
-    renderThemeResourceRoots.put(parent, parent.getName())
-  }
+  val displayModel = DisplayModel()
+  val renderThemeManager = RenderThemeManager(renderThemeFiles, displayModel)
 
   fun startServer(options: Options) {
     val runtime = Runtime.getRuntime()
@@ -226,6 +145,8 @@ class MapsforgeTileServer(val maps: List<File>, renderThemeFiles: Array<Path>) {
         if (!eventGroupShutdownFeature.compareAndSet(null, eventGroup.shutdownGracefully())) {
           LOG.error("ereventGroupShutdownFeature was already set");
         }
+
+        renderThemeManager.dispose()
       }
     }
 

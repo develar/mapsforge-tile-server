@@ -2,6 +2,8 @@ package org.develar.mapsforgeTileServer.pixi
 
 import java.io.OutputStream
 import java.util.Arrays
+import java.io.File
+import java.io.FileOutputStream
 
 class ByteArrayOutput(size: Int = 32) : OutputStream() {
   protected var buffer: ByteArray = ByteArray(size)
@@ -163,5 +165,11 @@ class ByteArrayOutput(size: Int = 32) : OutputStream() {
 
   public fun writeSignedVarInt(v: Int) {
     writeUnsighedVarInt((v shl 1) xor (v shr 31))
+  }
+
+  public fun writeTo(file: File): Unit {
+    val fileOut = FileOutputStream(file)
+    fileOut.write(buffer, 0, count)
+    fileOut.close()
   }
 }

@@ -24,7 +24,7 @@ public class CanvasRastererEx(graphicFactory: GraphicFactory) {
           val boundary = element.getBoundary()
           val point = element.getPoint()
           val symbolContainer = element as SymbolContainer
-          shape.drawSymbol(symbolContainer.symbol, point.x - origin.x + boundary.left, point.y - origin.y + boundary.top, symbolContainer.theta)
+          shape.drawSymbol(symbolContainer.symbol, (point.x - origin.x) + boundary.left, (point.y - origin.y) + boundary.top, symbolContainer.theta)
         }
         else {
           element.draw(canvas, origin, symbolMatrix)

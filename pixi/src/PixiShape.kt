@@ -93,7 +93,7 @@ class PixiShape(private val w: Int, private val h: Int) : DrawPath(), Shape {
   override fun drawSymbol(symbol: Bitmap, x: Double, y: Double, rotation: Float) {
     val pixiSymbol = symbol as PixiSymbol
     writeCommand(PixiCommand.SYMBOL)
-    out.writeString(pixiSymbol.path)
+    out.writeUnsighedVarInt(pixiSymbol.index)
     writeAsTwips(x)
     writeAsTwips(y)
     writeAsTwips(rotation)

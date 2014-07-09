@@ -32,7 +32,6 @@ import org.develar.mapsforgeTileServer.http.formatTime
 import org.develar.mapsforgeTileServer.http.addCommonHeaders
 import org.develar.mapsforgeTileServer.http.addKeepAliveIfNeed
 import org.develar.mapsforgeTileServer.http.sendFile
-import java.io.File
 
 class TileNotFound() : RuntimeException() {
   class object {
@@ -125,14 +124,13 @@ class TileHttpRequestHandler(private val tileServer: MapsforgeTileServer, fileCa
     val matcher = MAP_TILE_NAME_PATTERN.matcher(uri)
     val channel = context.channel()
     if (!matcher.find()) {
-      for ((file, name) in tileServer.renderThemeResourceRoots) {
-        if (uri.length > name.length && uri.charAt(name.length + 1) == '/' && uri.startsWith(name, 1)) {
-          sendFile(request, channel, File(file, uri.substring(name.length + 2)))
-          return
-        }
+      val file = tileServer.renderThemeManager.requestToFile(uri)
+      if (file != null) {
+        sendFile(request, channel, file)
+        return
       }
 
-      sendStatus(HttpResponseStatus.BAD_REQUEST, channel, request)
+      sendStatus(HttpResponseStatus.NOT_FOUND, channel, request)
       return
     }
 

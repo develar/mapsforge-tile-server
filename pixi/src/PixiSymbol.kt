@@ -5,28 +5,46 @@ import org.mapsforge.map.model.DisplayModel
 import org.mapsforge.map.rendertheme.renderinstruction.Symbol
 import org.xmlpull.v1.XmlPullParser
 
-import java.io.IOException
 import java.io.OutputStream
+import com.badlogic.gdx.utils.ObjectIntMap
+import com.badlogic.gdx.graphics.g2d.TextureAtlas.TextureAtlasData.Region
 
-class PixiSymbol(displayModel: DisplayModel, elementName: String, pullParser: XmlPullParser, relativePathPrefix: String) : Symbol(null, displayModel, elementName, pullParser), Bitmap {
-  val path: String
+data class TextureAtlasInfo(val nameToId:ObjectIntMap<String>, val regions:com.badlogic.gdx.utils.Array<Region>)
+
+class PixiSymbol(displayModel: DisplayModel,
+                 elementName: String,
+                 pullParser: XmlPullParser,
+                 relativePathPrefix: String,
+                 textureAtlasInfo: TextureAtlasInfo) : Symbol(null, displayModel, elementName, pullParser), Bitmap {
+  val index: Int
 
   {
+    val subPath = src!!.substring("file:".length() + 1)
     // relativePathPrefix = dist/renderThemes/Elevate => Elevate as renderer theme file parent directory name
-    var lastSlahIndex = relativePathPrefix.lastIndexOf('/')
-    if (lastSlahIndex == -1) {
-      lastSlahIndex = relativePathPrefix.lastIndexOf('\\')
+    var slahIndex = subPath.indexOf('/')
+    if (slahIndex == -1) {
+      slahIndex = subPath.indexOf('\\')
     }
-    path = relativePathPrefix.substring(lastSlahIndex + 1) + src!!.substring("file:".length()).replace('\\', '/')
+    index = textureAtlasInfo.nameToId.get(subPath.substring(slahIndex + 1, subPath.lastIndexOf('.')), -1)
+    assert(index > -1)
     // release memory
     src = null
+
+    if (width == 0f || height == 0f) {
+      val region = textureAtlasInfo.regions.get(index)
+      if (width == 0f) {
+        width = region.width.toFloat()
+      }
+      if (height == 0f) {
+        height = region.height.toFloat()
+      }
+    }
   }
 
   override fun getBitmap(): Bitmap {
     return this
   }
 
-  throws(javaClass<IOException>())
   override fun compress(outputStream: OutputStream?): Unit = throw IllegalStateException()
 
   override fun incrementRefCount() {
@@ -42,4 +60,8 @@ class PixiSymbol(displayModel: DisplayModel, elementName: String, pullParser: Xm
   override fun scaleTo(width: Int, height: Int): Unit = throw IllegalStateException()
 
   override fun setBackgroundColor(color: Int): Unit = throw IllegalStateException()
+
+  override fun hashCode(): Int = index.hashCode()
+
+  override fun equals(other: Any?): Boolean = other is PixiSymbol && other.index == index
 }

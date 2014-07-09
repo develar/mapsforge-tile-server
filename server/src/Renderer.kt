@@ -53,7 +53,7 @@ public class Renderer(tileServer: MapsforgeTileServer) {
       val mapFile = maps.get(i)
       var tileRenderer = tileRenderers!![i]
       if (tileRenderer == null) {
-        tileRenderer = TileRenderer(tileServer.displayModel, mapFile, tileServer.defaultRenderTheme, tileCacheInfoProvider)
+        tileRenderer = TileRenderer(tileServer.displayModel, mapFile, tileServer.renderThemeManager.defaultTheme, tileCacheInfoProvider)
         tileRenderers[i] = tileRenderer;
       }
 

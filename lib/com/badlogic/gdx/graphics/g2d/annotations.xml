@@ -1,0 +1,8 @@
+<root>
+  <item name='com.badlogic.gdx.graphics.g2d.TextureAtlas.TextureAtlasData com.badlogic.gdx.utils.Array&lt;com.badlogic.gdx.graphics.g2d.TextureAtlas.TextureAtlasData.Page&gt; getPages()'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='com.badlogic.gdx.graphics.g2d.TextureAtlas.TextureAtlasData com.badlogic.gdx.utils.Array&lt;com.badlogic.gdx.graphics.g2d.TextureAtlas.TextureAtlasData.Region&gt; getRegions()'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+</root>
