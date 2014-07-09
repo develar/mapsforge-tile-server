@@ -32,6 +32,7 @@ import org.develar.mapsforgeTileServer.http.formatTime
 import org.develar.mapsforgeTileServer.http.addCommonHeaders
 import org.develar.mapsforgeTileServer.http.addKeepAliveIfNeed
 import org.develar.mapsforgeTileServer.http.sendFile
+import java.io.File
 
 class TileNotFound() : RuntimeException() {
   class object {
@@ -60,6 +61,8 @@ private fun encodePng(bufferedImage: BufferedImage): ByteArray {
 ChannelHandler.Sharable
 class TileHttpRequestHandler(private val tileServer: MapsforgeTileServer, fileCacheManager: FileCacheManager?, executorCount: Int, maxMemoryCacheSize: Long, shutdownHooks: MutableList<()->Unit>) : SimpleChannelInboundHandler<FullHttpRequest>() {
   private val tileCache: LoadingCache<TileRequest, RenderedTile>
+
+  private val fontsDir = File(System.getProperty("mts.fontsDir")!!)
 
   private val threadLocalRenderer = object : FastThreadLocal<Renderer>() {
     override fun initialValue(): Renderer {
@@ -124,7 +127,15 @@ class TileHttpRequestHandler(private val tileServer: MapsforgeTileServer, fileCa
     val matcher = MAP_TILE_NAME_PATTERN.matcher(uri)
     val channel = context.channel()
     if (!matcher.find()) {
-      val file = tileServer.renderThemeManager.requestToFile(uri)
+      val file: File?
+      val fontsDirName = "fonts/"
+      if (uri.startsWith(fontsDirName, 1)) {
+        file = File(fontsDir, uri.substring(fontsDirName.length + 1))
+      }
+      else {
+        file = tileServer.renderThemeManager.requestToFile(uri)
+      }
+
       if (file != null) {
         sendFile(request, channel, file)
         return

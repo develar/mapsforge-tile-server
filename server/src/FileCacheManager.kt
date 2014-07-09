@@ -15,10 +15,10 @@ import java.util.concurrent.ConcurrentMap
 class FileCacheManager(options: Options, executorCount: Int, shutdownHooks: MutableList<() -> Unit>) {
   private val db: DB
   private val fileCache: HTreeMap<TileRequest, RenderedTile>
-  private val flushQueue: BlockingQueue<RemovalNotification<TileRequest, RenderedTile>>
+  private val flushQueue: BlockingQueue<RemovalNotification<in TileRequest, in RenderedTile>>
 
   {
-    val cacheFile = options.cacheFile!!
+    val cacheFile = options.cacheFile
     val dbMaker = DBMaker.newFileDB(cacheFile).transactionDisable()!!.mmapFileEnablePartial().cacheDisable()
     if (options.maxFileCacheSize != -1.0) {
       dbMaker.sizeLimit(options.maxFileCacheSize)
@@ -36,7 +36,7 @@ class FileCacheManager(options: Options, executorCount: Int, shutdownHooks: Muta
 
     fileCache = db.createHashMap("tiles").keySerializer(TileRequest.TileRequestSerializer()).valueSerializer(RenderedTileSerializer()).makeOrGet()
 
-    flushQueue = ArrayBlockingQueue<RemovalNotification<TileRequest, RenderedTile>>(executorCount * 4)
+    flushQueue = ArrayBlockingQueue<RemovalNotification<in TileRequest, in RenderedTile>>(executorCount * 4)
     val flushThread = Thread("Memory to file cache writer")
     flushThread.setPriority(Thread.MIN_PRIORITY)
 
@@ -49,7 +49,11 @@ class FileCacheManager(options: Options, executorCount: Int, shutdownHooks: Muta
   }
 
   public fun configureMemoryCache(cacheBuilder: CacheBuilder<TileRequest, RenderedTile>): CacheBuilder<TileRequest, RenderedTile> {
-    return UglyGuavaCacheBuilderJavaWrapper.removalListener(cacheBuilder, { if (it.wasEvicted()) { flushQueue.add(it) }})
+    return cacheBuilder.removalListener {(removalNotification: RemovalNotification<in TileRequest, in RenderedTile>): Unit ->
+      if (removalNotification.wasEvicted()) {
+        flushQueue.add(removalNotification)
+      }
+    }
   }
 
   public fun get(tile: TileRequest): RenderedTile? {

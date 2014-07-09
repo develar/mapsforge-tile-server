@@ -20,8 +20,8 @@ buildscript {
 }
 
 subprojects {
-  apply plugin: 'java'
   apply plugin: 'kotlin'
+  apply plugin: 'java'
 
   compileKotlin {
     kotlinOptions.annotations = file(libPath)
@@ -33,9 +33,6 @@ subprojects {
 
   sourceSets {
     main {
-      java {
-        srcDir 'src'
-      }
       kotlin {
         srcDir 'src'
       }
@@ -72,12 +69,33 @@ project(':pixi') {
     compile 'org.mapsforge:mapsforge-map-reader:dev-SNAPSHOT'
     compile 'org.mapsforge:mapsforge-map-awt:dev-SNAPSHOT'
     compile name: 'kxml2', version: '2.+'
+
+    compile name: 'gdx', version: '1.+'
   }
 }
 
 project(':server') {
   apply plugin: 'java'
+  apply plugin: 'kotlin'
   apply plugin: 'distribution'
+
+  compileJava.taskDependencies.values -= "compileKotlin"
+  compileKotlin.dependsOn(compileJava)
+
+  compileKotlin {
+    kotlinOptions.annotations = file(libPath)
+  }
+
+  sourceSets {
+    main {
+      java {
+        srcDir 'src'
+      }
+      kotlin {
+        srcDir 'src'
+      }
+    }
+  }
 
   dependencies {
     compile project(':mapsforge-ex')
@@ -97,6 +115,9 @@ project(':server') {
     compile name: 'kxml2', version: '2.+'
     compile name: 'netty-all', version: '4.+'
     compile name: 'webp-imageio'
+
+    compile name: 'gdx', version: '1.+'
+    compile name: 'gdx-tools', version: '1.+'
   }
 
   jar {

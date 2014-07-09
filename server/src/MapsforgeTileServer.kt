@@ -32,8 +32,19 @@ import java.util.concurrent.atomic.AtomicReference
 import java.util.function.Consumer
 import java.util.function.Predicate
 import org.slf4j.Logger
+import org.mapsforge.map.awt.AwtGraphicFactory
+import org.mapsforge.core.graphics.TileBitmap
+import org.mapsforge.map.awt.AwtTileBitmap
+import java.awt.image.BufferedImage
 
 val LOG:Logger = LoggerFactory.getLogger(javaClass<MapsforgeTileServer>())
+
+class MyAwtGraphicFactory() : AwtGraphicFactory() {
+  override fun createTileBitmap(tileSize: Int, hasAlpha: Boolean): TileBitmap {
+    return AwtTileBitmap(BufferedImage(tileSize, tileSize, if (hasAlpha) BufferedImage.TYPE_INT_ARGB else BufferedImage.TYPE_3BYTE_BGR))
+  }
+}
+
 val AWT_GRAPHIC_FACTORY: GraphicFactory = MyAwtGraphicFactory()
 
 public fun main(args: Array<String>) {
