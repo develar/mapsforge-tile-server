@@ -9,6 +9,10 @@ import org.mapsforge.core.model.Tile
 
 val EMPTY_POINT: Point = Point(0.0, 0.0)
 
+public trait MapElementContainerEx {
+  fun draw(shape: Shape, origin: Point): Unit
+}
+
 fun drawWays(drawWays: Array<List<MutableList<ShapePaintContainer>>>, shape: Shape) {
   val levelsPerLayer = drawWays[0].size()
   var currentStroke:Paint? = null
@@ -82,6 +86,9 @@ class CanvasRastererEx(graphicFactory: GraphicFactory) {
           throw UnsupportedOperationException("rotated symbol not supported")
         }
         shape.drawSymbol(symbolContainer.symbol, (point.x - origin.x) + boundary.left, (point.y - origin.y) + boundary.top, symbolContainer.theta)
+      }
+      else if (element is MapElementContainerEx) {
+        element.draw(shape, origin);
       }
       else {
         element.draw(canvas, origin, symbolMatrix)

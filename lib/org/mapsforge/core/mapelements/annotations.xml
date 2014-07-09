@@ -5,6 +5,9 @@
   <item name='org.mapsforge.core.mapelements.MapElementContainer boolean intersects(org.mapsforge.core.model.Rectangle) 0'>
     <annotation name='org.jetbrains.annotations.NotNull'/>
   </item>
+  <item name='org.mapsforge.core.mapelements.MapElementContainer boundary'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
   <item name='org.mapsforge.core.mapelements.MapElementContainer int compareTo(org.mapsforge.core.mapelements.MapElementContainer) 0'>
     <annotation name='org.jetbrains.annotations.NotNull'/>
   </item>
@@ -23,7 +26,13 @@
   <item name='org.mapsforge.core.mapelements.MapElementContainer void draw(org.mapsforge.core.graphics.Canvas, org.mapsforge.core.model.Point, org.mapsforge.core.graphics.Matrix) 2'>
     <annotation name='org.jetbrains.annotations.NotNull'/>
   </item>
+  <item name='org.mapsforge.core.mapelements.MapElementContainer xy'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
   <item name='org.mapsforge.core.mapelements.PointTextContainer boolean clashesWith(org.mapsforge.core.mapelements.MapElementContainer) 0'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='org.mapsforge.core.mapelements.PointTextContainer paintFront'>
     <annotation name='org.jetbrains.annotations.NotNull'/>
   </item>
   <item name='org.mapsforge.core.mapelements.SymbolContainer symbol'>

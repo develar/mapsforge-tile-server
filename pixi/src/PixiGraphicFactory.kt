@@ -1,13 +1,13 @@
 package org.develar.mapsforgeTileServer.pixi
 
 import org.mapsforge.core.graphics.*
-import org.mapsforge.core.mapelements.PointTextContainer
 import org.mapsforge.core.mapelements.SymbolContainer
 import org.mapsforge.core.model.Point
 import org.mapsforge.map.awt.AwtMatrix
 
 import java.io.IOException
 import java.io.InputStream
+import org.mapsforge.core.mapelements.MapElementContainer
 
 class PixiGraphicFactory() : GraphicFactory {
   class object {
@@ -55,21 +55,17 @@ class PixiGraphicFactory() : GraphicFactory {
 
   override fun createPath(): Path = PixiPath()
 
-  override fun createPointTextContainer(xy: Point, priority: Int, text: String, paintFront: Paint, paintBack: Paint?, symbolContainer: SymbolContainer?, position: Position, maxTextWidth: Int): PointTextContainer {
-    return PixiPointTextContainer(xy, priority, text, paintFront, paintBack, symbolContainer, position, maxTextWidth)
+  override fun createPointTextContainer(xy: Point, priority: Int, text: String, paintFront: Paint, paintBack: Paint?, symbolContainer: SymbolContainer?, position: Position, maxTextWidth: Int): MapElementContainer {
+    return PixiPointTextContainer(text, xy, priority, paintFront, paintBack, symbolContainer, position, maxTextWidth)
   }
 
-  throws(javaClass<IOException>())
   override fun createResourceBitmap(inputStream: InputStream, hash: Int): ResourceBitmap = throw IllegalStateException()
 
-  throws(javaClass<IOException>())
   override fun createTileBitmap(inputStream: InputStream, tileSize: Int, isTransparent: Boolean): TileBitmap = throw UnsupportedOperationException()
 
   override fun createTileBitmap(tileSize: Int, isTransparent: Boolean): TileBitmap = PixiShape(tileSize, tileSize)
 
-  throws(javaClass<IOException>())
   override fun platformSpecificSources(relativePathPrefix: String, src: String): InputStream = throw IOException()
 
-  throws(javaClass<IOException>())
   override fun renderSvg(inputStream: InputStream, scaleFactor: Float, width: Int, height: Int, percent: Int, hash: Int): ResourceBitmap = throw UnsupportedOperationException()
 }

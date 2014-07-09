@@ -19,9 +19,7 @@ class PixiCanvas() : Canvas {
     this.bitmap = bitmap as PixiShape
   }
 
-  override fun drawBitmap(bitmap: Bitmap, left: Int, top: Int) {
-    throw IllegalStateException()
-  }
+  override fun drawBitmap(bitmap: Bitmap, left: Int, top: Int) = throw IllegalStateException()
 
   override fun drawBitmap(bitmap: Bitmap, matrix: Matrix) {
   }
@@ -63,13 +61,7 @@ class PixiCanvas() : Canvas {
     }
   }
 
-  override fun drawText(text: String, x: Float, y: Float, paint: Paint) {
-    //System.out.println(x + " " + y);
-    bitmap!!.writeCommand(PixiCommand.TEXT)
-    bitmap!!.writeAsTwips(x)
-    bitmap!!.writeAsTwips(y)
-    bitmap!!.out.writeString(text)
-  }
+  override fun drawText(text: String, x: Float, y: Float, paint: Paint) = throw IllegalStateException("Shape.drawText must be used")
 
   override fun drawTextRotated(text: String, x1: Float, y1: Float, x2: Float, y2: Float, paint: Paint): Unit = throw IllegalStateException("Shape.drawTextRotated must be used")
 

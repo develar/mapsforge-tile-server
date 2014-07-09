@@ -6,15 +6,17 @@ import org.mapsforge.core.graphics.TileBitmap
 import org.mapsforge.core.model.Point
 
 public trait Shape : TileBitmap {
-  public fun drawPolyLine(coordinates: Array<Array<Point>>, origin: Point, dy: Float)
+  public fun drawPolyLine(coordinates: Array<Array<Point>>, origin: Point, dy: Float): Unit
 
   public fun beginFillOrSetLineStyle(paint: Paint): Boolean
 
-  public fun endFill()
+  public fun endFill(): Unit
 
-  public fun drawCircle(x: Double, y: Double, radius: Float)
+  public fun drawCircle(x: Double, y: Double, radius: Float): Unit
 
-  public fun drawTextRotated(text: String, start: Point, end: Point, origin: Point, paintFront: Paint)
+  public fun drawTextRotated(text: String, start: Point, end: Point, origin: Point, paintFront: Paint): Unit
 
-  public fun drawSymbol(symbol: Bitmap, x: Double, y: Double, rotation: Float)
+  public fun drawText(text: String, x: Double, y: Double, paintFront: Paint): Unit
+
+  public fun drawSymbol(symbol: Bitmap, x: Double, y: Double, rotation: Float): Unit
 }

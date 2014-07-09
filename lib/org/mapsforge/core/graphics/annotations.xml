@@ -66,6 +66,26 @@
     <annotation name='org.jetbrains.annotations.NotNull'/>
   </item>
   <item
+    name='org.mapsforge.core.graphics.GraphicFactory org.mapsforge.core.mapelements.MapElementContainer createPointTextContainer(org.mapsforge.core.model.Point, int, java.lang.String, org.mapsforge.core.graphics.Paint, org.mapsforge.core.graphics.Paint, org.mapsforge.core.mapelements.SymbolContainer, org.mapsforge.core.graphics.Position, int)'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item
+    name='org.mapsforge.core.graphics.GraphicFactory org.mapsforge.core.mapelements.MapElementContainer createPointTextContainer(org.mapsforge.core.model.Point, int, java.lang.String, org.mapsforge.core.graphics.Paint, org.mapsforge.core.graphics.Paint, org.mapsforge.core.mapelements.SymbolContainer, org.mapsforge.core.graphics.Position, int) 0'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item
+    name='org.mapsforge.core.graphics.GraphicFactory org.mapsforge.core.mapelements.MapElementContainer createPointTextContainer(org.mapsforge.core.model.Point, int, java.lang.String, org.mapsforge.core.graphics.Paint, org.mapsforge.core.graphics.Paint, org.mapsforge.core.mapelements.SymbolContainer, org.mapsforge.core.graphics.Position, int) 2'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item
+    name='org.mapsforge.core.graphics.GraphicFactory org.mapsforge.core.mapelements.MapElementContainer createPointTextContainer(org.mapsforge.core.model.Point, int, java.lang.String, org.mapsforge.core.graphics.Paint, org.mapsforge.core.graphics.Paint, org.mapsforge.core.mapelements.SymbolContainer, org.mapsforge.core.graphics.Position, int) 3'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item
+    name='org.mapsforge.core.graphics.GraphicFactory org.mapsforge.core.mapelements.MapElementContainer createPointTextContainer(org.mapsforge.core.model.Point, int, java.lang.String, org.mapsforge.core.graphics.Paint, org.mapsforge.core.graphics.Paint, org.mapsforge.core.mapelements.SymbolContainer, org.mapsforge.core.graphics.Position, int) 6'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item
     name='org.mapsforge.core.graphics.GraphicFactory org.mapsforge.core.mapelements.PointTextContainer createPointTextContainer(org.mapsforge.core.model.Point, int, java.lang.String, org.mapsforge.core.graphics.Paint, org.mapsforge.core.graphics.Paint, org.mapsforge.core.mapelements.SymbolContainer, org.mapsforge.core.graphics.Position, int)'>
     <annotation name='org.jetbrains.annotations.NotNull'/>
   </item>
