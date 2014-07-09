@@ -101,7 +101,7 @@ public class TileServerDatabaseRenderer(private val mapDatabase: MapDatabase?, p
 
     val shape = graphicFactory.createTileBitmap(tile.tileSize, hasAlpha) as Shape
     canvasRasterer.setCanvasBitmap(shape)
-    CanvasRastererEx.drawWays(ways, shape)
+    drawWays(ways, shape)
 
     // now draw the ways and the labels
     canvasRasterer.drawMapElements(currentWayLabels, tile, shape)
@@ -130,8 +130,7 @@ public class TileServerDatabaseRenderer(private val mapDatabase: MapDatabase?, p
   }
 
   override fun renderAreaSymbol(way: PolylineContainer, priority: Int, symbol: Bitmap) {
-    val centerPosition = way.getCenterAbsolute()
-    currentLabels.add(SymbolContainer(centerPosition, priority, symbol))
+    currentLabels.add(SymbolContainer(way.getCenterAbsolute(), priority, symbol))
   }
 
   override fun renderPointOfInterestCaption(poi: PointOfInterest, priority: Int, caption: String, horizontalOffset: Float, verticalOffset: Float, fill: Paint, stroke: Paint?, position: Position, maxTextWidth: Int, tile: Tile) {
