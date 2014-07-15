@@ -16,12 +16,13 @@ import org.mapsforge.map.rendertheme.rule.RenderTheme
 import java.util.*
 
 public class TileServerDatabaseRenderer(private val mapDatabase: MapDatabase?, private val graphicFactory: GraphicFactory) : RenderCallback {
-  private val canvasRasterer: CanvasRastererEx = CanvasRastererEx(graphicFactory)
   private val currentLabels = ArrayList<MapElementContainer>()
   private val currentWayLabels = HashSet<MapElementContainer>()
   private var drawingLayers: List<MutableList<ShapePaintContainer>>? = null
 
   private val ways = arrayOfNulls<ArrayList<MutableList<ShapePaintContainer>>>(LAYERS)
+
+  private val canvas = graphicFactory.createCanvas()
 
   public var renderTheme: RenderTheme? = null
     set (value) {
@@ -100,12 +101,12 @@ public class TileServerDatabaseRenderer(private val mapDatabase: MapDatabase?, p
     }
 
     val shape = graphicFactory.createTileBitmap(tile.tileSize, hasAlpha) as Shape
-    canvasRasterer.setCanvasBitmap(shape)
+    canvas.setBitmap(shape)
     drawWays(ways, shape)
 
     // now draw the ways and the labels
-    canvasRasterer.drawMapElements(currentWayLabels, tile, shape)
-    canvasRasterer.drawMapElements(collisionFreeOrdered(currentLabels), tile, shape)
+    drawMapElements(currentWayLabels, tile, shape)
+    drawMapElements(collisionFreeOrdered(currentLabels), tile, shape)
 
     // clear way list
     for (innerWayList in ways) {

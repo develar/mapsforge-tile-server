@@ -25,6 +25,9 @@ class PixiPointTextContainer(private val text: String, point: Point, priority: I
   }
 
   override fun draw(shape: Shape, origin: Point) {
+    if (text.startsWith("21")) {
+      System.out.print("dd");
+    }
     shape.drawText(text, (xy.x - origin.x) + boundary.left, (xy.y - origin.y) + boundary.top, paintFront)
   }
 

@@ -13,6 +13,7 @@
     <JAVADOC />
     <SOURCES>
       <root url="jar://$PROJECT_DIR$/lib/src/mapsforge-src.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/src/kxml2-2.3.0-sources.jar!/" />
     </SOURCES>
   </library>
 </component>

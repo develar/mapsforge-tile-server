@@ -26,6 +26,7 @@ import org.mapsforge.map.rendertheme.rule.RenderThemeBuilder
 import org.mapsforge.map.rendertheme.rule.RenderTheme
 import org.mapsforge.core.graphics.Bitmap
 import org.develar.mapsforgeTileServer.pixi.TextureAtlasInfo
+import java.util.ArrayList
 
 abstract class MyRenderThemeFactory : RenderThemeFactory {
   override fun create(renderThemeBuilder: RenderThemeBuilder): RenderTheme {
@@ -49,6 +50,8 @@ class RenderThemeManager(renderThemeFiles: Array<Path>, displayModel: DisplayMod
   val themes = LinkedHashMap<String, RenderThemeItem>()
   private val generatedResources: File
   private val resourceRoots = HashMap<File, String>()
+
+  private val fontsDir = File(System.getProperty("mts.fontsDir")!!)
 
   val defaultTheme: RenderThemeItem
 
@@ -77,6 +80,13 @@ class RenderThemeManager(renderThemeFiles: Array<Path>, displayModel: DisplayMod
     LOG.info("Use " + themeName + " as default theme")
 
     this.defaultTheme = defaultTheme!!
+
+    val fonts = ArrayList<FontInfo>()
+    for (filename in fontsDir.list()!!) {
+      if (filename.endsWith(".fnt")) {
+        fonts.add(parseFontInfo(File(fontsDir, filename)))
+      }
+    }
   }
 
   private fun addRenderTheme(path: Path, themeResourceRootNameToTextureAtlasInfo: HashMap<String, TextureAtlasInfo>, displayModel: DisplayModel) {
@@ -137,6 +147,11 @@ class RenderThemeManager(renderThemeFiles: Array<Path>, displayModel: DisplayMod
   }
 
   fun requestToFile(uri: String): File? {
+    val fontsDirName = "fonts/"
+    if (uri.startsWith(fontsDirName, 1)) {
+      return File(fontsDir, uri.substring(fontsDirName.length + 1))
+    }
+
     for ((file, name) in resourceRoots) {
       if (uri.startsWith(name, 1)) {
         if (uri[name.length + 1] == '.') {

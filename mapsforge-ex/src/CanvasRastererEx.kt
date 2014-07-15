@@ -67,36 +67,25 @@ private fun drawShapePaintContainer(shapePaintContainer: ShapePaintContainer, sh
   }
 }
 
-class CanvasRastererEx(graphicFactory: GraphicFactory) {
-  private val canvas = graphicFactory.createCanvas()
-  private val symbolMatrix = graphicFactory.createMatrix()
-
-  fun drawMapElements(elements: Collection<MapElementContainer>, tile: Tile, shape: Shape) {
-    val origin = tile.getOrigin()
-    for (element in elements) {
-      if (element is WayTextContainer) {
-        val wayTextContainer = element as WayTextContainer
-        shape.drawTextRotated(wayTextContainer.text, wayTextContainer.getPoint(), wayTextContainer.end, origin, wayTextContainer.paintFront)
-      }
-      else if (element is SymbolContainer) {
-        val boundary = element.getBoundary()
-        val point = element.getPoint()
-        val symbolContainer = element as SymbolContainer
-        if (symbolContainer.theta != 0f) {
-          throw UnsupportedOperationException("rotated symbol not supported")
-        }
-        shape.drawSymbol(symbolContainer.symbol, (point.x - origin.x) + boundary.left, (point.y - origin.y) + boundary.top, symbolContainer.theta)
-      }
-      else if (element is MapElementContainerEx) {
-        element.draw(shape, origin);
-      }
-      else {
-        element.draw(canvas, origin, symbolMatrix)
-      }
+fun drawMapElements(elements:Collection<MapElementContainer>, tile:Tile, shape:Shape) {
+  val origin = tile.getOrigin()
+  for (element in elements) {
+    if (element is WayTextContainer) {
+      shape.drawTextRotated(element.text, element.getPoint(), element.end, origin, element.paintFront)
     }
-  }
-
-  fun setCanvasBitmap(bitmap: Bitmap) {
-    canvas.setBitmap(bitmap)
+    else if (element is SymbolContainer) {
+      val boundary = element.getBoundary()
+      val point = element.getPoint()
+      if (element.theta != 0f) {
+        throw UnsupportedOperationException("rotated symbol not supported")
+      }
+      shape.drawSymbol(element.symbol, (point.x - origin.x) + boundary.left, (point.y - origin.y) + boundary.top, element.theta)
+    }
+    else if (element is MapElementContainerEx) {
+      element.draw(shape, origin);
+    }
+    else {
+      throw UnsupportedOperationException("unsupported element")
+    }
   }
 }

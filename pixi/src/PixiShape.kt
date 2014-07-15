@@ -6,7 +6,6 @@ import org.mapsforge.core.graphics.Style
 import org.mapsforge.core.model.Point
 import org.mapsforge.map.layer.renderer.Shape
 
-import java.io.IOException
 import java.io.OutputStream
 
 class PixiShape(private val w: Int, private val h: Int) : DrawPath(), Shape {
@@ -14,7 +13,6 @@ class PixiShape(private val w: Int, private val h: Int) : DrawPath(), Shape {
 
   override fun getWidth(): Int = h
 
-  throws(javaClass<IOException>())
   override fun compress(outputStream: OutputStream?) {
   }
 
