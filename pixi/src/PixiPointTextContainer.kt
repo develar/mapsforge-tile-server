@@ -8,7 +8,7 @@ import org.mapsforge.core.mapelements.SymbolContainer
 import org.mapsforge.core.model.Point
 import org.mapsforge.core.model.Rectangle
 import org.mapsforge.map.layer.renderer.MapElementContainerEx
-import org.mapsforge.map.layer.renderer.Shape
+import org.mapsforge.map.layer.renderer.CanvasEx
 import org.mapsforge.core.mapelements.MapElementContainer
 import java.awt.geom.Rectangle2D
 
@@ -24,7 +24,7 @@ class PixiPointTextContainer(private val text: String, point: Point, priority: I
     boundary = computeBoundary(textVisualBounds, maxTextWidth, position)
   }
 
-  override fun draw(shape: Shape, origin: Point) {
+  override fun draw(shape:CanvasEx, origin: Point) {
     if (text.startsWith("21")) {
       System.out.print("dd");
     }

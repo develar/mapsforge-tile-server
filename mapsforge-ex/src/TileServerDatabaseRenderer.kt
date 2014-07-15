@@ -100,7 +100,7 @@ public class TileServerDatabaseRenderer(private val mapDatabase: MapDatabase?, p
       processReadMapData(ways, mapDatabase.readMapData(tile), tile)
     }
 
-    val shape = graphicFactory.createTileBitmap(tile.tileSize, hasAlpha) as Shape
+    val shape = graphicFactory.createTileBitmap(tile.tileSize, hasAlpha) as CanvasEx
     canvas.setBitmap(shape)
     drawWays(ways, shape)
 

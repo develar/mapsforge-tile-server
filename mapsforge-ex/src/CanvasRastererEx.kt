@@ -10,10 +10,10 @@ import org.mapsforge.core.model.Tile
 val EMPTY_POINT: Point = Point(0.0, 0.0)
 
 public trait MapElementContainerEx {
-  fun draw(shape: Shape, origin: Point): Unit
+  fun draw(shape:CanvasEx, origin: Point): Unit
 }
 
-fun drawWays(drawWays: Array<List<MutableList<ShapePaintContainer>>>, shape: Shape) {
+fun drawWays(drawWays: Array<List<MutableList<ShapePaintContainer>>>, shape:CanvasEx) {
   val levelsPerLayer = drawWays[0].size()
   var currentStroke:Paint? = null
   for (shapePaintContainers in drawWays) {
@@ -48,7 +48,7 @@ fun drawWays(drawWays: Array<List<MutableList<ShapePaintContainer>>>, shape: Sha
   }
 }
 
-private fun drawShapePaintContainer(shapePaintContainer: ShapePaintContainer, shape: Shape) {
+private fun drawShapePaintContainer(shapePaintContainer: ShapePaintContainer, shape:CanvasEx) {
   when (shapePaintContainer.shapeContainer.getShapeType()) {
     ShapeType.CIRCLE -> {
       val circleContainer = shapePaintContainer.shapeContainer as CircleContainer
@@ -67,7 +67,7 @@ private fun drawShapePaintContainer(shapePaintContainer: ShapePaintContainer, sh
   }
 }
 
-fun drawMapElements(elements:Collection<MapElementContainer>, tile:Tile, shape:Shape) {
+fun drawMapElements(elements:Collection<MapElementContainer>, tile:Tile, shape:CanvasEx) {
   val origin = tile.getOrigin()
   for (element in elements) {
     if (element is WayTextContainer) {

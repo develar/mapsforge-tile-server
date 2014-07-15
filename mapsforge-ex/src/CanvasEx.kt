@@ -5,7 +5,7 @@ import org.mapsforge.core.graphics.Paint
 import org.mapsforge.core.graphics.TileBitmap
 import org.mapsforge.core.model.Point
 
-public trait Shape : TileBitmap {
+public trait CanvasEx : TileBitmap {
   public fun drawPolyLine(coordinates: Array<Array<Point>>, origin: Point, dy: Float): Unit
 
   public fun beginFillOrSetLineStyle(paint: Paint): Boolean

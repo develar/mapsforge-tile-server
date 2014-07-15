@@ -4,11 +4,11 @@ import org.mapsforge.core.graphics.Bitmap
 import org.mapsforge.core.graphics.Paint
 import org.mapsforge.core.graphics.Style
 import org.mapsforge.core.model.Point
-import org.mapsforge.map.layer.renderer.Shape
+import org.mapsforge.map.layer.renderer.CanvasEx
 
 import java.io.OutputStream
 
-class PixiShape(private val w: Int, private val h: Int) : DrawPath(), Shape {
+class PixiShape(private val w: Int, private val h: Int) : DrawPath(), CanvasEx {
   override fun getHeight(): Int  = w
 
   override fun getWidth(): Int = h
