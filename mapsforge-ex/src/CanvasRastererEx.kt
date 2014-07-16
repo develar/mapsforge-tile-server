@@ -7,13 +7,13 @@ import org.mapsforge.core.mapelements.WayTextContainer
 import org.mapsforge.core.model.Point
 import org.mapsforge.core.model.Tile
 
-val EMPTY_POINT: Point = Point(0.0, 0.0)
+val EMPTY_POINT:Point = Point(0.0, 0.0)
 
 public trait MapElementContainerEx {
-  fun draw(shape:CanvasEx, origin: Point): Unit
+  fun draw(shape:CanvasEx, origin:Point):Unit
 }
 
-fun drawWays(drawWays: Array<List<MutableList<ShapePaintContainer>>>, shape:CanvasEx) {
+fun drawWays(drawWays:Array<List<MutableList<ShapePaintContainer>>>, canvas:CanvasEx) {
   val levelsPerLayer = drawWays[0].size()
   var currentStroke:Paint? = null
   for (shapePaintContainers in drawWays) {
@@ -26,52 +26,52 @@ fun drawWays(drawWays: Array<List<MutableList<ShapePaintContainer>>>, shape:Canv
         val fill = container.fill
         var addEndFill = false
         if (fill != null && !fill.isTransparent()) {
-          addEndFill = shape.beginFillOrSetLineStyle(fill)
+          addEndFill = canvas.beginFillOrSetLineStyle(fill)
           assert(addEndFill)
         }
 
         if (currentStroke != container.stroke) {
           currentStroke = container.stroke
           if (currentStroke != null && !currentStroke!!.isTransparent()) {
-            val r = shape.beginFillOrSetLineStyle(currentStroke!!)
+            val r = canvas.beginFillOrSetLineStyle(currentStroke!!)
             assert(!r)
           }
         }
 
-        drawShapePaintContainer(container, shape)
+        drawShapePaintContainer(container, canvas)
 
         if (addEndFill) {
-          shape.endFill()
+          canvas.endFill()
         }
       }
     }
   }
 }
 
-private fun drawShapePaintContainer(shapePaintContainer: ShapePaintContainer, shape:CanvasEx) {
+private fun drawShapePaintContainer(shapePaintContainer:ShapePaintContainer, canvas:CanvasEx) {
   when (shapePaintContainer.shapeContainer.getShapeType()) {
     ShapeType.CIRCLE -> {
       val circleContainer = shapePaintContainer.shapeContainer as CircleContainer
       val point = circleContainer.point
-      shape.drawCircle(point.x, point.y, circleContainer.radius)
+      canvas.drawCircle(point.x, point.y, circleContainer.radius)
     }
 
     ShapeType.POLYLINE -> {
       val shapeContainer = shapePaintContainer.shapeContainer as PolylineContainer
       val coordinates = if (shapePaintContainer.dy == 0f) shapeContainer.getCoordinatesAbsolute() else shapeContainer.getCoordinatesRelativeToTile()
       [suppress("CAST_NEVER_SUCCEEDS")]
-      shape.drawPolyLine(coordinates as Array<Array<Point>>, if (shapePaintContainer.dy == 0f) shapeContainer.getTile().getOrigin() else EMPTY_POINT, shapePaintContainer.dy)
+      canvas.drawPolyLine(coordinates as Array<Array<Point>>, if (shapePaintContainer.dy == 0f) shapeContainer.getTile().getOrigin() else EMPTY_POINT, shapePaintContainer.dy)
     }
     else -> {
     }
   }
 }
 
-fun drawMapElements(elements:Collection<MapElementContainer>, tile:Tile, shape:CanvasEx) {
+fun drawMapElements(elements:Collection<MapElementContainer>, tile:Tile, canvas:CanvasEx) {
   val origin = tile.getOrigin()
   for (element in elements) {
     if (element is WayTextContainer) {
-      shape.drawTextRotated(element.text, element.getPoint(), element.end, origin, element.paintFront)
+      canvas.drawTextRotated(element.text, element.getPoint(), element.end, origin, element.paintFront)
     }
     else if (element is SymbolContainer) {
       val boundary = element.getBoundary()
@@ -79,10 +79,10 @@ fun drawMapElements(elements:Collection<MapElementContainer>, tile:Tile, shape:C
       if (element.theta != 0f) {
         throw UnsupportedOperationException("rotated symbol not supported")
       }
-      shape.drawSymbol(element.symbol, (point.x - origin.x) + boundary.left, (point.y - origin.y) + boundary.top, element.theta)
+      canvas.drawSymbol(element.symbol, (point.x - origin.x) + boundary.left, (point.y - origin.y) + boundary.top, element.theta)
     }
     else if (element is MapElementContainerEx) {
-      element.draw(shape, origin);
+      element.draw(canvas, origin);
     }
     else {
       throw UnsupportedOperationException("unsupported element")

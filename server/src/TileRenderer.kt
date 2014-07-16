@@ -1,7 +1,6 @@
 package org.develar.mapsforgeTileServer
 
 import org.develar.mapsforgeTileServer.pixi.PixiGraphicFactory
-import org.mapsforge.core.graphics.TileBitmap
 import org.mapsforge.core.model.BoundingBox
 import org.mapsforge.core.model.Tile
 import org.mapsforge.map.awt.AwtGraphicFactory
@@ -50,14 +49,14 @@ public class TileRenderer(private val displayModel: DisplayModel, mapFile: File,
     return stringBuilder.toString()
   }
 
-  public fun renderVector(tile: Tile): TileBitmap {
+  public fun renderVector(tile: Tile): ByteArray {
     var renderer = databaseVectorRenderer
     if (renderer == null) {
       renderer = TileServerDatabaseRenderer(databaseRenderer.getMapDatabase(), PixiGraphicFactory.INSTANCE)
       renderer!!.renderTheme = vectorRenderTheme
       databaseVectorRenderer = renderer;
     }
-    return renderer!!.renderTile(tile, false)
+    return renderer!!.renderTile(tile)
   }
 
   public fun render(tile: Tile): BufferedImage {

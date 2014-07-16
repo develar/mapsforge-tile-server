@@ -3,18 +3,22 @@ package org.develar.mapsforgeTileServer.pixi
 import org.mapsforge.core.graphics.FillRule
 import org.mapsforge.core.graphics.Path
 
-class PixiPath() : DrawPath(), Path {
+class PixiPath() : Path {
+  val out = ByteArrayOutput()
+
+  public fun build():ByteArray = out.toByteArray()
+
   private var lineToCount = 0
   private var lineToCountOffset = -1
 
-  private var prevX: Float = 0.toFloat()
-  private var prevY: Float = 0.toFloat()
+  private var prevX:Float = 0.toFloat()
+  private var prevY:Float = 0.toFloat()
 
   override fun clear() = out.reset()
 
-  override fun lineTo(x: Float, y: Float) {
+  override fun lineTo(x:Float, y:Float) {
     if (lineToCount == 0) {
-      writeCommand(PixiCommand.POLYLINE)
+      out.writeCommand(PixiCommand.POLYLINE)
       lineToCountOffset = out.allocateShort()
 
       prevX = 0f
@@ -22,16 +26,16 @@ class PixiPath() : DrawPath(), Path {
     }
 
     lineToCount++
-    writeAsTwips(x - prevX)
-    writeAsTwips(y - prevY)
+    out.writeAsTwips(x - prevX)
+    out.writeAsTwips(y - prevY)
 
     prevX = x
     prevY = y
   }
 
-  override fun moveTo(x: Float, y: Float) {
+  override fun moveTo(x:Float, y:Float) {
     closePolyline()
-    moveToOrLineTo(PixiCommand.MOVE_TO, x, y)
+    out.moveToOrLineTo(PixiCommand.MOVE_TO, x, y)
   }
 
   fun closePolyline() {
@@ -43,5 +47,5 @@ class PixiPath() : DrawPath(), Path {
     }
   }
 
-  override fun setFillRule(fillRule: FillRule): Unit = throw UnsupportedOperationException()
+  override fun setFillRule(fillRule:FillRule):Unit = throw UnsupportedOperationException()
 }

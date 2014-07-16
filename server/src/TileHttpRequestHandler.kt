@@ -9,7 +9,6 @@ import com.luciad.imageio.webp.WebPWriteParam
 import io.netty.buffer.Unpooled
 import io.netty.channel.*
 import io.netty.handler.codec.http.*
-import org.develar.mapsforgeTileServer.pixi.PixiShape
 import org.mapsforge.core.model.Tile
 import org.mapsforge.map.layer.renderer.DatabaseRenderer
 
@@ -44,12 +43,12 @@ private val WRITE_PARAM = WebPWriteParam(Locale.ENGLISH)
 // http://wiki.openstreetmap.org/wiki/Slippy_map_tilenames
 private val MAP_TILE_NAME_PATTERN = Pattern.compile("^/(\\d+)/(\\d+)/(\\d+)(?:\\.(png|webp|v))?(?:\\?theme=(\\w+))?")
 
-private fun checkClientCache(request: HttpRequest, lastModified: Long, etag: String): Boolean {
+private fun checkClientCache(request:HttpRequest, lastModified:Long, etag:String):Boolean {
   return checkCache(request, lastModified) || etag == request.headers().get(IF_NONE_MATCH)
 }
 
-private fun encodePng(bufferedImage: BufferedImage): ByteArray {
-  val bytes: ByteArray
+private fun encodePng(bufferedImage:BufferedImage):ByteArray {
+  val bytes:ByteArray
   val out = ByteArrayOutputStream(8 * 1024)
   ImageIO.write(bufferedImage, "png", out)
   bytes = out.toByteArray()
@@ -58,28 +57,28 @@ private fun encodePng(bufferedImage: BufferedImage): ByteArray {
 }
 
 ChannelHandler.Sharable
-class TileHttpRequestHandler(private val tileServer: MapsforgeTileServer, fileCacheManager: FileCacheManager?, executorCount: Int, maxMemoryCacheSize: Long, shutdownHooks: MutableList<()->Unit>) : SimpleChannelInboundHandler<FullHttpRequest>() {
-  private val tileCache: LoadingCache<TileRequest, RenderedTile>
+class TileHttpRequestHandler(private val tileServer:MapsforgeTileServer, fileCacheManager:FileCacheManager?, executorCount:Int, maxMemoryCacheSize:Long, shutdownHooks:MutableList<() -> Unit>) : SimpleChannelInboundHandler<FullHttpRequest>() {
+  private val tileCache:LoadingCache<TileRequest, RenderedTile>
 
   private val threadLocalRenderer = object : FastThreadLocal<Renderer>() {
-    override fun initialValue(): Renderer {
+    override fun initialValue():Renderer {
       return Renderer(tileServer)
     }
   }
 
-  private val tileCacheInfoProvider: DatabaseRenderer.TileCacheInfoProvider
+  private val tileCacheInfoProvider:DatabaseRenderer.TileCacheInfoProvider
 
   {
     val cacheBuilder = CacheBuilder.newBuilder()
             .concurrencyLevel(executorCount)
-            .weigher(object: Weigher<TileRequest, RenderedTile> {
-              override fun weigh(key: TileRequest, value: RenderedTile): Int = TILE_REQUEST_WEIGHT + value.computeWeight()
+            .weigher(object : Weigher<TileRequest, RenderedTile> {
+              override fun weigh(key:TileRequest, value:RenderedTile):Int = TILE_REQUEST_WEIGHT + value.computeWeight()
             })
             .maximumWeight(maxMemoryCacheSize)
     if (fileCacheManager == null) {
       tileCache = cacheBuilder.build(object : CacheLoader<TileRequest, RenderedTile>() {
         throws(javaClass<Exception>())
-        override fun load(tile: TileRequest): RenderedTile {
+        override fun load(tile:TileRequest):RenderedTile {
           return renderTile(tile)
         }
       })
@@ -87,7 +86,7 @@ class TileHttpRequestHandler(private val tileServer: MapsforgeTileServer, fileCa
     else {
       tileCache = fileCacheManager.configureMemoryCache(cacheBuilder).build(object : CacheLoader<TileRequest, RenderedTile>() {
         throws(javaClass<Exception>())
-        override fun load(tile: TileRequest): RenderedTile {
+        override fun load(tile:TileRequest):RenderedTile {
           val renderedTile = fileCacheManager.get(tile)
           return renderedTile ?: renderTile(tile)
         }
@@ -99,8 +98,8 @@ class TileHttpRequestHandler(private val tileServer: MapsforgeTileServer, fileCa
       }
     }
 
-    tileCacheInfoProvider = object: DatabaseRenderer.TileCacheInfoProvider {
-      override fun contains(tile: Tile, rendererJob: RendererJob?): Boolean = tileCache.asMap().containsKey(tile as TileRequest)
+    tileCacheInfoProvider = object : DatabaseRenderer.TileCacheInfoProvider {
+      override fun contains(tile:Tile, rendererJob:RendererJob?):Boolean = tileCache.asMap().containsKey(tile as TileRequest)
     }
   }
 
@@ -110,7 +109,7 @@ class TileHttpRequestHandler(private val tileServer: MapsforgeTileServer, fileCa
     }
   }
 
-  override fun exceptionCaught(context: ChannelHandlerContext, cause: Throwable) {
+  override fun exceptionCaught(context:ChannelHandlerContext, cause:Throwable) {
     if (cause is IOException && cause.getMessage() == "Connection reset by peer") {
       // ignore Connection reset by peer
       return
@@ -119,7 +118,7 @@ class TileHttpRequestHandler(private val tileServer: MapsforgeTileServer, fileCa
     LOG.error(cause.getMessage(), cause)
   }
 
-  override fun channelRead0(context: ChannelHandlerContext, request: FullHttpRequest) {
+  override fun channelRead0(context:ChannelHandlerContext, request:FullHttpRequest) {
     val uri = request.uri()
     val matcher = MAP_TILE_NAME_PATTERN.matcher(uri)
     val channel = context.channel()
@@ -151,7 +150,7 @@ class TileHttpRequestHandler(private val tileServer: MapsforgeTileServer, fileCa
       imageFormat = if (accept != null && accept.contains(ImageFormat.WEBP.getContentType())) ImageFormat.WEBP else ImageFormat.PNG
     }
 
-    val renderedTile: RenderedTile
+    val renderedTile:RenderedTile
 
     val tile = TileRequest(x, y, zoom, imageFormat!!.ordinal().toByte())
     if (imageFormat == ImageFormat.VECTOR) {
@@ -162,14 +161,13 @@ class TileHttpRequestHandler(private val tileServer: MapsforgeTileServer, fileCa
         return
       }
 
-      val bitmap = renderer.renderVector(tile) as PixiShape
-      renderedTile = RenderedTile(bitmap.build(), Math.floorDiv(System.currentTimeMillis(), 1000), "")
+      renderedTile = RenderedTile(renderer.renderVector(tile), Math.floorDiv(System.currentTimeMillis(), 1000), "")
     }
     else {
       try {
         renderedTile = tileCache.get(tile)
       }
-      catch (e: UncheckedExecutionException) {
+      catch (e:UncheckedExecutionException) {
         if (e.getCause() is TileNotFound) {
           send(response(HttpResponseStatus.NOT_FOUND), channel, request)
         }
@@ -213,8 +211,7 @@ class TileHttpRequestHandler(private val tileServer: MapsforgeTileServer, fileCa
     }
   }
 
-  throws(javaClass<IOException>())
-  private fun renderTile(tile: TileRequest): RenderedTile {
+  private fun renderTile(tile:TileRequest):RenderedTile {
     val rendererManager = threadLocalRenderer.get()
     val renderer = rendererManager.getTileRenderer(tile, tileServer, tileCacheInfoProvider)
     if (renderer == null) {

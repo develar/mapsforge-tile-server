@@ -15,16 +15,16 @@ import org.mapsforge.map.rendertheme.rule.RenderTheme
 
 import java.util.*
 
-public class TileServerDatabaseRenderer(private val mapDatabase: MapDatabase?, private val graphicFactory: GraphicFactory) : RenderCallback {
+public class TileServerDatabaseRenderer(private val mapDatabase:MapDatabase?, private val graphicFactory:GraphicFactory) : RenderCallback {
   private val currentLabels = ArrayList<MapElementContainer>()
   private val currentWayLabels = HashSet<MapElementContainer>()
-  private var drawingLayers: List<MutableList<ShapePaintContainer>>? = null
+  private var drawingLayers:List<MutableList<ShapePaintContainer>>? = null
 
   private val ways = arrayOfNulls<ArrayList<MutableList<ShapePaintContainer>>>(LAYERS)
 
-  private val canvas = graphicFactory.createCanvas()
+  private val canvas = graphicFactory.createCanvas() as CanvasEx
 
-  public var renderTheme: RenderTheme? = null
+  public var renderTheme:RenderTheme? = null
     set (value) {
       if ($renderTheme == value) {
         return;
@@ -52,12 +52,12 @@ public class TileServerDatabaseRenderer(private val mapDatabase: MapDatabase?, p
     private val LAYERS = 11
     private val TAG_NATURAL_WATER = Tag("natural", "water")
 
-    private fun getTilePixelCoordinates(tileSize: Int): Array<Point> {
+    private fun getTilePixelCoordinates(tileSize:Int):Array<Point> {
       val emptyPoint = Point(0.0, 0.0)
       return array(emptyPoint, Point(tileSize.toDouble(), 0.0), Point(tileSize.toDouble(), tileSize.toDouble()), Point(0.0, tileSize.toDouble()), emptyPoint)
     }
 
-    private fun getValidLayer(layer: Byte): Int {
+    private fun getValidLayer(layer:Byte):Int {
       if (layer < 0) {
         return 0
       }
@@ -70,7 +70,7 @@ public class TileServerDatabaseRenderer(private val mapDatabase: MapDatabase?, p
         }
     }
 
-    private fun collisionFreeOrdered(input: List<MapElementContainer>): List<MapElementContainer> {
+    private fun collisionFreeOrdered(input:List<MapElementContainer>):List<MapElementContainer> {
       // sort items by priority (highest first)
       input.sortBy(Collections.reverseOrder())
       // in order of priority, see if an item can be drawn, i.e. none of the items
@@ -93,20 +93,19 @@ public class TileServerDatabaseRenderer(private val mapDatabase: MapDatabase?, p
     }
   }
 
-  public fun renderTile(tile: Tile, hasAlpha: Boolean): TileBitmap {
+  public fun renderTile(tile:Tile):ByteArray {
     [suppress("CAST_NEVER_SUCCEEDS")]
     val ways = this.ways as Array<List<MutableList<ShapePaintContainer>>>
     if (mapDatabase != null) {
       processReadMapData(ways, mapDatabase.readMapData(tile), tile)
     }
 
-    val shape = graphicFactory.createTileBitmap(tile.tileSize, hasAlpha) as CanvasEx
-    canvas.setBitmap(shape)
-    drawWays(ways, shape)
+    canvas.reset()
+    drawWays(ways, canvas)
 
     // now draw the ways and the labels
-    drawMapElements(currentWayLabels, tile, shape)
-    drawMapElements(collisionFreeOrdered(currentLabels), tile, shape)
+    drawMapElements(currentWayLabels, tile, canvas)
+    drawMapElements(collisionFreeOrdered(currentLabels), tile, canvas)
 
     // clear way list
     for (innerWayList in ways) {
@@ -118,50 +117,50 @@ public class TileServerDatabaseRenderer(private val mapDatabase: MapDatabase?, p
     currentLabels.clear()
     currentWayLabels.clear()
 
-    return shape
+    return canvas.build()
   }
 
-  override fun renderArea(way: PolylineContainer, fill: Paint, stroke: Paint?, level: Int) {
-    drawingLayers!!.get(level).add(ShapePaintContainer(way, fill, stroke, 0f))
+  override fun renderArea(way:PolylineContainer, fill:Paint, stroke:Paint?, level:Int) {
+    drawingLayers!![level].add(ShapePaintContainer(way, fill, stroke, 0f))
   }
 
-  override fun renderAreaCaption(way: PolylineContainer, priority: Int, caption: String, horizontalOffset: Float, verticalOffset: Float, fill: Paint, stroke: Paint?, position: Position, maxTextWidth: Int) {
+  override fun renderAreaCaption(way:PolylineContainer, priority:Int, caption:String, horizontalOffset:Float, verticalOffset:Float, fill:Paint, stroke:Paint?, position:Position, maxTextWidth:Int) {
     val centerPoint = way.getCenterAbsolute().offset(horizontalOffset.toDouble(), verticalOffset.toDouble())
     currentLabels.add(graphicFactory.createPointTextContainer(centerPoint, priority, caption, fill, stroke, null, position, maxTextWidth))
   }
 
-  override fun renderAreaSymbol(way: PolylineContainer, priority: Int, symbol: Bitmap) {
+  override fun renderAreaSymbol(way:PolylineContainer, priority:Int, symbol:Bitmap) {
     currentLabels.add(SymbolContainer(way.getCenterAbsolute(), priority, symbol))
   }
 
-  override fun renderPointOfInterestCaption(poi: PointOfInterest, priority: Int, caption: String, horizontalOffset: Float, verticalOffset: Float, fill: Paint, stroke: Paint?, position: Position, maxTextWidth: Int, tile: Tile) {
+  override fun renderPointOfInterestCaption(poi:PointOfInterest, priority:Int, caption:String, horizontalOffset:Float, verticalOffset:Float, fill:Paint, stroke:Paint?, position:Position, maxTextWidth:Int, tile:Tile) {
     val poiPosition = MercatorProjection.getPixelAbsolute(poi.position, tile.zoomLevel, tile.tileSize)
     currentLabels.add(graphicFactory.createPointTextContainer(poiPosition.offset(horizontalOffset.toDouble(), verticalOffset.toDouble()), priority, caption, fill, stroke, null, position, maxTextWidth))
   }
 
-  override fun renderPointOfInterestCircle(poi: PointOfInterest, radius: Float, fill: Paint, stroke: Paint?, level: Int, tile: Tile) {
+  override fun renderPointOfInterestCircle(poi:PointOfInterest, radius:Float, fill:Paint, stroke:Paint?, level:Int, tile:Tile) {
     val poiPosition = MercatorProjection.getPixelRelativeToTile(poi.position, tile)
-    drawingLayers!!.get(level).add(ShapePaintContainer(CircleContainer(poiPosition, radius), fill, stroke, 0f))
+    drawingLayers!![level].add(ShapePaintContainer(CircleContainer(poiPosition, radius), fill, stroke, 0f))
   }
 
-  override fun renderPointOfInterestSymbol(poi: PointOfInterest, priority: Int, symbol: Bitmap, tile: Tile) {
+  override fun renderPointOfInterestSymbol(poi:PointOfInterest, priority:Int, symbol:Bitmap, tile:Tile) {
     val poiPosition = MercatorProjection.getPixelAbsolute(poi.position, tile.zoomLevel, tile.tileSize)
     currentLabels.add(SymbolContainer(poiPosition, priority, symbol))
   }
 
-  override fun renderWay(way: PolylineContainer, stroke: Paint, dy: Float, level: Int) {
-    drawingLayers!!.get(level).add(ShapePaintContainer(way, null, stroke, dy))
+  override fun renderWay(way:PolylineContainer, stroke:Paint, dy:Float, level:Int) {
+    drawingLayers!![level].add(ShapePaintContainer(way, null, stroke, dy))
   }
 
-  override fun renderWaySymbol(way: PolylineContainer, priority: Int, symbol: Bitmap, dy: Float, alignCenter: Boolean, repeat: Boolean, repeatGap: Float, repeatStart: Float, rotate: Boolean) {
+  override fun renderWaySymbol(way:PolylineContainer, priority:Int, symbol:Bitmap, dy:Float, alignCenter:Boolean, repeat:Boolean, repeatGap:Float, repeatStart:Float, rotate:Boolean) {
     WayDecorator.renderSymbol(symbol, priority, dy, alignCenter, repeat, repeatGap, repeatStart, rotate, way.getCoordinatesAbsolute(), currentLabels)
   }
 
-  override fun renderWayText(way: PolylineContainer, priority: Int, textKey: String, dy: Float, fill: Paint, stroke: Paint?) {
+  override fun renderWayText(way:PolylineContainer, priority:Int, textKey:String, dy:Float, fill:Paint, stroke:Paint?) {
     WayDecorator.renderText(textKey, priority, dy, fill, stroke, way.getCoordinatesAbsolute(), currentWayLabels)
   }
 
-  private fun processReadMapData(ways: Array<List<MutableList<ShapePaintContainer>>>, mapReadResult: MapReadResult?, tile: Tile) {
+  private fun processReadMapData(ways:Array<List<MutableList<ShapePaintContainer>>>, mapReadResult:MapReadResult?, tile:Tile) {
     if (mapReadResult == null) {
       return
     }
@@ -179,18 +178,18 @@ public class TileServerDatabaseRenderer(private val mapDatabase: MapDatabase?, p
     }
   }
 
-  private fun renderPointOfInterest(ways: Array<List<MutableList<ShapePaintContainer>>>, pointOfInterest: PointOfInterest, tile: Tile) {
+  private fun renderPointOfInterest(ways:Array<List<MutableList<ShapePaintContainer>>>, pointOfInterest:PointOfInterest, tile:Tile) {
     drawingLayers = ways[getValidLayer(pointOfInterest.layer)]
     renderTheme!!.matchNode(this, pointOfInterest, tile)
   }
 
-  private fun renderWaterBackground(ways: Array<List<MutableList<ShapePaintContainer>>>, tile: Tile) {
+  private fun renderWaterBackground(ways:Array<List<MutableList<ShapePaintContainer>>>, tile:Tile) {
     drawingLayers = ways[0]
     val coordinates = getTilePixelCoordinates(tile.tileSize)
     renderTheme!!.matchClosedWay(this, PolylineContainer(coordinates, tile, Arrays.asList(TAG_NATURAL_WATER)))
   }
 
-  private fun renderWay(ways: Array<List<MutableList<ShapePaintContainer>>>, way: PolylineContainer) {
+  private fun renderWay(ways:Array<List<MutableList<ShapePaintContainer>>>, way:PolylineContainer) {
     drawingLayers = ways[getValidLayer(way.getLayer())]
 
     if (way.isClosedWay()) {
