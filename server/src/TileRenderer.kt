@@ -13,16 +13,16 @@ import org.mapsforge.map.rendertheme.rule.RenderTheme
 import java.awt.image.BufferedImage
 import java.io.File
 
-public class TileRenderer(private val displayModel: DisplayModel, mapFile: File, renderTheme: RenderThemeItem, tileCacheInfoProvider: DatabaseRenderer.TileCacheInfoProvider) {
-  private val databaseRenderer: DatabaseRenderer
-  private val vectorRenderTheme: RenderTheme
+public class TileRenderer(private val displayModel:DisplayModel, mapFile:File, renderTheme:RenderThemeItem, tileCacheInfoProvider:DatabaseRenderer.TileCacheInfoProvider) {
+  private val databaseRenderer:DatabaseRenderer
+  private val vectorRenderTheme:RenderTheme
   // DatabaseRenderer keep reference to canvas and we cannot change it after creation, so, currently, we use different instances
-  private var databaseVectorRenderer: TileServerDatabaseRenderer? = null
+  private var databaseVectorRenderer:TileServerDatabaseRenderer? = null
 
-  private val mapFileLastModified: String
-  private val renderThemeEtag: String
+  private val mapFileLastModified:String
+  private val renderThemeEtag:String
 
-  public val boundingBox: BoundingBox
+  public val boundingBox:BoundingBox
     get() = databaseRenderer.getMapDatabase().getMapFileInfo().boundingBox
 
   {
@@ -40,7 +40,7 @@ public class TileRenderer(private val displayModel: DisplayModel, mapFile: File,
     }
   }
 
-  public fun computeETag(tile: TileRequest, stringBuilder: StringBuilder): String {
+  public fun computeETag(tile:TileRequest, stringBuilder:StringBuilder):String {
     stringBuilder.setLength(0)
     stringBuilder.append(mapFileLastModified).append('@')
     stringBuilder.append(renderThemeEtag).append('@')
@@ -49,17 +49,17 @@ public class TileRenderer(private val displayModel: DisplayModel, mapFile: File,
     return stringBuilder.toString()
   }
 
-  public fun renderVector(tile: Tile): ByteArray {
+  public fun renderVector(tile:Tile, pixiGraphicFactory:PixiGraphicFactory):ByteArray {
     var renderer = databaseVectorRenderer
     if (renderer == null) {
-      renderer = TileServerDatabaseRenderer(databaseRenderer.getMapDatabase(), PixiGraphicFactory.INSTANCE)
+      renderer = TileServerDatabaseRenderer(databaseRenderer.getMapDatabase(), pixiGraphicFactory)
       renderer!!.renderTheme = vectorRenderTheme
       databaseVectorRenderer = renderer;
     }
     return renderer!!.renderTile(tile)
   }
 
-  public fun render(tile: Tile): BufferedImage {
+  public fun render(tile:Tile):BufferedImage {
     return AwtGraphicFactory.getBitmap(databaseRenderer.renderTile(tile, 1f, false, false, displayModel))
   }
 }

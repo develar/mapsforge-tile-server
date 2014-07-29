@@ -5,6 +5,7 @@
       <module fileurl="file://$PROJECT_DIR$/mapsforge-ex/mapsforge-ex.iml" filepath="$PROJECT_DIR$/mapsforge-ex/mapsforge-ex.iml" />
       <module fileurl="file://$PROJECT_DIR$/mapsforge-tile-server.iml" filepath="$PROJECT_DIR$/mapsforge-tile-server.iml" />
       <module fileurl="file://$PROJECT_DIR$/pixi/pixi.iml" filepath="$PROJECT_DIR$/pixi/pixi.iml" />
+      <module fileurl="file://$PROJECT_DIR$/ugly-kotlin/ugly-kotlin.iml" filepath="$PROJECT_DIR$/ugly-kotlin/ugly-kotlin.iml" />
     </modules>
   </component>
 </project>

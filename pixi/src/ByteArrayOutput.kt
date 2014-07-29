@@ -5,17 +5,17 @@ import java.util.Arrays
 import java.io.File
 import java.io.FileOutputStream
 
-class ByteArrayOutput(size: Int = 32) : OutputStream() {
-  protected var buffer: ByteArray = ByteArray(size)
-  protected var count: Int = 0
+class ByteArrayOutput(size:Int = 32) : OutputStream() {
+  protected var buffer:ByteArray = ByteArray(size)
+  protected var count:Int = 0
 
-  private fun ensureCapacity(minCapacity: Int) {
+  private fun ensureCapacity(minCapacity:Int) {
     if (minCapacity - buffer.size > 0) {
       grow(minCapacity)
     }
   }
 
-  private fun grow(minCapacity: Int) {
+  private fun grow(minCapacity:Int) {
     // overflow-conscious code
     val oldCapacity = buffer.size
     var newCapacity = oldCapacity shl 1
@@ -32,12 +32,12 @@ class ByteArrayOutput(size: Int = 32) : OutputStream() {
     buffer = Arrays.copyOf(buffer, newCapacity)
   }
 
-  override fun write(b: Int) {
+  override fun write(b:Int) {
     ensureCapacity(count + 1)
     buffer[count++] = b.toByte()
   }
 
-  override fun write(b: ByteArray, off: Int, len: Int) {
+  override fun write(b:ByteArray, off:Int, len:Int) {
     if ((off < 0) || (off > b.size) || (len < 0) || ((off + len) - b.size > 0)) {
       throw IndexOutOfBoundsException()
     }
@@ -46,7 +46,7 @@ class ByteArrayOutput(size: Int = 32) : OutputStream() {
     count += len
   }
 
-  public fun writeTo(out: ByteArrayOutput) {
+  public fun writeTo(out:OutputStream) {
     out.write(buffer, 0, count)
   }
 
@@ -54,7 +54,7 @@ class ByteArrayOutput(size: Int = 32) : OutputStream() {
     count = 0
   }
 
-  public fun toByteArray(): ByteArray {
+  public fun toByteArray():ByteArray {
     if (buffer.size == count) {
       return buffer
     }
@@ -63,59 +63,56 @@ class ByteArrayOutput(size: Int = 32) : OutputStream() {
     }
   }
 
-  public fun size(): Int {
+  public fun size():Int {
     return count
   }
 
   override fun close() {
   }
 
-  public fun writeShort(v: Int, offset: Int) {
+  public fun writeShort(v:Int, offset:Int) {
     buffer[offset] = ((v.ushr(8)) and 255).toByte()
     buffer[offset + 1] = (v and 255).toByte()
   }
 
-  public fun allocateShort(): Int {
+  public fun allocateShort():Int {
     val c = count
     buffer[count++] = 0
     buffer[count++] = 0
     return c
   }
 
-  public fun writeUnsighedVarInt(v: Int) {
+  public fun writeUnsighedVarInt(v:Int) {
     if (v < 128) {
       if (v < 0) {
         throw IllegalArgumentException("Integer out of range: " + v)
       }
       write(v)
     }
-    else
-      if (v < 16384) {
-        ensureCapacity(count + 2)
-        buffer[count++] = (((v shr 7) and 127) or 128).toByte()
-        buffer[count++] = (v and 127).toByte()
-      }
-      else
-        if (v < 2097152) {
-          ensureCapacity(count + 3)
-          buffer[count++] = (((v shr 14) and 127) or 128).toByte()
-          buffer[count++] = (((v shr 7) and 127) or 128).toByte()
-          buffer[count++] = (v and 127).toByte()
-        }
-        else
-          if (v < 1073741824) {
-            ensureCapacity(count + 4)
-            buffer[count++] = (((v shr 22) and 127) or 128).toByte()
-            buffer[count++] = (((v shr 15) and 127) or 128).toByte()
-            buffer[count++] = (((v shr 8) and 127) or 128).toByte()
-            buffer[count++] = (v and 255).toByte()
-          }
-          else {
-            throw IllegalArgumentException("Integer out of range: " + v)
-          }
+    else if (v < 16384) {
+      ensureCapacity(count + 2)
+      buffer[count++] = (((v shr 7) and 127) or 128).toByte()
+      buffer[count++] = (v and 127).toByte()
+    }
+    else if (v < 2097152) {
+      ensureCapacity(count + 3)
+      buffer[count++] = (((v shr 14) and 127) or 128).toByte()
+      buffer[count++] = (((v shr 7) and 127) or 128).toByte()
+      buffer[count++] = (v and 127).toByte()
+    }
+    else if (v < 1073741824) {
+      ensureCapacity(count + 4)
+      buffer[count++] = (((v shr 22) and 127) or 128).toByte()
+      buffer[count++] = (((v shr 15) and 127) or 128).toByte()
+      buffer[count++] = (((v shr 8) and 127) or 128).toByte()
+      buffer[count++] = (v and 255).toByte()
+    }
+    else {
+      throw IllegalArgumentException("Integer out of range: " + v)
+    }
   }
 
-  public fun writeInt(v: Int) {
+  public fun writeInt(v:Int) {
     ensureCapacity(count + 4)
     buffer[count++] = ((v.ushr(24)) and 255).toByte()
     buffer[count++] = ((v.ushr(16)) and 255).toByte()
@@ -123,7 +120,7 @@ class ByteArrayOutput(size: Int = 32) : OutputStream() {
     buffer[count++] = ((v) and 255).toByte()
   }
 
-  public fun writeString(s: CharSequence) {
+  public fun writeString(s:CharSequence) {
     var utfLen = 0
     for (i in 0..s.length - 1) {
       var c = s.charAt(i).toInt()
@@ -163,11 +160,11 @@ class ByteArrayOutput(size: Int = 32) : OutputStream() {
     this.count = count
   }
 
-  public fun writeSignedVarInt(v: Int) {
+  public fun writeSignedVarInt(v:Int) {
     writeUnsighedVarInt((v shl 1) xor (v shr 31))
   }
 
-  public fun writeTo(file: File): Unit {
+  public fun writeTo(file:File):Unit {
     val fileOut = FileOutputStream(file)
     fileOut.write(buffer, 0, count)
     fileOut.close()

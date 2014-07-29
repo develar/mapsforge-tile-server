@@ -197,8 +197,8 @@ class PixiCanvas() : Canvas, CanvasEx {
 
     val textBounds = (paintFront as PixiPaint).getTextVisualBounds(text)
 
-    out.writeAsTwips(textBounds.getWidth())
-    out.writeAsTwips(textBounds.getHeight())
+    out.writeAsTwips(textBounds.x)
+    out.writeAsTwips(textBounds.y)
 
     out.writeString(text)
   }

@@ -25,6 +25,7 @@
     <orderEntry type="module" module-name="mapsforge-ex" />
     <orderEntry type="library" name="KotlinJavaRuntime" level="project" />
     <orderEntry type="library" name="gdx" level="project" />
+    <orderEntry type="module" module-name="ugly-kotlin" />
   </component>
 </module>
 

@@ -2,4 +2,10 @@
   <item name='com.badlogic.gdx.utils.Array T get(int)'>
     <annotation name='org.jetbrains.annotations.NotNull'/>
   </item>
+  <item name='com.badlogic.gdx.utils.IntMap com.badlogic.gdx.utils.IntMap.Keys keys()'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='com.badlogic.gdx.utils.IntMap.Keys com.badlogic.gdx.utils.IntArray toArray()'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
 </root>

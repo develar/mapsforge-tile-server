@@ -161,7 +161,7 @@ class TileHttpRequestHandler(private val tileServer:MapsforgeTileServer, fileCac
         return
       }
 
-      renderedTile = RenderedTile(renderer.renderVector(tile), Math.floorDiv(System.currentTimeMillis(), 1000), "")
+      renderedTile = RenderedTile(renderer.renderVector(tile, tileServer.renderThemeManager.pixiGraphicFactory), Math.floorDiv(System.currentTimeMillis(), 1000), "")
     }
     else {
       try {
