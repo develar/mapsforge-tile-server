@@ -140,11 +140,12 @@ fun generateFontFile(fonts:List<FontInfo>, outFile:File) {
     buffer.reset()
 
     val sortedCharCodes = UglyKotlin.getSortedKeys(chars)
+    var prevCharCode = 0
     for (k in 0..sortedCharCodes.size - 1) {
       val charCode = sortedCharCodes[k]
       val charInfo = chars.get(charCode)!!
 
-      buffer.writeUnsighedVarInt(charCode)
+      buffer.writeUnsighedVarInt(charCode - prevCharCode)
       buffer.writeTo(out)
       buffer.reset()
 
@@ -152,9 +153,9 @@ fun generateFontFile(fonts:List<FontInfo>, outFile:File) {
       out.write(charInfo.yOffset)
       out.write(charInfo.xAdvance)
 
-
-
       writeKerningsInfo(charInfo, buffer, out)
+
+      prevCharCode = charCode
     }
   }
 
@@ -167,13 +168,16 @@ private fun writeKerningsInfo(charInfo:CharInfo, buffer:ByteArrayOutput, out:Out
   buffer.reset()
 
   val sortedKernings = UglyKotlin.getSortedKeys(charInfo.kerning)
+  var prevCharCode = 0
   for (i in 0..sortedKernings.size - 1) {
     val charCode = sortedKernings[i]
 
-    buffer.writeUnsighedVarInt(charCode)
+    buffer.writeUnsighedVarInt(charCode - prevCharCode)
     buffer.writeTo(out)
     buffer.reset()
 
     out.write(charInfo.kerning.get(charCode, 0))
+
+    prevCharCode = charCode
   }
 }
