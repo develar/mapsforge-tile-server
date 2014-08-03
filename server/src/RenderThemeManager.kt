@@ -8,9 +8,6 @@ import java.nio.file.Path
 import java.util.function.Consumer
 import com.badlogic.gdx.tools.texturepacker.TexturePacker.Settings
 import com.badlogic.gdx.tools.texturepacker.TexturePacker
-import com.badlogic.gdx.graphics.g2d.TextureAtlas
-import org.develar.mapsforgeTileServer.pixi.ByteArrayOutput
-import com.badlogic.gdx.utils.ObjectIntMap
 import java.util.Locale
 import org.mapsforge.map.rendertheme.ExternalRenderTheme
 import org.mapsforge.map.rendertheme.rule.RenderThemeHandler
@@ -20,7 +17,6 @@ import org.mapsforge.map.model.DisplayModel
 import org.xmlpull.v1.XmlPullParser
 import org.mapsforge.map.rendertheme.renderinstruction.Symbol
 import org.develar.mapsforgeTileServer.pixi.PixiSymbol
-import com.badlogic.gdx.files.FileHandle
 import org.mapsforge.map.rendertheme.rule.RenderThemeFactory
 import org.mapsforge.map.rendertheme.rule.RenderThemeBuilder
 import org.mapsforge.map.rendertheme.rule.RenderTheme
@@ -31,6 +27,7 @@ import org.develar.mapsforgeTileServer.pixi.FontInfo
 import org.develar.mapsforgeTileServer.pixi.parseFontInfo
 import org.develar.mapsforgeTileServer.pixi.FontManager
 import org.develar.mapsforgeTileServer.pixi.generateFontFile
+import org.develar.mapsforgeTileServer.pixi.convertAtlas
 
 abstract class MyRenderThemeFactory : RenderThemeFactory {
   override fun create(renderThemeBuilder:RenderThemeBuilder):RenderTheme {
@@ -55,7 +52,7 @@ class RenderThemeManager(renderThemeFiles:Array<Path>, displayModel:DisplayModel
   private val generatedResources:File
   private val resourceRoots = HashMap<File, String>()
 
-  private val fontsDir = File(System.getProperty("mts.fontsDir")!!)
+  private val fontsFile:File;
 
   val pixiGraphicFactory:PixiGraphicFactory
 
@@ -73,6 +70,7 @@ class RenderThemeManager(renderThemeFiles:Array<Path>, displayModel:DisplayModel
     texturePackerSettings.maxWidth = 4096
     texturePackerSettings.maxHeight = 4096
 
+    fontsFile = File(generatedResources, "fonts")
     val fontManager = generateFonts(texturePackerSettings)
     pixiGraphicFactory = PixiGraphicFactory(fontManager)
 
@@ -102,43 +100,20 @@ class RenderThemeManager(renderThemeFiles:Array<Path>, displayModel:DisplayModel
   private fun generateFonts(texturePackerSettings:Settings):FontManager {
     LOG.info("Generate fonts")
     val fonts = ArrayList<FontInfo>()
+    val fontsDir = File(System.getProperty("mts.fontsDir")!!)
+    val fontToRegionName = HashMap<FontInfo, String>()
     for (filename in fontsDir.list()!!) {
       if (filename.endsWith(".fnt")) {
-        fonts.add(parseFontInfo(File(fontsDir, filename)))
+        val font = parseFontInfo(File(fontsDir, filename), fonts.size)
+        fonts.add(font)
+        fontToRegionName[font] = filename.substring(0, filename.length - ".fnt".length)
       }
     }
 
-    val fontManager = FontManager(fonts)
-
     TexturePacker.process(texturePackerSettings, fontsDir.path, generatedResources.path, "fonts")
-    convertAtlas("fonts")
-
-    generateFontFile(fontManager.fonts, File(generatedResources, "fonts"))
-    return fontManager
-  }
-
-  private fun convertAtlas(packFileName:String):TextureAtlasInfo {
-    val atlasData = TextureAtlas.TextureAtlasData(FileHandle(File(generatedResources, packFileName + ".atlas")), FileHandle(generatedResources), false)
-    val pages = atlasData.getPages()
-    if (pages.size > 1) {
-      throw UnsupportedOperationException("Only one page supported")
-    }
-
-    val byteOut = ByteArrayOutput()
-    val regions = atlasData.getRegions()
-    byteOut.writeUnsighedVarInt(regions.size)
-    val nameToId = ObjectIntMap<String>(regions.size)
-    for (i in 0..regions.size - 1) {
-      val image = regions.get(i)
-      nameToId.put(image.name, i)
-      byteOut.writeUnsighedVarInt(image.left)
-      byteOut.writeUnsighedVarInt(image.top)
-      byteOut.writeUnsighedVarInt(image.width)
-      byteOut.writeUnsighedVarInt(image.height)
-    }
-
-    byteOut.writeTo(File(generatedResources, packFileName + ".atl"))
-    return TextureAtlasInfo(nameToId, regions)
+    val textureAtlas = convertAtlas("fonts", generatedResources)
+    generateFontFile(fonts, fontsFile, textureAtlas, fontToRegionName)
+    return FontManager(fonts)
   }
 
   private fun addRenderTheme(path:Path,
@@ -151,7 +126,7 @@ class RenderThemeManager(renderThemeFiles:Array<Path>, displayModel:DisplayModel
     if (resourceRoots.put(parent, parentName) == null) {
       LOG.info("Generate render theme resources")
       TexturePacker.process(texturePackerSettings, File(parent, "ele_res").path, generatedResources.path, parentName)
-      textureAtlasInfo = convertAtlas(parentName)
+      textureAtlasInfo = convertAtlas(parentName, generatedResources)
       themeResourceRootNameToTextureAtlasInfo.put(parentName, textureAtlasInfo)
     }
     else {
@@ -178,21 +153,20 @@ class RenderThemeManager(renderThemeFiles:Array<Path>, displayModel:DisplayModel
     themes.put(name, RenderThemeItem(renderTheme, vectorRenderTheme, etag))
   }
 
-  fun requestToFile(uri:String):File? {
-    val fontsDirName = "fonts/"
-    if (uri.startsWith(fontsDirName, 1)) {
-      return File(fontsDir, uri.substring(fontsDirName.length + 1))
+  fun requestToFile(url:String):File? {
+    if (url == "/fonts" || url == "/fonts.png") {
+      return File(generatedResources, url.substring(1))
     }
 
     for ((file, name) in resourceRoots) {
-      if (uri.startsWith(name, 1)) {
-        if (uri[name.length + 1] == '.') {
+      if (url.startsWith(name, 1)) {
+        if (url[name.length + 1] == '.') {
           // atlas
-          return File(generatedResources, uri.substring(1))
+          return File(generatedResources, url.substring(1))
         }
         else {
           // render theme resources (actually, our client doesn't use it)
-          return File(file, uri.substring(name.length + 2))
+          return File(file, url.substring(name.length + 2))
         }
       }
     }

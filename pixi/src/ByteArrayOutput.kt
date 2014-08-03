@@ -82,7 +82,7 @@ class ByteArrayOutput(size:Int = 32) : OutputStream() {
     return c
   }
 
-  public fun writeUnsighedVarInt(v:Int) {
+  public fun writeUnsignedVarInt(v:Int) {
     if (v < 128) {
       if (v < 0) {
         throw IllegalArgumentException("Integer out of range: " + v)
@@ -136,7 +136,7 @@ class ByteArrayOutput(size:Int = 32) : OutputStream() {
         }
     }
 
-    writeUnsighedVarInt(s.length)
+    writeUnsignedVarInt(s.length)
 
     ensureCapacity(count + utfLen)
     var count = this.count
@@ -161,7 +161,7 @@ class ByteArrayOutput(size:Int = 32) : OutputStream() {
   }
 
   public fun writeSignedVarInt(v:Int) {
-    writeUnsighedVarInt((v shl 1) xor (v shr 31))
+    writeUnsignedVarInt((v shl 1) xor (v shr 31))
   }
 
   public fun writeTo(file:File):Unit {

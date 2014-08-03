@@ -1,0 +1,8 @@
+<root>
+  <item name='com.carrotsearch.hppc.IntContainer int[] toArray()'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+  <item name='com.carrotsearch.hppc.IntIntOpenHashMap com.carrotsearch.hppc.IntIntOpenHashMap.KeysContainer keys()'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+</root>

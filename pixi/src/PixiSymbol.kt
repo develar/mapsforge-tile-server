@@ -6,17 +6,13 @@ import org.mapsforge.map.rendertheme.renderinstruction.Symbol
 import org.xmlpull.v1.XmlPullParser
 
 import java.io.OutputStream
-import com.badlogic.gdx.utils.ObjectIntMap
-import com.badlogic.gdx.graphics.g2d.TextureAtlas.TextureAtlasData.Region
 
-data class TextureAtlasInfo(val nameToId:ObjectIntMap<String>, val regions:com.badlogic.gdx.utils.Array<Region>)
-
-class PixiSymbol(displayModel: DisplayModel,
-                 elementName: String,
-                 pullParser: XmlPullParser,
-                 relativePathPrefix: String,
-                 textureAtlasInfo: TextureAtlasInfo) : Symbol(null, displayModel, elementName, pullParser), Bitmap {
-  val index: Int
+class PixiSymbol(displayModel:DisplayModel,
+                 elementName:String,
+                 pullParser:XmlPullParser,
+                 relativePathPrefix:String,
+                 textureAtlasInfo:TextureAtlasInfo) : Symbol(null, displayModel, elementName, pullParser), Bitmap {
+  val index:Int
 
   {
     val subPath = src!!.substring("file:".length() + 1)
@@ -25,13 +21,13 @@ class PixiSymbol(displayModel: DisplayModel,
     if (slahIndex == -1) {
       slahIndex = subPath.indexOf('\\')
     }
-    index = textureAtlasInfo.nameToId.get(subPath.substring(slahIndex + 1, subPath.lastIndexOf('.')), -1)
+    index = textureAtlasInfo.getIndex(subPath.substring(slahIndex + 1, subPath.lastIndexOf('.')))
     assert(index > -1)
     // release memory
     src = null
 
     if (width == 0f || height == 0f) {
-      val region = textureAtlasInfo.regions.get(index)
+      val region = textureAtlasInfo.getRegion(index)
       if (width == 0f) {
         width = region.width.toFloat()
       }
@@ -41,11 +37,11 @@ class PixiSymbol(displayModel: DisplayModel,
     }
   }
 
-  override fun getBitmap(): Bitmap {
+  override fun getBitmap():Bitmap {
     return this
   }
 
-  override fun compress(outputStream: OutputStream?): Unit = throw IllegalStateException()
+  override fun compress(outputStream:OutputStream?):Unit = throw IllegalStateException()
 
   override fun incrementRefCount() {
   }
@@ -53,15 +49,15 @@ class PixiSymbol(displayModel: DisplayModel,
   override fun decrementRefCount() {
   }
 
-  override fun getHeight(): Int = height.toInt()
+  override fun getHeight():Int = height.toInt()
 
-  override fun getWidth(): Int = width.toInt()
+  override fun getWidth():Int = width.toInt()
 
-  override fun scaleTo(width: Int, height: Int): Unit = throw IllegalStateException()
+  override fun scaleTo(width:Int, height:Int):Unit = throw IllegalStateException()
 
-  override fun setBackgroundColor(color: Int): Unit = throw IllegalStateException()
+  override fun setBackgroundColor(color:Int):Unit = throw IllegalStateException()
 
-  override fun hashCode(): Int = index.hashCode()
+  override fun hashCode():Int = index.hashCode()
 
-  override fun equals(other: Any?): Boolean = other is PixiSymbol && other.index == index
+  override fun equals(other:Any?):Boolean = other is PixiSymbol && other.index == index
 }

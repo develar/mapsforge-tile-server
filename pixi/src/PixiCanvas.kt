@@ -146,7 +146,7 @@ class PixiCanvas() : Canvas, CanvasEx {
 
   override fun drawPolyLine(coordinates:Array<Array<Point>>, origin:Point, dy:Float) {
     out.writeCommand(PixiCommand.POLYLINE2)
-    out.writeUnsighedVarInt(coordinates.size)
+    out.writeUnsignedVarInt(coordinates.size)
 
     var prevPoint = origin
 
@@ -162,7 +162,7 @@ class PixiCanvas() : Canvas, CanvasEx {
       out.writeAsTwips(moveTo.y - prevPoint.y)
       prevPoint = moveTo
 
-      out.writeUnsighedVarInt(points.size - 1)
+      out.writeUnsignedVarInt(points.size - 1)
 
       for (i in 1..points.size - 1) {
         val point = points[i]
@@ -200,20 +200,36 @@ class PixiCanvas() : Canvas, CanvasEx {
     out.writeAsTwips(textBounds.x)
     out.writeAsTwips(textBounds.y)
 
-    out.writeString(text)
+    writeString((paintFront as PixiPaint).font!!, text)
   }
 
   override fun drawText(text:String, x:Double, y:Double, paintFront:Paint) {
     out.writeCommand(PixiCommand.TEXT)
     out.writeAsTwips(x)
     out.writeAsTwips(y)
-    out.writeString(text)
+    writeString((paintFront as PixiPaint).font!!, text)
+  }
+
+  private fun writeString(font:FontInfo, text:String) {
+    out.write(font.index)
+
+    out.writeUnsignedVarInt(text.length)
+    for (char in text) {
+      val index = font.getCharIndex(char)
+      if (index == -1) {
+        LOG.warn("missed char: " + char + " (code " + char.toInt() + ")")
+        out.writeUnsignedVarInt(0)
+      }
+      else {
+        out.writeUnsignedVarInt(index + 1)
+      }
+    }
   }
 
   override fun drawSymbol(symbol:Bitmap, x:Double, y:Double, rotation:Float) {
     val pixiSymbol = symbol as PixiSymbol
     out.writeCommand(PixiCommand.SYMBOL)
-    out.writeUnsighedVarInt(pixiSymbol.index)
+    out.writeUnsignedVarInt(pixiSymbol.index)
     out.writeAsTwips(x)
     out.writeAsTwips(y)
     out.writeAsTwips(rotation)

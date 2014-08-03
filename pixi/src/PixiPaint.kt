@@ -33,7 +33,9 @@ private fun getFontStyle(fontStyle:FontStyle):Int {
 }
 
 class PixiPaint(private val fontManager:FontManager) : Paint {
-  private var font:FontInfo? = null
+  var font:FontInfo? = null
+    private set
+
   private var fontSize:Int = 0
   private var fontFamily:FontFamily? = null
   private var fontStyle:FontStyle? = null

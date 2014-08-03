@@ -1,0 +1,14 @@
+<component name="libraryTable">
+  <library name="hppc">
+    <ANNOTATIONS>
+      <root url="file://$PROJECT_DIR$/lib" />
+    </ANNOTATIONS>
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib/hppc-0.6.0.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$PROJECT_DIR$/lib/src/hppc-0.6.0-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

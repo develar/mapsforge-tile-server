@@ -9,8 +9,7 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="guava" level="project" />
     <orderEntry type="library" name="mapsforge" level="project" />
-    <orderEntry type="library" name="gdx" level="project" />
-    <orderEntry type="library" name="KotlinJavaRuntime" level="project" />
+    <orderEntry type="library" name="annotations" level="project" />
   </component>
 </module>
 

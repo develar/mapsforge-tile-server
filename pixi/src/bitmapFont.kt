@@ -1,8 +1,6 @@
 package org.develar.mapsforgeTileServer.pixi
 
-import com.badlogic.gdx.utils.IntMap
 import java.awt.Rectangle
-import com.badlogic.gdx.utils.IntIntMap
 import java.io.File
 import java.io.FileReader
 import org.xmlpull.v1.XmlPullParser
@@ -15,21 +13,32 @@ import org.slf4j.LoggerFactory
 import java.awt.Point
 import java.io.BufferedOutputStream
 import java.io.FileOutputStream
-import org.develar.mapsforgeTileServer.UglyKotlin
 import java.io.OutputStream
+import com.carrotsearch.hppc.CharIntMap
+import com.carrotsearch.hppc.CharIntOpenHashMap
+import com.carrotsearch.hppc.IntObjectOpenHashMap
+import com.carrotsearch.hppc.IntObjectMap
+import java.util.ArrayList
+import com.carrotsearch.hppc.IntIntOpenHashMap
+import com.carrotsearch.hppc.IntIntMap
 
 val LOG:Logger = LoggerFactory.getLogger(javaClass<FontManager>())
 
 data
-class FontInfo(public val size:Int, public val style:FontStyle) {
-  var chars:IntMap<CharInfo>? = null
+class FontInfo(public val index:Int, public val size:Int, public val style:FontStyle, val chars:List<CharInfo>, private val charToIndex:CharIntMap) {
+  fun getCharInfoByChar(char:Char):CharInfo? {
+    val index = getCharIndex(char)
+    return if (index == -1) null else chars.get(index)
+  }
 
-  fun getCharInfo(codePoint:Int) = chars!!.get(codePoint)
+  fun getCharIndex(char:Char) = charToIndex.getOrDefault(char, -1)
+
+  fun getCharInfoByIndex(index:Int) = chars.get(index)
 }
 
 data
 class CharInfo(public val xOffset:Int, public val yOffset:Int, public val xAdvance:Int, public val rectangle:Rectangle) {
-  val kerning = IntIntMap()
+  val kerning = IntIntOpenHashMap()
 }
 
 class FontManager(fonts:List<FontInfo>) {
@@ -40,22 +49,23 @@ class FontManager(fonts:List<FontInfo>) {
   fun measureText(text:String, font:FontInfo):Point {
     var x = 0
     var height = 0
-    var prevCharCode = -1;
-    for (i in 0..text.length - 1) {
-      val charCode = text.codePointAt(i)
-      val charInfo = font.getCharInfo(charCode)
-      if (charInfo == null) {
-        LOG.warn("missed char: " + text[i])
+    var prevCharIndex = -1;
+    for (char in text) {
+      val charIndex = font.getCharIndex(char)
+      if (charIndex == -1) {
+        LOG.warn("missed char: " + char + " " + char.toInt())
         continue
       }
 
-      if (prevCharCode != -1) {
-        x += charInfo.kerning.get(prevCharCode, 0);
+      val charInfo = font.getCharInfoByIndex(charIndex)
+
+      if (prevCharIndex != -1) {
+        x += charInfo.kerning.getOrDefault(prevCharIndex, 0);
       }
       x += charInfo.xAdvance;
-      prevCharCode = charCode;
-
       height = Math.max(height, charInfo.rectangle.height + charInfo.yOffset)
+
+      prevCharIndex = charIndex
     }
     return Point(x, height)
   }
@@ -73,25 +83,31 @@ class FontManager(fonts:List<FontInfo>) {
 fun KXmlParser.getIntAttribute(name:String):Int = getAttributeValue(null, name)!!.toInt()
 fun KXmlParser.get(name:String):String = getAttributeValue(null, name)!!
 
-fun parseFontInfo(file:File):FontInfo {
+fun parseFontInfo(file:File, fontIndex:Int):FontInfo {
   val parser = KXmlParser()
   parser.setInput(FileReader(file))
   var eventType = parser.getEventType()
-  var font:FontInfo? = null
-  var chars:IntMap<CharInfo>? = null
+  var chars:MutableList<CharInfo>? = null
+  var charToIndex:CharIntMap? = null
+  var idToCharInfo:IntObjectMap<CharInfo>? = null
+  var idToCharIndex:IntIntMap? = null
+  var fontSize:Int? = null
+  var fontStyle:FontStyle? = null
   do {
     when (eventType) {
       XmlPullParser.START_TAG -> {
         when (parser.getName()!!) {
           "info" -> {
+            fontSize = parser["size"].toInt()
+
             val bold = parser["bold"] == "1"
             val italic = parser["italic"] == "1"
-            font = FontInfo(parser["size"].toInt(), when {
+            fontStyle = when {
               bold && italic -> FontStyle.BOLD_ITALIC
               bold -> FontStyle.BOLD
               italic -> FontStyle.ITALIC
               else -> FontStyle.NORMAL
-            })
+            }
           }
 
           "common" -> {
@@ -101,16 +117,41 @@ fun parseFontInfo(file:File):FontInfo {
           }
 
           "chars" -> {
-            chars = IntMap<CharInfo>(parser["count"].toInt())
+            val charCount = parser["count"].toInt()
+            charToIndex = CharIntOpenHashMap(charCount)
+            chars = ArrayList(charCount)
+            idToCharInfo = IntObjectOpenHashMap(charCount)
+            idToCharIndex = IntIntOpenHashMap(charCount)
           }
 
           "char" -> {
             val rect = Rectangle(parser.getIntAttribute("x"), parser["y"].toInt(), parser["width"].toInt(), parser["height"].toInt())
-            chars!!.put(parser["id"].toInt(), CharInfo(parser["xoffset"].toInt(), parser["yoffset"].toInt(), parser["xadvance"].toInt(), rect))
+            val charInfo = CharInfo(parser["xoffset"].toInt(), parser["yoffset"].toInt(), parser["xadvance"].toInt(), rect)
+
+            val char:Char
+            val letter = parser["letter"]
+            char = when (letter) {
+              "space" -> ' '
+              "&quot;" -> '"'
+              "&lt;" -> '<'
+              "&gt;" -> '>'
+              "&amp;" -> '&'
+              else -> {
+                assert(letter.length == 1)
+                letter[0]
+              }
+            }
+
+            charToIndex!!.put(char, chars!!.size)
+            chars!!.add(charInfo)
+            idToCharInfo!!.put(parser["id"].toInt(), charInfo)
           }
 
           "kerning" -> {
-            chars!!.get(parser["second"].toInt())?.kerning?.put(parser["first"].toInt(), parser["amount"].toInt())
+            val charInfo = idToCharInfo!![parser["second"].toInt()]
+            if (charInfo != null) {
+              charInfo.kerning.put(idToCharIndex!![parser["first"].toInt()], parser["amount"].toInt())
+            }
           }
         }
       }
@@ -119,43 +160,46 @@ fun parseFontInfo(file:File):FontInfo {
   }
   while (eventType != XmlPullParser.END_DOCUMENT)
 
-  font!!.chars = chars
-  return font!!
+  return FontInfo(fontIndex, fontSize!!, fontStyle!!, chars!!, charToIndex!!)
 }
 
-fun generateFontFile(fonts:List<FontInfo>, outFile:File) {
+fun generateFontFile(fonts:List<FontInfo>, outFile:File, textureAtlas:TextureAtlasInfo, fontToRegionName:Map<FontInfo, String>) {
   val out = BufferedOutputStream(FileOutputStream(outFile))
   val buffer = ByteArrayOutput()
-  buffer.writeUnsighedVarInt(fonts.size)
-  for (i in 0..fonts.size - 1) {
-    val font = fonts[i]
-    buffer.writeUnsighedVarInt(font.size)
-    buffer.write(font.style.ordinal())
+  buffer.writeUnsignedVarInt(fonts.size)
+  for (font in fonts) {
+    //buffer.writeUnsighedVarInt(font.size)
+    //buffer.write(font.style.ordinal())
+    //buffer.writeTo(out)
+    //buffer.reset()
+
+    val chars = font.chars
+    buffer.writeUnsignedVarInt(chars.size)
     buffer.writeTo(out)
     buffer.reset()
 
-    val chars = font.chars!!
-    buffer.writeUnsighedVarInt(chars.size)
-    buffer.writeTo(out)
-    buffer.reset()
+    var prevX = 0
+    var prevY = 0
 
-    val sortedCharCodes = UglyKotlin.getSortedKeys(chars)
-    var prevCharCode = 0
-    for (k in 0..sortedCharCodes.size - 1) {
-      val charCode = sortedCharCodes[k]
-      val charInfo = chars.get(charCode)!!
-
-      buffer.writeUnsighedVarInt(charCode - prevCharCode)
-      buffer.writeTo(out)
-      buffer.reset()
-
+    val region = textureAtlas.getRegion(fontToRegionName[font]!!)
+    for (charInfo in chars) {
       out.write(charInfo.xOffset)
       out.write(charInfo.yOffset)
       out.write(charInfo.xAdvance)
 
-      writeKerningsInfo(charInfo, buffer, out)
+      val x = region.left + charInfo.rectangle.x
+      val y = region.top + charInfo.rectangle.y
+      buffer.writeSignedVarInt(x - prevX)
+      buffer.writeSignedVarInt(y - prevY)
+      buffer.writeTo(out)
+      buffer.reset()
+      prevX = x
+      prevY = y
 
-      prevCharCode = charCode
+      out.write(charInfo.rectangle.width)
+      out.write(charInfo.rectangle.height)
+
+      writeKerningsInfo(charInfo, buffer, out)
     }
   }
 
@@ -163,21 +207,25 @@ fun generateFontFile(fonts:List<FontInfo>, outFile:File) {
 }
 
 private fun writeKerningsInfo(charInfo:CharInfo, buffer:ByteArrayOutput, out:OutputStream) {
-  buffer.writeUnsighedVarInt(charInfo.kerning.size)
+  buffer.writeUnsignedVarInt(charInfo.kerning.size())
   buffer.writeTo(out)
   buffer.reset()
 
-  val sortedKernings = UglyKotlin.getSortedKeys(charInfo.kerning)
-  var prevCharCode = 0
-  for (i in 0..sortedKernings.size - 1) {
-    val charCode = sortedKernings[i]
+  if (charInfo.kerning.isEmpty()) {
+    return
+  }
 
-    buffer.writeUnsighedVarInt(charCode - prevCharCode)
+  val sortedKernings = charInfo.kerning.keys().toArray()
+  sortedKernings.sort()
+  var prevCharIndex = 0
+  for (i in 0..sortedKernings.size - 1) {
+    val charIndex = sortedKernings[i]
+    buffer.writeUnsignedVarInt(charIndex - prevCharIndex)
     buffer.writeTo(out)
     buffer.reset()
 
-    out.write(charInfo.kerning.get(charCode, 0))
+    out.write(charInfo.kerning.get(charIndex))
 
-    prevCharCode = charCode
+    prevCharIndex = charIndex
   }
 }
