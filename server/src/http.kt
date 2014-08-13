@@ -18,14 +18,18 @@ import io.netty.channel.DefaultFileRegion
 import io.netty.handler.stream.ChunkedFile
 import io.netty.handler.codec.http.LastHttpContent
 import io.netty.channel.ChannelFutureListener
+import org.develar.mapsforgeTileServer.ImageFormat
+import io.netty.handler.codec.http.HttpHeaders.Names.ACCEPT
 
 private val FILE_MIMETYPE_MAP = MimetypesFileTypeMap()
 
-fun getContentType(path: String): String {
+fun getContentType(path:String):String {
   return FILE_MIMETYPE_MAP.getContentType(path)
 }
 
-fun checkCache(request: HttpRequest, lastModified: Long): Boolean {
+fun isWebpSupported(request:HttpRequest):Boolean = request.headers().get(ACCEPT)?.contains(ImageFormat.WEBP.getContentType()) ?: false
+
+fun checkCache(request:HttpRequest, lastModified:Long):Boolean {
   val ifModifiedSince = request.headers().get(IF_MODIFIED_SINCE)
   if (ifModifiedSince != null && !ifModifiedSince.isEmpty()) {
     try {
@@ -33,13 +37,13 @@ fun checkCache(request: HttpRequest, lastModified: Long): Boolean {
         return true
       }
     }
-    catch (ignored: DateTimeParseException) {
+    catch (ignored:DateTimeParseException) {
     }
   }
   return false
 }
 
-fun sendFile(request: HttpRequest, channel: Channel, file: File) {
+fun sendFile(request:HttpRequest, channel:Channel, file:File) {
   if (checkCache(request, file.lastModified())) {
     send(response(HttpResponseStatus.NOT_MODIFIED), channel, request)
     return
@@ -54,11 +58,11 @@ fun sendFile(request: HttpRequest, channel: Channel, file: File) {
   val keepAlive = addKeepAliveIfNeed(response, request)
 
   var fileWillBeClosed = false
-  val raf: RandomAccessFile
+  val raf:RandomAccessFile
   try {
     raf = RandomAccessFile(file, "r")
   }
-  catch (ignored: FileNotFoundException) {
+  catch (ignored:FileNotFoundException) {
     send(response(HttpResponseStatus.NOT_FOUND), channel, request)
     return
   }

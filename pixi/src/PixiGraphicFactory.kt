@@ -9,17 +9,17 @@ import java.io.IOException
 import java.io.InputStream
 import org.mapsforge.core.mapelements.MapElementContainer
 
-fun colorToInt(color:Color):Int = when (color) {
+fun colorToRgba(color:Color):Int = when (color) {
   Color.BLACK -> 0
-  Color.BLUE -> colorToInt(255, 0, 0, 255)
-  Color.GREEN -> colorToInt(255, 0, 255, 0)
-  Color.RED -> colorToInt(255, 255, 0, 0)
-  Color.TRANSPARENT -> colorToInt(0, 0, 0, 0)
-  Color.WHITE -> colorToInt(255, 255, 255, 255)
+  Color.BLUE -> colorToRgba(255, 0, 0, 255)
+  Color.GREEN -> colorToRgba(255, 0, 255, 0)
+  Color.RED -> colorToRgba(255, 255, 0, 0)
+  Color.TRANSPARENT -> colorToRgba(0, 0, 0, 0)
+  Color.WHITE -> colorToRgba(255, 255, 255, 255)
   else -> throw IllegalArgumentException("unknown color: " + color)
 }
 
-fun colorToInt(alpha:Int, red:Int, green:Int, blue:Int):Int = ((alpha and 255) shl 24) or ((red and 255) shl 16) or ((green and 255) shl 8) or (blue and 255)
+fun colorToRgba(alpha:Int, red:Int, green:Int, blue:Int):Int = ((alpha and 255) shl 24) or ((red and 255) shl 16) or ((green and 255) shl 8) or (blue and 255)
 
 class PixiGraphicFactory(private val fontManager:FontManager) : GraphicFactory {
   override fun createBitmap(width:Int, height:Int) = throw UnsupportedOperationException()
@@ -28,9 +28,9 @@ class PixiGraphicFactory(private val fontManager:FontManager) : GraphicFactory {
 
   override fun createCanvas() = PixiCanvas()
 
-  override fun createColor(color:Color) = colorToInt(color)
+  override fun createColor(color:Color) = colorToRgba(color)
 
-  override fun createColor(alpha:Int, red:Int, green:Int, blue:Int) = colorToInt(alpha, red, green, blue)
+  override fun createColor(alpha:Int, red:Int, green:Int, blue:Int) = colorToRgba(alpha, red, green, blue)
 
   override fun createMatrix() = AwtMatrix()
 

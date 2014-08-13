@@ -16,6 +16,21 @@
     <orderEntry type="library" name="slf4j" level="project" />
     <orderEntry type="module" module-name="ugly-kotlin" />
     <orderEntry type="library" name="hppc" level="project" />
+    <orderEntry type="module-library">
+      <library name="dd-plist">
+        <ANNOTATIONS>
+          <root url="file://$MODULE_DIR$/../lib" />
+        </ANNOTATIONS>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../lib/dd-plist.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://$MODULE_DIR$/../lib/src/dd-plist-r-1-sources.jar!/src/main/java" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="library" name="webp" level="project" />
   </component>
 </module>
 

@@ -19,7 +19,7 @@ public trait CanvasEx {
 
   public fun drawTextRotated(text:String, start:Point, end:Point, origin:Point, paintFront:Paint):Unit
 
-  public fun drawText(text:String, x:Double, y:Double, paintFront:Paint):Unit
+  public fun drawText(text:String, x:Double, y:Double, paintFront:Paint, paintBack:Paint?):Unit
 
   public fun drawSymbol(symbol:Bitmap, x:Double, y:Double, rotation:Float):Unit
 }

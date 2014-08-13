@@ -7,7 +7,6 @@ import org.xmlpull.v1.XmlPullParser
 import org.kxml2.io.KXmlParser
 import org.mapsforge.core.graphics.FontFamily
 import org.mapsforge.core.graphics.FontStyle
-import java.util.Comparator
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.awt.Point
@@ -25,7 +24,7 @@ import com.carrotsearch.hppc.IntIntMap
 val LOG:Logger = LoggerFactory.getLogger(javaClass<FontManager>())
 
 data
-class FontInfo(public val index:Int, public val size:Int, public val style:FontStyle, val chars:List<CharInfo>, private val charToIndex:CharIntMap) {
+class FontInfo(public val index:Int, public val size:Int, public val style:FontStyle, val chars:List<CharInfo>, private val charToIndex:CharIntMap, val fontColor:Int, val strokeWidth:Float = -1f, val strokeColor:Int = -1) {
   fun getCharInfoByChar(char:Char):CharInfo? {
     val index = getCharIndex(char)
     return if (index == -1) null else chars.get(index)
@@ -41,11 +40,8 @@ class CharInfo(public val xOffset:Int, public val yOffset:Int, public val xAdvan
   val kerning = IntIntOpenHashMap()
 }
 
-class FontManager(fonts:List<FontInfo>) {
-  val fonts = fonts.sortBy(object: Comparator<FontInfo> {
-    override fun compare(o1:FontInfo, o2:FontInfo) = o1.size - o2.size
-  })
-
+// fonts - ordered by font size
+class FontManager(private val fonts:List<FontInfo>) {
   fun measureText(text:String, font:FontInfo):Point {
     var x = 0
     var height = 0
@@ -70,18 +66,26 @@ class FontManager(fonts:List<FontInfo>) {
     return Point(x, height)
   }
 
-  fun getFont(family:FontFamily, style:FontStyle, size:Int):FontInfo? {
+  fun getFont([suppress("UNUSED_PARAMETER")] family:FontFamily, style:FontStyle, size:Int):FontInfo? {
     for (font in fonts) {
-      if (font.style == style && font.size == size) {
+      if (font.size == size && font.style == style) {
         return font
       }
     }
     return null
   }
+
+  fun getFont([suppress("UNUSED_PARAMETER")] family:FontFamily, style:FontStyle, size:Int, fontColor:Int, strokeWidth:Float = -1f, strokeColor:Int = -1):FontInfo {
+    for (font in fonts) {
+      if (font.size == size && font.style == style && font.fontColor == fontColor && font.strokeWidth == strokeWidth && font.strokeColor == strokeColor) {
+        return font
+      }
+    }
+    throw Exception("Unknown font " + family + " " + style + " " + size)
+  }
 }
 
-fun KXmlParser.getIntAttribute(name:String):Int = getAttributeValue(null, name)!!.toInt()
-fun KXmlParser.get(name:String):String = getAttributeValue(null, name)!!
+private fun KXmlParser.get(name:String):String = getAttributeValue(null, name)!!
 
 fun parseFontInfo(file:File, fontIndex:Int):FontInfo {
   val parser = KXmlParser()
@@ -125,7 +129,7 @@ fun parseFontInfo(file:File, fontIndex:Int):FontInfo {
           }
 
           "char" -> {
-            val rect = Rectangle(parser.getIntAttribute("x"), parser["y"].toInt(), parser["width"].toInt(), parser["height"].toInt())
+            val rect = Rectangle(parser["x"].toInt(), parser["y"].toInt(), parser["width"].toInt(), parser["height"].toInt())
             val charInfo = CharInfo(parser["xoffset"].toInt(), parser["yoffset"].toInt(), parser["xadvance"].toInt(), rect)
 
             val char:Char
@@ -156,14 +160,33 @@ fun parseFontInfo(file:File, fontIndex:Int):FontInfo {
         }
       }
     }
-    eventType = parser.next();
+    eventType = parser.next()
   }
   while (eventType != XmlPullParser.END_DOCUMENT)
 
-  return FontInfo(fontIndex, fontSize!!, fontStyle!!, chars!!, charToIndex!!)
+  val fileName = file.name
+  val items = fileName.substring(0, fileName.lastIndexOf('.')).split('-')
+  val strokeWidth:Float
+  val strokeColor:Int
+  if (items.size > 3) {
+    strokeWidth = items[3].toFloat()
+    strokeColor = getColor(items[4])
+  }
+  else {
+    strokeWidth = -1f
+    strokeColor = -1
+  }
+  return FontInfo(fontIndex, fontSize!!, fontStyle!!, chars!!, charToIndex!!, getColor(items[2]), strokeWidth, strokeColor)
 }
 
-fun generateFontFile(fonts:List<FontInfo>, outFile:File, textureAtlas:TextureAtlasInfo, fontToRegionName:Map<FontInfo, String>) {
+private fun getColor(colorString:String):Int {
+  val red = Integer.parseInt(colorString.substring(0, 2), 16);
+  val green = Integer.parseInt(colorString.substring(2, 4), 16);
+  val blue = Integer.parseInt(colorString.substring(4, 6), 16);
+  return colorToRgba(255, red, green, blue);
+}
+
+fun generateFontInfo(fonts:List<FontInfo>, outFile:File, textureAtlas:TextureAtlasInfo, fontToRegionName:Map<FontInfo, String>) {
   val out = BufferedOutputStream(FileOutputStream(outFile))
   val buffer = ByteArrayOutput()
   buffer.writeUnsignedVarInt(fonts.size)

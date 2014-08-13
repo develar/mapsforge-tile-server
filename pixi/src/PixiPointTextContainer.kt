@@ -11,23 +11,13 @@ import org.mapsforge.map.layer.renderer.MapElementContainerEx
 import org.mapsforge.map.layer.renderer.CanvasEx
 import org.mapsforge.core.mapelements.MapElementContainer
 
-class PixiPointTextContainer(private val text:String, point:Point, priority:Int, private val paintFront:Paint, paintBack:Paint?, symbolContainer:SymbolContainer?, position:Position, maxTextWidth:Int) : MapElementContainer(point, priority), MapElementContainerEx {
+class PixiPointTextContainer(private val text:String, point:Point, priority:Int, private val paintFront:Paint, private val paintBack:Paint?, symbolContainer:SymbolContainer?, position:Position, maxTextWidth:Int) : MapElementContainer(point, priority), MapElementContainerEx {
   {
-    val textVisualBounds:java.awt.Point
-    if (paintBack != null) {
-      textVisualBounds = (paintBack as PixiPaint).getTextVisualBounds(text)
-    }
-    else {
-      textVisualBounds = (paintFront as PixiPaint).getTextVisualBounds(text);
-    }
-    boundary = computeBoundary(textVisualBounds, maxTextWidth, position)
+    boundary = computeBoundary(((paintBack ?: paintFront) as PixiPaint).getTextVisualBounds(text), maxTextWidth, position)
   }
 
-  override fun draw(shape:CanvasEx, origin:Point) {
-    if (text.startsWith("21")) {
-      //System.out.print("dd");
-    }
-    shape.drawText(text, (xy.x - origin.x) + boundary.left, (xy.y - origin.y) + boundary.top, paintFront)
+  override fun draw(canvas:CanvasEx, origin:Point) {
+    canvas.drawText(text, (xy.x - origin.x) + boundary.left, (xy.y - origin.y) + boundary.top, paintFront, paintBack)
   }
 
   override fun clashesWith(other:MapElementContainer):Boolean {

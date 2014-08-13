@@ -1,0 +1,5 @@
+<root>
+  <item name='java.util.Base64 java.util.Base64.Encoder getEncoder()'>
+    <annotation name='org.jetbrains.annotations.NotNull'/>
+  </item>
+</root>

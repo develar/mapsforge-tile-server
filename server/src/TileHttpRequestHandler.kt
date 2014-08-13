@@ -31,6 +31,7 @@ import org.develar.mapsforgeTileServer.http.formatTime
 import org.develar.mapsforgeTileServer.http.addCommonHeaders
 import org.develar.mapsforgeTileServer.http.addKeepAliveIfNeed
 import org.develar.mapsforgeTileServer.http.sendFile
+import org.develar.mapsforgeTileServer.http.isWebpSupported
 
 class TileNotFound() : RuntimeException() {
   class object {
@@ -103,12 +104,6 @@ class TileHttpRequestHandler(private val tileServer:MapsforgeTileServer, fileCac
     }
   }
 
-  class object {
-    {
-      ImageIO.setUseCache(false)
-    }
-  }
-
   override fun exceptionCaught(context:ChannelHandlerContext, cause:Throwable) {
     if (cause is IOException && cause.getMessage() == "Connection reset by peer") {
       // ignore Connection reset by peer
@@ -123,7 +118,7 @@ class TileHttpRequestHandler(private val tileServer:MapsforgeTileServer, fileCac
     val matcher = MAP_TILE_NAME_PATTERN.matcher(uri)
     val channel = context.channel()
     if (!matcher.find()) {
-      val file = tileServer.renderThemeManager.requestToFile(uri)
+      val file = tileServer.renderThemeManager.requestToFile(uri, request)
       if (file != null) {
         sendFile(request, channel, file)
         return
@@ -146,8 +141,7 @@ class TileHttpRequestHandler(private val tileServer:MapsforgeTileServer, fileCac
     var imageFormat = imageFormat(matcher.group(4))
     val useVaryAccept = imageFormat == null
     if (useVaryAccept) {
-      val accept = request.headers().get(ACCEPT)
-      imageFormat = if (accept != null && accept.contains(ImageFormat.WEBP.getContentType())) ImageFormat.WEBP else ImageFormat.PNG
+      imageFormat = if (isWebpSupported(request)) ImageFormat.WEBP else ImageFormat.PNG
     }
 
     val renderedTile:RenderedTile
@@ -177,7 +171,6 @@ class TileHttpRequestHandler(private val tileServer:MapsforgeTileServer, fileCac
         }
         return
       }
-
     }
 
     if (checkCache(request, renderedTile.lastModified) || renderedTile.etag == request.headers().get(IF_NONE_MATCH)) {

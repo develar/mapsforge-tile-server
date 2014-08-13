@@ -36,6 +36,7 @@ import org.mapsforge.map.awt.AwtGraphicFactory
 import org.mapsforge.core.graphics.TileBitmap
 import org.mapsforge.map.awt.AwtTileBitmap
 import java.awt.image.BufferedImage
+import javax.imageio.ImageIO
 
 val LOG:Logger = LoggerFactory.getLogger(javaClass<MapsforgeTileServer>())
 
@@ -48,6 +49,8 @@ class MyAwtGraphicFactory() : AwtGraphicFactory() {
 val AWT_GRAPHIC_FACTORY: GraphicFactory = MyAwtGraphicFactory()
 
 public fun main(args: Array<String>) {
+  ImageIO.setUseCache(false)
+
   val options = Options()
   //printUsage(options);
   try {

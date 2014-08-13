@@ -128,9 +128,9 @@ class PixiCanvas() : Canvas, CanvasEx {
     }
   }
 
-  override fun drawText(text:String, x:Float, y:Float, paint:Paint) = throw IllegalStateException("Shape.drawText must be used")
+  override fun drawText(text:String, x:Float, y:Float, paint:Paint) = throw IllegalStateException("Canvas.drawText must be used")
 
-  override fun drawTextRotated(text:String, x1:Float, y1:Float, x2:Float, y2:Float, paint:Paint):Unit = throw IllegalStateException("Shape.drawTextRotated must be used")
+  override fun drawTextRotated(text:String, x1:Float, y1:Float, x2:Float, y2:Float, paint:Paint):Unit = throw IllegalStateException("Canvas.drawTextRotated must be used")
 
   override fun fillColor(color:Color) {
   }
@@ -203,11 +203,19 @@ class PixiCanvas() : Canvas, CanvasEx {
     writeString((paintFront as PixiPaint).font!!, text)
   }
 
-  override fun drawText(text:String, x:Double, y:Double, paintFront:Paint) {
+  override fun drawText(text:String, x:Double, y:Double, paintFront:Paint, paintBack:Paint?) {
+    val font:FontInfo
+    if (paintBack != null) {
+      font = (paintBack as PixiPaint).fontManager.getFont((paintFront as PixiPaint).fontFamily, paintFront.fontStyle, paintFront.fontSize, paintFront._color, paintBack.lineWidth, paintBack._color)
+    }
+    else {
+      font = (paintFront as PixiPaint).font!!
+    }
+
     out.writeCommand(PixiCommand.TEXT)
     out.writeAsTwips(x)
     out.writeAsTwips(y)
-    writeString((paintFront as PixiPaint).font!!, text)
+    writeString(font, text)
   }
 
   private fun writeString(font:FontInfo, text:String) {

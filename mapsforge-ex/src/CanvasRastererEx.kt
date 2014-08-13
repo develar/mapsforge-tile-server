@@ -10,7 +10,7 @@ import org.mapsforge.core.model.Tile
 val EMPTY_POINT:Point = Point(0.0, 0.0)
 
 public trait MapElementContainerEx {
-  fun draw(shape:CanvasEx, origin:Point):Unit
+  fun draw(canvas:CanvasEx, origin:Point):Unit
 }
 
 fun drawWays(drawWays:Array<List<MutableList<ShapePaintContainer>>>, canvas:CanvasEx) {

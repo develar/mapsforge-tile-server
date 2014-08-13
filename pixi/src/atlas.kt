@@ -6,6 +6,12 @@ import com.badlogic.gdx.files.FileHandle
 import java.io.File
 import com.carrotsearch.hppc.ObjectIntMap
 import com.carrotsearch.hppc.ObjectIntOpenHashMap
+import com.luciad.imageio.webp.WebPWriteParam
+import java.util.Locale
+import java.nio.file.Files
+import java.nio.file.Paths
+import javax.imageio.ImageIO
+import com.luciad.imageio.webp.WebP
 
 data class TextureAtlasInfo(private val nameToId:ObjectIntMap<String>, private val regions:com.badlogic.gdx.utils.Array<Region>) {
   fun getRegion(index:Int) = regions[index]
@@ -15,7 +21,29 @@ data class TextureAtlasInfo(private val nameToId:ObjectIntMap<String>, private v
   fun getIndex(name:String) = nameToId.getOrDefault(name, -1)
 }
 
+val WEBP_PARAM = {
+  try {
+    val result = WebPWriteParam(Locale.ENGLISH)
+    result.setCompressionType("Lossless")
+    result
+  }
+  catch(e:Exception) {
+    LOG.warn("Cannot use webp", e)
+    null
+  }
+}()
+
+
 fun convertAtlas(packFileName:String, generatedResources:File):TextureAtlasInfo {
+  if (WEBP_PARAM != null) {
+    try {
+      Files.write(Paths.get(generatedResources.getPath(), packFileName + ".webp"), WebP.encode(WEBP_PARAM, ImageIO.read(File(generatedResources, packFileName + ".png"))!!))
+    }
+    catch(e:Exception) {
+      LOG.warn("Cannot encode webp", e)
+    }
+  }
+
   val atlasData = TextureAtlas.TextureAtlasData(FileHandle(File(generatedResources, packFileName + ".atlas")), FileHandle(generatedResources), false)
   val pages = atlasData.getPages()
   if (pages.size > 1) {

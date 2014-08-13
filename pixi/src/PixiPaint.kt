@@ -32,16 +32,21 @@ private fun getFontStyle(fontStyle:FontStyle):Int {
   }
 }
 
-class PixiPaint(private val fontManager:FontManager) : Paint {
+class PixiPaint(val fontManager:FontManager) : Paint {
   var font:FontInfo? = null
     private set
 
-  private var fontSize:Int = 0
-  private var fontFamily:FontFamily? = null
-  private var fontStyle:FontStyle? = null
+  var fontSize:Int = 0
+    private set
+  var fontFamily = FontFamily.DEFAULT
+    private set
+  var fontStyle = FontStyle.NORMAL
+    private set
 
   var lineWidth:Float = 1f
   var _color:Int = 0
+    private set
+
   var _style:Style? = null
 
   fun getTextVisualBounds(text:String) = fontManager.measureText(text, font!!)
@@ -59,11 +64,19 @@ class PixiPaint(private val fontManager:FontManager) : Paint {
   }
 
   override fun setColor(color:Color) {
-    _color = colorToInt(color)
+    _color = colorToRgba(color)
+    if (_color == -16777216) {
+      var i = 3;
+      i++;
+    }
   }
 
   override fun setColor(color:Int) {
     _color = color
+    if (_color == -16777216) {
+      var i = 3;
+      i++;
+    }
   }
 
   override fun setDashPathEffect(strokeDasharray:FloatArray) {
@@ -102,7 +115,7 @@ class PixiPaint(private val fontManager:FontManager) : Paint {
 
   private fun createFont() {
     if (fontSize > 0) {
-      font = fontManager.getFont(fontFamily!!, fontStyle!!, fontSize)
+      font = fontManager.getFont(fontFamily, fontStyle, fontSize)
       if (font == null) {
         LOG.error("Unknown font " + fontFamily + " " + fontStyle + " " + fontSize)
       }

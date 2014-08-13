@@ -26,8 +26,11 @@ import java.util.ArrayList
 import org.develar.mapsforgeTileServer.pixi.FontInfo
 import org.develar.mapsforgeTileServer.pixi.parseFontInfo
 import org.develar.mapsforgeTileServer.pixi.FontManager
-import org.develar.mapsforgeTileServer.pixi.generateFontFile
+import org.develar.mapsforgeTileServer.pixi.generateFontInfo
 import org.develar.mapsforgeTileServer.pixi.convertAtlas
+import java.util.Comparator
+import org.develar.mapsforgeTileServer.http.isWebpSupported
+import io.netty.handler.codec.http.FullHttpRequest
 
 abstract class MyRenderThemeFactory : RenderThemeFactory {
   override fun create(renderThemeBuilder:RenderThemeBuilder):RenderTheme {
@@ -50,9 +53,8 @@ private val AWT_RENDER_THEME_FACTORY = object : MyRenderThemeFactory() {
 class RenderThemeManager(renderThemeFiles:Array<Path>, displayModel:DisplayModel) {
   val themes = LinkedHashMap<String, RenderThemeItem>()
   private val generatedResources:File
-  private val resourceRoots = HashMap<File, String>()
 
-  private val fontsFile:File;
+  private val generatedFiles = HashMap<String, File>()
 
   val pixiGraphicFactory:PixiGraphicFactory
 
@@ -70,7 +72,6 @@ class RenderThemeManager(renderThemeFiles:Array<Path>, displayModel:DisplayModel
     texturePackerSettings.maxWidth = 4096
     texturePackerSettings.maxHeight = 4096
 
-    fontsFile = File(generatedResources, "fonts")
     val fontManager = generateFonts(texturePackerSettings)
     pixiGraphicFactory = PixiGraphicFactory(fontManager)
 
@@ -110,10 +111,25 @@ class RenderThemeManager(renderThemeFiles:Array<Path>, displayModel:DisplayModel
       }
     }
 
-    TexturePacker.process(texturePackerSettings, fontsDir.path, generatedResources.path, "fonts")
+    val packFileName = "fonts"
+    TexturePacker.process(texturePackerSettings, fontsDir.path, generatedResources.path, packFileName)
     val textureAtlas = convertAtlas("fonts", generatedResources)
-    generateFontFile(fonts, fontsFile, textureAtlas, fontToRegionName)
-    return FontManager(fonts)
+    generateFontInfo(fonts, addToGeneratedFiles(packFileName), textureAtlas, fontToRegionName)
+    return FontManager(fonts.sortBy(object : Comparator<FontInfo> {
+      override fun compare(o1:FontInfo, o2:FontInfo) = o1.size - o2.size
+    })
+    )
+  }
+
+  private fun addToGeneratedFiles(packFileName:String):File {
+    val infoFile = File(generatedResources, "$packFileName.info")
+    generatedFiles["/$packFileName.info"] = infoFile
+    generatedFiles["/$packFileName.atl"] = File(generatedResources, "$packFileName.atl")
+    generatedFiles["/$packFileName.png"] = File(generatedResources, "$packFileName.png")
+    if (pixi.WEBP_PARAM != null) {
+      generatedFiles["/$packFileName.webp"] = File(generatedResources, "$packFileName.webp")
+    }
+    return infoFile
   }
 
   private fun addRenderTheme(path:Path,
@@ -122,15 +138,13 @@ class RenderThemeManager(renderThemeFiles:Array<Path>, displayModel:DisplayModel
                              texturePackerSettings:TexturePacker.Settings) {
     val parent = path.getParent()!!.toFile()
     val parentName = parent.getName()
-    val textureAtlasInfo:TextureAtlasInfo
-    if (resourceRoots.put(parent, parentName) == null) {
+    var textureAtlasInfo = themeResourceRootNameToTextureAtlasInfo.get(parentName)
+    if (textureAtlasInfo == null) {
       LOG.info("Generate render theme resources")
       TexturePacker.process(texturePackerSettings, File(parent, "ele_res").path, generatedResources.path, parentName)
       textureAtlasInfo = convertAtlas(parentName, generatedResources)
-      themeResourceRootNameToTextureAtlasInfo.put(parentName, textureAtlasInfo)
-    }
-    else {
-      textureAtlasInfo = themeResourceRootNameToTextureAtlasInfo.get(parentName)!!
+      addToGeneratedFiles(parentName)
+      themeResourceRootNameToTextureAtlasInfo.put(parentName, textureAtlasInfo!!)
     }
 
     val fileName = path.getFileName().toString()
@@ -140,7 +154,7 @@ class RenderThemeManager(renderThemeFiles:Array<Path>, displayModel:DisplayModel
 
     val vectorRenderTheme = RenderThemeHandler.getRenderTheme(pixiGraphicFactory, displayModel, xmlRenderTheme, object : MyRenderThemeFactory() {
       override fun createSymbol(graphicFactory:GraphicFactory?, displayModel:DisplayModel, qName:String, pullParser:XmlPullParser, relativePathPrefix:String):Symbol? {
-        return PixiSymbol(displayModel, qName, pullParser, relativePathPrefix, textureAtlasInfo)
+        return PixiSymbol(displayModel, qName, pullParser, relativePathPrefix, textureAtlasInfo!!)
       }
     })
     vectorRenderTheme.scaleTextSize(1f)
@@ -153,24 +167,12 @@ class RenderThemeManager(renderThemeFiles:Array<Path>, displayModel:DisplayModel
     themes.put(name, RenderThemeItem(renderTheme, vectorRenderTheme, etag))
   }
 
-  fun requestToFile(url:String):File? {
-    if (url == "/fonts" || url == "/fonts.png") {
-      return File(generatedResources, url.substring(1))
+  fun requestToFile(url:String, request:FullHttpRequest):File? {
+    var file = generatedFiles[url]
+    if (file == null && url.lastIndexOf('.') == -1) {
+      file = generatedFiles["$url.${if (isWebpSupported(request)) "webp" else "png"}"]
     }
-
-    for ((file, name) in resourceRoots) {
-      if (url.startsWith(name, 1)) {
-        if (url[name.length + 1] == '.') {
-          // atlas
-          return File(generatedResources, url.substring(1))
-        }
-        else {
-          // render theme resources (actually, our client doesn't use it)
-          return File(file, url.substring(name.length + 2))
-        }
-      }
-    }
-    return null
+    return file
   }
 
   fun dispose():Unit {
