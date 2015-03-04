@@ -127,7 +127,7 @@ private fun getAvailableMemory(): Long {
   val runtime = Runtime.getRuntime()
   val totalMemory = runtime.totalMemory() // current heap allocated to the VM process
   val freeMemory = runtime.freeMemory() // out of the current heap, how much is free
-  val maxMemory = runtime.maxMemory() // Max heap VM can use e.g. Xmx setting
+  val maxMemory = runtime.maxMemory() // max heap VM can use e.g. Xmx setting
   val usedMemory = totalMemory - freeMemory // how much of the current heap the VM is using
   // available memory i.e. Maximum heap size minus the current amount used
   return maxMemory - usedMemory
@@ -138,14 +138,6 @@ class MapsforgeTileServer(val maps: List<File>, renderThemeFiles: Array<Path>) {
   val renderThemeManager = RenderThemeManager(renderThemeFiles, displayModel)
 
   fun startServer(options: Options) {
-    val runtime = Runtime.getRuntime()
-    val freeMemory = runtime.freeMemory()
-    val maxMemoryCacheSize = getAvailableMemory() - (64 * 1024 * 1024).toLong() /* leave 64MB for another stuff */
-    if (maxMemoryCacheSize <= 0) {
-      LOG.error("Memory not enough, current free memory " + freeMemory + ", total memory " + runtime.totalMemory() + ", max memory " + runtime.maxMemory())
-      return
-    }
-
     val isLinux = System.getProperty("os.name")!!.toLowerCase(Locale.ENGLISH).startsWith("linux")
     val eventGroup = if (isLinux) EpollEventLoopGroup() else NioEventLoopGroup()
     val channelRegistrar = ChannelRegistrar()
@@ -168,6 +160,13 @@ class MapsforgeTileServer(val maps: List<File>, renderThemeFiles: Array<Path>) {
 
     val executorCount = (eventGroup : MultithreadEventExecutorGroup).executorCount()
     val fileCacheManager = if (options.maxFileCacheSize == 0.0) null else FileCacheManager(options, executorCount, shutdownHooks)
+
+    val maxMemoryCacheSize = getAvailableMemory() - (64 * 1024 * 1024).toLong() /* leave 64MB for another stuff */
+    if (maxMemoryCacheSize <= 0) {
+      val runtime = Runtime.getRuntime()
+      LOG.error("Memory not enough, current free memory " + runtime.freeMemory() + ", total memory " + runtime.totalMemory() + ", max memory " + runtime.maxMemory())
+      return
+    }
     val tileHttpRequestHandler = TileHttpRequestHandler(this, fileCacheManager, executorCount, maxMemoryCacheSize, shutdownHooks)
 
     // task "sync eventGroupShutdownFeature only" must be last
