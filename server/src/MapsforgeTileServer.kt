@@ -18,24 +18,26 @@ import io.netty.util.concurrent.MultithreadEventExecutorGroup
 import org.kohsuke.args4j.CmdLineException
 import org.kohsuke.args4j.CmdLineParser
 import org.mapsforge.core.graphics.GraphicFactory
+import org.mapsforge.core.graphics.TileBitmap
+import org.mapsforge.map.awt.AwtGraphicFactory
+import org.mapsforge.map.awt.AwtTileBitmap
 import org.mapsforge.map.model.DisplayModel
+import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-
+import java.awt.image.BufferedImage
 import java.io.File
 import java.io.OutputStreamWriter
 import java.net.InetAddress
 import java.net.InetSocketAddress
 import java.nio.file.Files
 import java.nio.file.Path
-import java.util.*
+import java.util.ArrayList
+import java.util.Enumeration
+import java.util.Locale
+import java.util.ResourceBundle
 import java.util.concurrent.atomic.AtomicReference
 import java.util.function.Consumer
 import java.util.function.Predicate
-import org.slf4j.Logger
-import org.mapsforge.map.awt.AwtGraphicFactory
-import org.mapsforge.core.graphics.TileBitmap
-import org.mapsforge.map.awt.AwtTileBitmap
-import java.awt.image.BufferedImage
 import javax.imageio.ImageIO
 
 val LOG:Logger = LoggerFactory.getLogger(javaClass<MapsforgeTileServer>())
@@ -61,7 +63,7 @@ public fun main(args: Array<String>) {
     System.exit(64)
   }
 
-  val maps = ArrayList<File>(options.maps!!.size)
+  val maps = ArrayList<File>(options.maps!!.size())
   processPaths(options.maps!!, ".map", Integer.MAX_VALUE, object: Consumer<Path> {
     override fun accept(path: Path) {
       maps.add(path.toFile())

@@ -13,7 +13,6 @@ public class ChannelRegistrar() : ChannelInboundHandlerAdapter() {
     openChannels.add(serverChannel)
   }
 
-  throws(javaClass<Exception>())
   override fun channelActive(context: ChannelHandlerContext) {
     // we don't need to remove channel on close - ChannelGroup do it
     openChannels.add(context.channel())
