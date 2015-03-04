@@ -1,17 +1,17 @@
 package org.develar.mapsforgeTileServer.pixi
 
-import com.badlogic.gdx.graphics.g2d.TextureAtlas.TextureAtlasData.Region
-import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.badlogic.gdx.files.FileHandle
-import java.io.File
+import com.badlogic.gdx.graphics.g2d.TextureAtlas
+import com.badlogic.gdx.graphics.g2d.TextureAtlas.TextureAtlasData.Region
 import com.carrotsearch.hppc.ObjectIntMap
 import com.carrotsearch.hppc.ObjectIntOpenHashMap
+import com.luciad.imageio.webp.WebP
 import com.luciad.imageio.webp.WebPWriteParam
-import java.util.Locale
+import java.io.File
 import java.nio.file.Files
 import java.nio.file.Paths
+import java.util.Locale
 import javax.imageio.ImageIO
-import com.luciad.imageio.webp.WebP
 
 data class TextureAtlasInfo(private val nameToId:ObjectIntMap<String>, private val regions:com.badlogic.gdx.utils.Array<Region>) {
   fun getRegion(index:Int) = regions[index]
@@ -21,7 +21,7 @@ data class TextureAtlasInfo(private val nameToId:ObjectIntMap<String>, private v
   fun getIndex(name:String) = nameToId.getOrDefault(name, -1)
 }
 
-val WEBP_PARAM = {
+public val WEBP_PARAM: WebPWriteParam? = {
   try {
     val result = WebPWriteParam(Locale.ENGLISH)
     result.setCompressionType("Lossless")

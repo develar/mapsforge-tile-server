@@ -21,8 +21,8 @@ import io.netty.channel.Channel
 import io.netty.channel.ChannelFutureListener
 import io.netty.channel.ChannelHandlerContext
 import io.netty.handler.codec.http.*
+import io.netty.handler.codec.http.HttpHeaders.Names.*
 import io.netty.util.CharsetUtil
-
 import java.nio.charset.Charset
 import java.time.Instant
 import java.time.ZoneId
@@ -30,8 +30,6 @@ import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoField
 import java.util.Locale
-
-import io.netty.handler.codec.http.HttpHeaders.Names.*
 
 private val DATE_FORMAT = DateTimeFormatter.ofPattern("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.US)
 
@@ -88,7 +86,7 @@ public fun addServer(response: HttpResponse) {
 
 public fun send(response: HttpResponse, channel: Channel, request: HttpRequest?) {
   if (response.status() != HttpResponseStatus.NOT_MODIFIED && !HttpHeaders.isContentLengthSet(response)) {
-    HttpHeaders.setContentLength(response, (if (response is FullHttpResponse) (response as FullHttpResponse).content().readableBytes() else 0).toLong())
+    HttpHeaders.setContentLength(response, (if (response is FullHttpResponse) (response).content().readableBytes() else 0).toLong())
   }
 
   addCommonHeaders(response)

@@ -2,8 +2,8 @@ package org.develar.mapsforgeTileServer.pixi
 
 import org.mapsforge.core.graphics.*
 import org.mapsforge.core.model.Dimension
-import org.mapsforge.map.layer.renderer.CanvasEx
 import org.mapsforge.core.model.Point
+import org.mapsforge.map.layer.renderer.CanvasEx
 
 private val TWIP_SIZE = 20
 
@@ -146,14 +146,14 @@ class PixiCanvas() : Canvas, CanvasEx {
 
   override fun drawPolyLine(coordinates:Array<Array<Point>>, origin:Point, dy:Float) {
     out.writeCommand(PixiCommand.POLYLINE2)
-    out.writeUnsignedVarInt(coordinates.size)
+    out.writeUnsignedVarInt(coordinates.size())
 
     var prevPoint = origin
 
     for (innerList in coordinates) {
       val points = innerList
 
-      if (dy != 0f || points.size < 2) {
+      if (dy != 0f || points.size() < 2) {
         throw IllegalStateException()
       }
 
@@ -162,9 +162,9 @@ class PixiCanvas() : Canvas, CanvasEx {
       out.writeAsTwips(moveTo.y - prevPoint.y)
       prevPoint = moveTo
 
-      out.writeUnsignedVarInt(points.size - 1)
+      out.writeUnsignedVarInt(points.size() - 1)
 
-      for (i in 1..points.size - 1) {
+      for (i in 1..points.size() - 1) {
         val point = points[i]
         out.writeAsTwips(point.x - prevPoint.x)
         out.writeAsTwips(point.y - prevPoint.y)
@@ -200,7 +200,7 @@ class PixiCanvas() : Canvas, CanvasEx {
     out.writeAsTwips(textBounds.x)
     out.writeAsTwips(textBounds.y)
 
-    writeString((paintFront as PixiPaint).font!!, text)
+    writeString((paintFront).font!!, text)
   }
 
   override fun drawText(text:String, x:Double, y:Double, paintFront:Paint, paintBack:Paint?) {
@@ -221,7 +221,7 @@ class PixiCanvas() : Canvas, CanvasEx {
   private fun writeString(font:FontInfo, text:String) {
     out.write(font.index)
 
-    out.writeUnsignedVarInt(text.length)
+    out.writeUnsignedVarInt(text.length())
     for (char in text) {
       val index = font.getCharIndex(char)
       if (index == -1) {

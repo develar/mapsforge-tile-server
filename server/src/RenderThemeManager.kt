@@ -1,36 +1,25 @@
 package org.develar.mapsforgeTileServer
 
-import java.util.LinkedHashMap
-import java.util.HashMap
+import com.badlogic.gdx.tools.texturepacker.TexturePacker
+import com.badlogic.gdx.tools.texturepacker.TexturePacker.Settings
+import io.netty.handler.codec.http.FullHttpRequest
+import org.develar.mapsforgeTileServer.http.isWebpSupported
+import org.develar.mapsforgeTileServer.pixi.*
+import org.mapsforge.core.graphics.Bitmap
+import org.mapsforge.core.graphics.GraphicFactory
+import org.mapsforge.map.model.DisplayModel
+import org.mapsforge.map.rendertheme.ExternalRenderTheme
+import org.mapsforge.map.rendertheme.renderinstruction.Symbol
+import org.mapsforge.map.rendertheme.rule.RenderTheme
+import org.mapsforge.map.rendertheme.rule.RenderThemeBuilder
+import org.mapsforge.map.rendertheme.rule.RenderThemeFactory
+import org.mapsforge.map.rendertheme.rule.RenderThemeHandler
+import org.xmlpull.v1.XmlPullParser
 import java.io.File
 import java.nio.file.Files
 import java.nio.file.Path
+import java.util.*
 import java.util.function.Consumer
-import com.badlogic.gdx.tools.texturepacker.TexturePacker.Settings
-import com.badlogic.gdx.tools.texturepacker.TexturePacker
-import java.util.Locale
-import org.mapsforge.map.rendertheme.ExternalRenderTheme
-import org.mapsforge.map.rendertheme.rule.RenderThemeHandler
-import org.develar.mapsforgeTileServer.pixi.PixiGraphicFactory
-import org.mapsforge.core.graphics.GraphicFactory
-import org.mapsforge.map.model.DisplayModel
-import org.xmlpull.v1.XmlPullParser
-import org.mapsforge.map.rendertheme.renderinstruction.Symbol
-import org.develar.mapsforgeTileServer.pixi.PixiSymbol
-import org.mapsforge.map.rendertheme.rule.RenderThemeFactory
-import org.mapsforge.map.rendertheme.rule.RenderThemeBuilder
-import org.mapsforge.map.rendertheme.rule.RenderTheme
-import org.mapsforge.core.graphics.Bitmap
-import org.develar.mapsforgeTileServer.pixi.TextureAtlasInfo
-import java.util.ArrayList
-import org.develar.mapsforgeTileServer.pixi.FontInfo
-import org.develar.mapsforgeTileServer.pixi.parseFontInfo
-import org.develar.mapsforgeTileServer.pixi.FontManager
-import org.develar.mapsforgeTileServer.pixi.generateFontInfo
-import org.develar.mapsforgeTileServer.pixi.convertAtlas
-import java.util.Comparator
-import org.develar.mapsforgeTileServer.http.isWebpSupported
-import io.netty.handler.codec.http.FullHttpRequest
 
 abstract class MyRenderThemeFactory : RenderThemeFactory {
   override fun create(renderThemeBuilder:RenderThemeBuilder):RenderTheme {
@@ -93,21 +82,21 @@ class RenderThemeManager(renderThemeFiles:Array<Path>, displayModel:DisplayModel
       defaultTheme = themes.get(themeName)
     }
 
-    LOG.info("Use " + themeName + " as default theme")
+    org.develar.mapsforgeTileServer.LOG.info("Use " + themeName + " as default theme")
 
     this.defaultTheme = defaultTheme!!
   }
 
-  private fun generateFonts(texturePackerSettings:Settings):FontManager {
-    LOG.info("Generate fonts")
+  private fun generateFonts(texturePackerSettings:Settings): FontManager {
+    org.develar.mapsforgeTileServer.LOG.info("Generate fonts")
     val fonts = ArrayList<FontInfo>()
     val fontsDir = File(System.getProperty("mts.fontsDir")!!)
     val fontToRegionName = HashMap<FontInfo, String>()
     for (filename in fontsDir.list()!!) {
       if (filename.endsWith(".fnt")) {
-        val font = parseFontInfo(File(fontsDir, filename), fonts.size)
+        val font = parseFontInfo(File(fontsDir, filename), fonts.size())
         fonts.add(font)
-        fontToRegionName[font] = filename.substring(0, filename.length - ".fnt".length)
+        fontToRegionName[font] = filename.substring(0, filename.length() - ".fnt".length())
       }
     }
 
@@ -126,7 +115,7 @@ class RenderThemeManager(renderThemeFiles:Array<Path>, displayModel:DisplayModel
     generatedFiles["/$packFileName.info"] = infoFile
     generatedFiles["/$packFileName.atl"] = File(generatedResources, "$packFileName.atl")
     generatedFiles["/$packFileName.png"] = File(generatedResources, "$packFileName.png")
-    if (pixi.WEBP_PARAM != null) {
+    if (WEBP_PARAM != null) {
       generatedFiles["/$packFileName.webp"] = File(generatedResources, "$packFileName.webp")
     }
     return infoFile
@@ -140,7 +129,7 @@ class RenderThemeManager(renderThemeFiles:Array<Path>, displayModel:DisplayModel
     val parentName = parent.getName()
     var textureAtlasInfo = themeResourceRootNameToTextureAtlasInfo.get(parentName)
     if (textureAtlasInfo == null) {
-      LOG.info("Generate render theme resources")
+      org.develar.mapsforgeTileServer.LOG.info("Generate render theme resources")
       TexturePacker.process(texturePackerSettings, File(parent, "ele_res").path, generatedResources.path, parentName)
       textureAtlasInfo = convertAtlas(parentName, generatedResources)
       addToGeneratedFiles(parentName)

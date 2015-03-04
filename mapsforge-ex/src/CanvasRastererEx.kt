@@ -1,6 +1,6 @@
 package org.mapsforge.map.layer.renderer
 
-import org.mapsforge.core.graphics.*
+import org.mapsforge.core.graphics.Paint
 import org.mapsforge.core.mapelements.MapElementContainer
 import org.mapsforge.core.mapelements.SymbolContainer
 import org.mapsforge.core.mapelements.WayTextContainer
@@ -60,7 +60,7 @@ private fun drawShapePaintContainer(shapePaintContainer:ShapePaintContainer, can
       val shapeContainer = shapePaintContainer.shapeContainer as PolylineContainer
       val coordinates = if (shapePaintContainer.dy == 0f) shapeContainer.getCoordinatesAbsolute() else shapeContainer.getCoordinatesRelativeToTile()
       [suppress("CAST_NEVER_SUCCEEDS")]
-      canvas.drawPolyLine(coordinates as Array<Array<Point>>, if (shapePaintContainer.dy == 0f) shapeContainer.getTile().getOrigin() else EMPTY_POINT, shapePaintContainer.dy)
+      canvas.drawPolyLine(coordinates, if (shapePaintContainer.dy == 0f) shapeContainer.getTile().getOrigin() else EMPTY_POINT, shapePaintContainer.dy)
     }
     else -> {
     }
