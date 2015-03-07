@@ -1,0 +1,8 @@
+.DS_Store
+.idea
+.git
+out/production
+out/glyphProjects
+out/fonts
+*/src/*
+*.GlyphProject

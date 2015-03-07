@@ -1,7 +1,7 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="MapsforgeTileServer" type="JetRunConfigurationType" factoryName="Kotlin" singleton="true">
     <option name="MAIN_CLASS_NAME" value="org.develar.mapsforgeTileServer.MapsforgeTileServerPackage" />
-    <option name="VM_PARAMETERS" value="-server -ea -Xmx1G -Xbootclasspath/a:lib/marlin-0.5.4-Unsafe.jar -Dsun.java2d.renderer=org.marlin.pisces.PiscesRenderingEngine -Dsun.java2d.renderer.useRef=hard -Dfile.encoding=UTF-8 -Djava.library.path=lib -Djava.awt.headless=true -Duser.language=en -Dorg.slf4j.simpleLogger.showLogName=false -Dorg.slf4j.simpleLogger.showDateTime=true -Dorg.slf4j.simpleLogger.dateTimeFormat=&quot;yyyy-MM-dd HH:mm:ss,SSS&quot; -Dmts.atlasDir=out -Dmts.fontsDir=dist/fonts" />
+    <option name="VM_PARAMETERS" value="-server -ea -Xmx512M -Xbootclasspath/a:lib/marlin-0.5.5-Unsafe.jar -Dsun.java2d.renderer=org.marlin.pisces.PiscesRenderingEngine -Dsun.java2d.renderer.useRef=hard -Dfile.encoding=UTF-8 -Djava.library.path=lib -Djava.awt.headless=true -Duser.language=en -Dorg.slf4j.simpleLogger.showLogName=false -Dorg.slf4j.simpleLogger.showDateTime=true -Dorg.slf4j.simpleLogger.dateTimeFormat=&quot;yyyy-MM-dd HH:mm:ss,SSS&quot; -Dmts.atlasDir=out/atlases -Dmts.fontsDir=out/fonts" />
     <option name="PROGRAM_PARAMETERS" value="--map ~/maps/Alps.map --theme dist/renderThemes --cache-file out/cache.db --max-file-size=0" />
     <option name="WORKING_DIRECTORY" value="" />
     <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />

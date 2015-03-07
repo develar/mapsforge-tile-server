@@ -15,6 +15,7 @@ import io.netty.handler.codec.http.HttpRequestDecoder
 import io.netty.handler.codec.http.HttpResponseEncoder
 import io.netty.util.concurrent.Future
 import io.netty.util.concurrent.MultithreadEventExecutorGroup
+import org.develar.mapsforgeTileServer.pixi.processPaths
 import org.kohsuke.args4j.CmdLineException
 import org.kohsuke.args4j.CmdLineParser
 import org.mapsforge.core.graphics.GraphicFactory
@@ -29,7 +30,6 @@ import java.io.File
 import java.io.OutputStreamWriter
 import java.net.InetAddress
 import java.net.InetSocketAddress
-import java.nio.file.Files
 import java.nio.file.Path
 import java.util.ArrayList
 import java.util.Enumeration
@@ -37,7 +37,6 @@ import java.util.Locale
 import java.util.ResourceBundle
 import java.util.concurrent.atomic.AtomicReference
 import java.util.function.Consumer
-import java.util.function.Predicate
 import javax.imageio.ImageIO
 
 val LOG:Logger = LoggerFactory.getLogger(javaClass<MapsforgeTileServer>())
@@ -85,27 +84,6 @@ public fun main(args: Array<String>) {
   }
 
   mapsforgeTileServer.startServer(options)
-}
-
-private fun processPaths(paths: Array<Path>, ext: String, maxDepth: Int, action: Consumer<Path>) {
-  for (specifiedPath in paths) {
-    if (!Files.exists(specifiedPath)) {
-      throw IllegalArgumentException("File does not exist: " + specifiedPath)
-    }
-    else
-      if (!Files.isReadable(specifiedPath)) {
-        throw IllegalArgumentException("Cannot read file: " + specifiedPath)
-      }
-      else
-        if (Files.isDirectory(specifiedPath)) {
-          Files.walk(specifiedPath, maxDepth).filter(object: Predicate<Path> {
-            override fun test(path: Path): Boolean = !Files.isDirectory(path) && path.getFileName().toString().endsWith(ext)
-          }).forEachOrdered(action)
-        }
-        else {
-          action.accept(specifiedPath)
-        }
-  }
 }
 
 SuppressWarnings("UnusedDeclaration")

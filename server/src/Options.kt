@@ -15,7 +15,7 @@ class Options() {
   public var host: String? = null
 
   Option(name = "--port", aliases = array("-p"), usage = "Port")
-  public var port: Int = 6090
+  public var port: Int = 80
 
   Option(name = "--max-file-cache-size", aliases = array("-cs"), usage = "Maximal file cache size in GB, limit is not strict, actual size might be 10% or more bigger. Set -1 to unlmited")
   public var maxFileCacheSize: Double = 30.0

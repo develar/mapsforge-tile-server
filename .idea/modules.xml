@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/font-generator/font-generator.iml" filepath="$PROJECT_DIR$/font-generator/font-generator.iml" />
       <module fileurl="file://$PROJECT_DIR$/mapsforge-ex/mapsforge-ex.iml" filepath="$PROJECT_DIR$/mapsforge-ex/mapsforge-ex.iml" />
       <module fileurl="file://$PROJECT_DIR$/mapsforge-tile-server.iml" filepath="$PROJECT_DIR$/mapsforge-tile-server.iml" />
       <module fileurl="file://$PROJECT_DIR$/pixi/pixi.iml" filepath="$PROJECT_DIR$/pixi/pixi.iml" />
@@ -9,4 +10,3 @@
     </modules>
   </component>
 </project>
-

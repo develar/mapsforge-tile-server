@@ -9,16 +9,18 @@ import com.luciad.imageio.webp.WebP
 import com.luciad.imageio.webp.WebPWriteParam
 import java.io.File
 import java.nio.file.Files
-import java.nio.file.Paths
+import java.nio.file.Path
 import java.util.Locale
+import java.util.function.Consumer
+import java.util.function.Predicate
 import javax.imageio.ImageIO
 
-data class TextureAtlasInfo(private val nameToId:ObjectIntMap<String>, private val regions:com.badlogic.gdx.utils.Array<Region>) {
-  fun getRegion(index:Int) = regions[index]
+data class TextureAtlasInfo(private val nameToId: ObjectIntMap<String>, private val regions: com.badlogic.gdx.utils.Array<Region>) {
+  fun getRegion(index: Int) = regions[index]
 
-  fun getRegion(name:String) = getRegion(getIndex(name))
+  fun getRegion(name: String) = getRegion(getIndex(name))
 
-  fun getIndex(name:String) = nameToId.getOrDefault(name, -1)
+  fun getIndex(name: String) = nameToId.getOrDefault(name, -1)
 }
 
 public val WEBP_PARAM: WebPWriteParam? = {
@@ -27,20 +29,39 @@ public val WEBP_PARAM: WebPWriteParam? = {
     result.setCompressionType("Lossless")
     result
   }
-  catch(e:Exception) {
+  catch(e: Throwable) {
     LOG.warn("Cannot use webp", e)
     null
   }
 }()
 
-
-fun convertAtlas(packFileName:String, generatedResources:File):TextureAtlasInfo {
-  if (WEBP_PARAM != null) {
-    try {
-      Files.write(Paths.get(generatedResources.getPath(), packFileName + ".webp"), WebP.encode(WEBP_PARAM, ImageIO.read(File(generatedResources, packFileName + ".png"))!!))
+public fun processPaths(paths: Array<Path>, ext: String, maxDepth: Int, action: Consumer<Path>) {
+  for (specifiedPath in paths) {
+    if (!Files.exists(specifiedPath)) {
+      throw IllegalArgumentException("File does not exist: " + specifiedPath)
     }
-    catch(e:Exception) {
-      LOG.warn("Cannot encode webp", e)
+    else if (!Files.isReadable(specifiedPath)) {
+      throw IllegalArgumentException("Cannot read file: " + specifiedPath)
+    }
+    else if (Files.isDirectory(specifiedPath)) {
+      Files.walk(specifiedPath, maxDepth).filter(object : Predicate<Path> {
+        override fun test(path: Path): Boolean = !Files.isDirectory(path) && path.getFileName().toString().endsWith(ext)
+      }).forEachOrdered(action)
+    }
+    else {
+      action.accept(specifiedPath)
+    }
+  }
+}
+
+public fun convertAtlas(packFileName: String, generatedResources: File): TextureAtlasInfo {
+  val webP = WEBP_PARAM
+  if (webP != null) {
+    try {
+      File(generatedResources, packFileName + ".webp").writeBytes(WebP.encode(webP, ImageIO.read(File(generatedResources, packFileName + ".png"))!!))
+    }
+    catch (e: Exception) {
+      LOG.warn("Cannot encode webp atlas file", e)
     }
   }
 

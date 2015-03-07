@@ -4,13 +4,13 @@
       <root url="file://$PROJECT_DIR$/lib" />
     </ANNOTATIONS>
     <CLASSES>
-      <root url="jar://$PROJECT_DIR$/lib/gdx-1.2.0.jar!/" />
-      <root url="jar://$PROJECT_DIR$/lib/gdx-tools-1.2.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/gdx-tools-1.5.4.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/gdx-1.5.4.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>
-      <root url="jar://$PROJECT_DIR$/lib/src/gdx-1.2.0-sources.jar!/" />
-      <root url="jar://$PROJECT_DIR$/lib/src/gdx-tools-1.2.0-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/src/gdx-tools-1.5.4-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/src/gdx-1.5.4-sources.jar!/" />
     </SOURCES>
   </library>
 </component>
