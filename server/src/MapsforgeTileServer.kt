@@ -74,6 +74,10 @@ public fun main(args: Array<String>) {
     return
   }
 
+  if (options.maxFileCacheSize == -2.0) {
+    options.maxFileCacheSize = System.getenv("MAX_FILE_CACHE_SIZE")?.toDouble() ?: 30.0
+  }
+
   val mapsforgeTileServer: MapsforgeTileServer
   try {
     mapsforgeTileServer = MapsforgeTileServer(maps, options.themes!!)

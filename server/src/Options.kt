@@ -18,7 +18,7 @@ class Options() {
   public var port: Int = 80
 
   Option(name = "--max-file-cache-size", aliases = array("-cs"), usage = "Maximal file cache size in GB, limit is not strict, actual size might be 10% or more bigger. Set -1 to unlmited")
-  public var maxFileCacheSize: Double = 30.0
+  public var maxFileCacheSize: Double = -2.0
 
   Option(name = "--cache-file", aliases = array("-c"), usage = "File cache")
   public var cacheFile: File = File("mapsforge-tiles.cache")
