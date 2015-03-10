@@ -3,35 +3,28 @@ package org.develar.mapsforgeTileServer
 import com.google.common.cache.CacheBuilder
 import com.google.common.cache.CacheLoader
 import com.google.common.cache.LoadingCache
+import com.google.common.cache.Weigher
 import com.google.common.util.concurrent.UncheckedExecutionException
 import com.luciad.imageio.webp.WebP
 import com.luciad.imageio.webp.WebPWriteParam
 import io.netty.buffer.Unpooled
-import io.netty.channel.*
+import io.netty.channel.ChannelFutureListener
+import io.netty.channel.ChannelHandler
+import io.netty.channel.ChannelHandlerContext
+import io.netty.channel.SimpleChannelInboundHandler
 import io.netty.handler.codec.http.*
+import io.netty.handler.codec.http.HttpHeaders.Names.*
+import io.netty.util.concurrent.FastThreadLocal
+import org.develar.mapsforgeTileServer.http.*
 import org.mapsforge.core.model.Tile
 import org.mapsforge.map.layer.renderer.DatabaseRenderer
-
-import javax.imageio.ImageIO
+import org.mapsforge.map.layer.renderer.RendererJob
 import java.awt.image.BufferedImage
 import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.util.Locale
 import java.util.regex.Pattern
-
-import io.netty.handler.codec.http.HttpHeaders.Names.*
-import org.mapsforge.map.layer.renderer.RendererJob
-import com.google.common.cache.Weigher
-import io.netty.util.concurrent.FastThreadLocal
-import org.develar.mapsforgeTileServer.http.checkCache
-import org.develar.mapsforgeTileServer.http.sendStatus
-import org.develar.mapsforgeTileServer.http.send
-import org.develar.mapsforgeTileServer.http.response
-import org.develar.mapsforgeTileServer.http.formatTime
-import org.develar.mapsforgeTileServer.http.addCommonHeaders
-import org.develar.mapsforgeTileServer.http.addKeepAliveIfNeed
-import org.develar.mapsforgeTileServer.http.sendFile
-import org.develar.mapsforgeTileServer.http.isWebpSupported
+import javax.imageio.ImageIO
 
 class TileNotFound() : RuntimeException() {
   class object {
@@ -105,7 +98,7 @@ class TileHttpRequestHandler(private val tileServer:MapsforgeTileServer, fileCac
   }
 
   override fun exceptionCaught(context:ChannelHandlerContext, cause:Throwable) {
-    if (cause is IOException && cause.getMessage() == "Connection reset by peer") {
+    if (cause is IOException && cause.getMessage()?.endsWith("Connection reset by peer") ?: false) {
       // ignore Connection reset by peer
       return
     }

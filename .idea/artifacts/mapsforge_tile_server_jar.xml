@@ -6,7 +6,6 @@
       <element id="module-output" name="pixi" />
       <element id="module-output" name="mapsforge-ex" />
       <element id="module-output" name="ugly-kotlin" />
-      <element id="extracted-dir" path="$PROJECT_DIR$/lib/netty-all-4.1.0.Beta4.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$PROJECT_DIR$/lib/hppc-0.6.0.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$PROJECT_DIR$/lib/webp-imageio.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$PROJECT_DIR$/lib/guava-18.0.jar" path-in-jar="/" />
@@ -23,6 +22,7 @@
       <element id="extracted-dir" path="$PROJECT_DIR$/lib/gdx-1.5.4.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$PROJECT_DIR$/lib/slf4j-api-1.7.10.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$PROJECT_DIR$/lib/slf4j-simple-1.7.10.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/netty-all-4.1.0.Beta5-SNAPSHOT.jar" path-in-jar="/" />
     </root>
   </artifact>
 </component>
