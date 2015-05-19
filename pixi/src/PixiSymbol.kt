@@ -14,7 +14,7 @@ class PixiSymbol(displayModel:DisplayModel,
                  textureAtlasInfo:TextureAtlasInfo) : Symbol(null, displayModel, elementName, pullParser), Bitmap {
   val index:Int
 
-  {
+  init {
     val subPath = src!!.substring("file:".length() + 1)
     // relativePathPrefix = dist/renderThemes/Elevate => Elevate as renderer theme file parent directory name
     var slahIndex = subPath.indexOf('/')

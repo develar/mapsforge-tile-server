@@ -15,7 +15,6 @@ import java.nio.file.Paths
 private val SPLITTER = Splitter.on(CharMatcher.anyOf(",;:")).omitEmptyStrings().trimResults()
 
 public class MultiPathOptionHandlerEx(parser: CmdLineParser, option: OptionDef, setter: Setter<in Path>) : OptionHandler<Path>(parser, option, setter) {
-  throws(javaClass<CmdLineException>())
   override fun parseArguments(params: Parameters): Int {
     for (value in SPLITTER.split(params.getParameter(0))) {
       val normalizedValue:String;

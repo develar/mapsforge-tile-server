@@ -4,10 +4,8 @@ import org.mapdb.DataInput2
 import org.mapdb.DataOutput2
 import org.mapdb.Serializer
 import org.mapsforge.core.model.Tile
-
 import java.io.DataInput
 import java.io.DataOutput
-import java.io.IOException
 import java.io.Serializable
 
 private val DEFAULT_TILE_SIZE = 256
@@ -31,7 +29,6 @@ class TileRequest(tileX: Int, tileY: Int, zoomLevel: Byte, private val imageForm
   }
 
   class TileRequestSerializer() : Serializer<TileRequest>, Serializable {
-    throws(javaClass<IOException>())
     override fun serialize(out: DataOutput, value: TileRequest) {
       DataOutput2.packInt(out, value.tileX)
       DataOutput2.packInt(out, value.tileY)
@@ -39,7 +36,6 @@ class TileRequest(tileX: Int, tileY: Int, zoomLevel: Byte, private val imageForm
       out.write(value.imageFormat.toInt())
     }
 
-    throws(javaClass<IOException>())
     override fun deserialize(`in`: DataInput, available: Int): TileRequest {
       return TileRequest(DataInput2.unpackInt(`in`), DataInput2.unpackInt(`in`), `in`.readByte(), `in`.readByte())
     }

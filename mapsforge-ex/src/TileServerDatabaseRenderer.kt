@@ -1,6 +1,9 @@
 package org.mapsforge.map.layer.renderer
 
-import org.mapsforge.core.graphics.*
+import org.mapsforge.core.graphics.Bitmap
+import org.mapsforge.core.graphics.GraphicFactory
+import org.mapsforge.core.graphics.Paint
+import org.mapsforge.core.graphics.Position
 import org.mapsforge.core.mapelements.MapElementContainer
 import org.mapsforge.core.mapelements.SymbolContainer
 import org.mapsforge.core.model.Point
@@ -12,8 +15,10 @@ import org.mapsforge.map.reader.MapReadResult
 import org.mapsforge.map.reader.PointOfInterest
 import org.mapsforge.map.rendertheme.RenderCallback
 import org.mapsforge.map.rendertheme.rule.RenderTheme
-
-import java.util.*
+import java.util.ArrayList
+import java.util.Arrays
+import java.util.Collections
+import java.util.HashSet
 
 public class TileServerDatabaseRenderer(private val mapDatabase:MapDatabase?, private val graphicFactory:GraphicFactory) : RenderCallback {
   private val currentLabels = ArrayList<MapElementContainer>()
@@ -39,16 +44,16 @@ public class TileServerDatabaseRenderer(private val mapDatabase:MapDatabase?, pr
           ways[i] = innerWayList
         }
         else {
-          innerWayList!!.ensureCapacity(levels)
+          innerWayList.ensureCapacity(levels)
         }
 
         for (j in 0..levels - 1) {
-          innerWayList!!.add(ArrayList<ShapePaintContainer>(0))
+          innerWayList.add(ArrayList<ShapePaintContainer>(0))
         }
       }
     }
 
-  class object {
+  companion object {
     private val LAYERS = 11
     private val TAG_NATURAL_WATER = Tag("natural", "water")
 
@@ -94,7 +99,7 @@ public class TileServerDatabaseRenderer(private val mapDatabase:MapDatabase?, pr
   }
 
   public fun renderTile(tile:Tile):ByteArray {
-    [suppress("CAST_NEVER_SUCCEEDS")]
+    @suppress("CAST_NEVER_SUCCEEDS")
     val ways = this.ways as Array<List<MutableList<ShapePaintContainer>>>
     if (mapDatabase != null) {
       processReadMapData(ways, mapDatabase.readMapData(tile), tile)

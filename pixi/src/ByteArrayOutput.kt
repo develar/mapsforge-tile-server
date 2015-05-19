@@ -1,23 +1,23 @@
 package org.develar.mapsforgeTileServer.pixi
 
-import java.io.OutputStream
-import java.util.Arrays
 import java.io.File
 import java.io.FileOutputStream
+import java.io.OutputStream
+import java.util.Arrays
 
 class ByteArrayOutput(size:Int = 32) : OutputStream() {
   protected var buffer:ByteArray = ByteArray(size)
   protected var count:Int = 0
 
   private fun ensureCapacity(minCapacity:Int) {
-    if (minCapacity - buffer.size > 0) {
+    if (minCapacity - buffer.size() > 0) {
       grow(minCapacity)
     }
   }
 
   private fun grow(minCapacity:Int) {
     // overflow-conscious code
-    val oldCapacity = buffer.size
+    val oldCapacity = buffer.size()
     var newCapacity = oldCapacity shl 1
     if (newCapacity - minCapacity < 0) {
       newCapacity = minCapacity
@@ -38,7 +38,7 @@ class ByteArrayOutput(size:Int = 32) : OutputStream() {
   }
 
   override fun write(b:ByteArray, off:Int, len:Int) {
-    if ((off < 0) || (off > b.size) || (len < 0) || ((off + len) - b.size > 0)) {
+    if ((off < 0) || (off > b.size()) || (len < 0) || ((off + len) - b.size() > 0)) {
       throw IndexOutOfBoundsException()
     }
     ensureCapacity(count + len)
@@ -55,7 +55,7 @@ class ByteArrayOutput(size:Int = 32) : OutputStream() {
   }
 
   public fun toByteArray():ByteArray {
-    if (buffer.size == count) {
+    if (buffer.size() == count) {
       return buffer
     }
     else {

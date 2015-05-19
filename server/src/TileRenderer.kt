@@ -25,7 +25,7 @@ public class TileRenderer(private val displayModel:DisplayModel, mapFile:File, r
   public val boundingBox:BoundingBox
     get() = databaseRenderer.getMapDatabase().getMapFileInfo().boundingBox
 
-  {
+  init {
     val mapDatabase = MapDatabase()
     databaseRenderer = DatabaseRenderer(mapDatabase, AWT_GRAPHIC_FACTORY, tileCacheInfoProvider)
     vectorRenderTheme = renderTheme.vectorRenderTheme
@@ -53,10 +53,10 @@ public class TileRenderer(private val displayModel:DisplayModel, mapFile:File, r
     var renderer = databaseVectorRenderer
     if (renderer == null) {
       renderer = TileServerDatabaseRenderer(databaseRenderer.getMapDatabase(), pixiGraphicFactory)
-      renderer!!.renderTheme = vectorRenderTheme
+      renderer.renderTheme = vectorRenderTheme
       databaseVectorRenderer = renderer;
     }
-    return renderer!!.renderTile(tile)
+    return renderer.renderTile(tile)
   }
 
   public fun render(tile:Tile):BufferedImage {

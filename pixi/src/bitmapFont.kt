@@ -67,7 +67,7 @@ public class FontManager(private val fonts: List<FontInfo>) {
     return Point(x, height)
   }
 
-  fun getFont([suppress("UNUSED_PARAMETER")] family: FontFamily, style: FontStyle, size: Int): FontInfo? {
+  fun getFont(@suppress("UNUSED_PARAMETER") family: FontFamily, style: FontStyle, size: Int): FontInfo? {
     for (font in fonts) {
       if (font.size == size && font.style == style) {
         return font
@@ -76,7 +76,7 @@ public class FontManager(private val fonts: List<FontInfo>) {
     return null
   }
 
-  fun getFont([suppress("UNUSED_PARAMETER")] family: FontFamily, style: FontStyle, size: Int, fontColor: Int, strokeWidth: Float = -1f, strokeColor: Int = -1): FontInfo {
+  fun getFont(@suppress("UNUSED_PARAMETER") family: FontFamily, style: FontStyle, size: Int, fontColor: Int, strokeWidth: Float = -1f, strokeColor: Int = -1): FontInfo {
     for (font in fonts) {
       if (font.size == size && font.style == style && font.fontColor == fontColor && font.strokeWidth == strokeWidth && font.strokeColor == strokeColor) {
         return font
@@ -146,7 +146,7 @@ public fun parseFontInfo(file: File, fontIndex: Int): FontInfo {
             }
 
             charToIndex!!.put(char, chars!!.size())
-            chars!!.add(charInfo)
+            chars.add(charInfo)
             idToCharInfo!!.put(parser["id"].toInt(), charInfo)
           }
 

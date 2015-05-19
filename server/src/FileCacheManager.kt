@@ -17,7 +17,7 @@ class FileCacheManager(options: Options, executorCount: Int, shutdownHooks: Muta
   private val fileCache: HTreeMap<TileRequest, RenderedTile>
   private val flushQueue: BlockingQueue<RemovalNotification<in TileRequest, in RenderedTile>>
 
-  {
+  init {
     val cacheFile = options.cacheFile
     val dbMaker = DBMaker.newFileDB(cacheFile).transactionDisable()!!.mmapFileEnablePartial().cacheDisable()
     if (options.maxFileCacheSize != -1.0) {
@@ -49,11 +49,9 @@ class FileCacheManager(options: Options, executorCount: Int, shutdownHooks: Muta
   }
 
   public fun configureMemoryCache(cacheBuilder: CacheBuilder<TileRequest, RenderedTile>): CacheBuilder<TileRequest, RenderedTile> {
-    return cacheBuilder.removalListener {(removalNotification: RemovalNotification<in TileRequest, in RenderedTile>): Unit ->
-      if (removalNotification.wasEvicted()) {
-        flushQueue.add(removalNotification)
-      }
-    }
+    return cacheBuilder.removalListener(fun (removalNotification: RemovalNotification<in TileRequest, in RenderedTile>): Unit = if (removalNotification.wasEvicted()) {
+      flushQueue.add(removalNotification)
+    })
   }
 
   public fun get(tile: TileRequest): RenderedTile? {

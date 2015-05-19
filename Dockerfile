@@ -1,4 +1,4 @@
-FROM jeanblanchard/busybox-java:8
+FROM develar/java
 MAINTAINER Vladimir Krivosheev <develar@gmail.com>
 
 WORKDIR app

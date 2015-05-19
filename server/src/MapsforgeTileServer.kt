@@ -14,7 +14,6 @@ import io.netty.handler.codec.http.HttpObjectAggregator
 import io.netty.handler.codec.http.HttpRequestDecoder
 import io.netty.handler.codec.http.HttpResponseEncoder
 import io.netty.util.concurrent.Future
-import io.netty.util.concurrent.MultithreadEventExecutorGroup
 import org.develar.mapsforgeTileServer.pixi.processPaths
 import org.kohsuke.args4j.CmdLineException
 import org.kohsuke.args4j.CmdLineParser
@@ -140,7 +139,7 @@ class MapsforgeTileServer(val maps: List<File>, renderThemeFiles: Array<Path>) {
       }
     }
 
-    val executorCount = (eventGroup : MultithreadEventExecutorGroup).executorCount()
+    val executorCount = eventGroup.executorCount()
     val fileCacheManager = if (options.maxFileCacheSize == 0.0) null else FileCacheManager(options, executorCount, shutdownHooks)
 
     val maxMemoryCacheSize = getAvailableMemory() - (64 * 1024 * 1024).toLong() /* leave 64MB for another stuff */
@@ -158,7 +157,6 @@ class MapsforgeTileServer(val maps: List<File>, renderThemeFiles: Array<Path>) {
 
     val serverBootstrap = ServerBootstrap()
     serverBootstrap.group(eventGroup).channel(if (isLinux) javaClass<EpollServerSocketChannel>() else javaClass<NioServerSocketChannel>()).childHandler(object : ChannelInitializer<Channel>() {
-      throws(javaClass<Exception>())
       override fun initChannel(channel: Channel) {
         channel.pipeline().addLast(channelRegistrar)
         channel.pipeline().addLast(HttpRequestDecoder(), HttpObjectAggregator(1048576 * 10), HttpResponseEncoder())
@@ -170,7 +168,18 @@ class MapsforgeTileServer(val maps: List<File>, renderThemeFiles: Array<Path>) {
     val serverChannel = serverBootstrap.bind(address).syncUninterruptibly().channel()
     channelRegistrar.addServerChannel(serverChannel)
 
-    Runtime.getRuntime().addShutdownHook(Thread())
+    Runtime.getRuntime().addShutdownHook(Thread(object: Runnable {
+      override fun run() {
+        for (shutdownHook in shutdownHooks) {
+          try {
+            shutdownHook()
+          }
+          catch (e: Throwable) {
+            LOG.error(e.getMessage(), e);
+          }
+        }
+      }
+    }))
 
     LOG.info("Listening " + address.getHostName() + ":" + address.getPort())
     serverChannel.closeFuture().syncUninterruptibly()

@@ -26,7 +26,7 @@ fun main(args: Array<String>) {
 }
 
 class TextureAtlasGenerator(private val generatedResources: File) {
-  class object {
+  companion object {
     private val LOG: Logger = LoggerFactory.getLogger("FontGenerator")
   }
 

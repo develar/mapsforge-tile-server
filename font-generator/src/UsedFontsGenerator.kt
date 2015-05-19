@@ -46,7 +46,7 @@ fun main(args:Array<String>) {
   val outDirPath = args[1]
   val outDir = File(outDirPath)
   if (outDir.exists()) {
-    outDir.recurse {
+    outDir.walkTopDown().forEach {
       if (!it.isDirectory()) {
         it.delete()
       }
@@ -120,11 +120,11 @@ private fun parseTheme(parser:KXmlParser, graphicFactory:PixiGraphicFactory):Map
               var fontSizes = map[key]
               if (fontSizes == null) {
                 fontSizes = IntOpenHashSet()
-                fontSizes!!.add(fontSize)
-                map[key] = fontSizes!!
+                fontSizes.add(fontSize)
+                map[key] = fontSizes
               }
               else {
-                fontSizes!!.add(fontSize)
+                fontSizes.add(fontSize)
               }
             }
           }

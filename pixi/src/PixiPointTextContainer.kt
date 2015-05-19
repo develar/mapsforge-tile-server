@@ -4,15 +4,15 @@ import org.mapsforge.core.graphics.Canvas
 import org.mapsforge.core.graphics.Matrix
 import org.mapsforge.core.graphics.Paint
 import org.mapsforge.core.graphics.Position
+import org.mapsforge.core.mapelements.MapElementContainer
 import org.mapsforge.core.mapelements.SymbolContainer
 import org.mapsforge.core.model.Point
 import org.mapsforge.core.model.Rectangle
-import org.mapsforge.map.layer.renderer.MapElementContainerEx
 import org.mapsforge.map.layer.renderer.CanvasEx
-import org.mapsforge.core.mapelements.MapElementContainer
+import org.mapsforge.map.layer.renderer.MapElementContainerEx
 
 class PixiPointTextContainer(private val text:String, point:Point, priority:Int, private val paintFront:Paint, private val paintBack:Paint?, symbolContainer:SymbolContainer?, position:Position, maxTextWidth:Int) : MapElementContainer(point, priority), MapElementContainerEx {
-  {
+  init {
     boundary = computeBoundary(((paintBack ?: paintFront) as PixiPaint).getTextVisualBounds(text), maxTextWidth, position)
   }
 

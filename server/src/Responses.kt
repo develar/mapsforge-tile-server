@@ -21,7 +21,6 @@ import io.netty.channel.Channel
 import io.netty.channel.ChannelFutureListener
 import io.netty.channel.ChannelHandlerContext
 import io.netty.handler.codec.http.*
-import io.netty.handler.codec.http.HttpHeaders.Names.*
 import io.netty.util.CharsetUtil
 import java.nio.charset.Charset
 import java.time.Instant
@@ -56,37 +55,37 @@ public fun response(status: HttpResponseStatus): FullHttpResponse {
 public fun response(contentType: String?, content: ByteBuf?): HttpResponse {
   val response = DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK, content ?: Unpooled.EMPTY_BUFFER)
   if (contentType != null) {
-    response.headers().add(CONTENT_TYPE, contentType)
+    response.headers().add(HttpHeaderNames.CONTENT_TYPE, contentType)
   }
   return response
 }
 
 public fun addAllowAnyOrigin(response: HttpResponse) {
-  response.headers().add(ACCESS_CONTROL_ALLOW_ORIGIN, "*")
+  response.headers().add(HttpHeaderNames.ACCESS_CONTROL_ALLOW_ORIGIN, "*")
 }
 
 public fun addDate(response: HttpResponse) {
-  if (!response.headers().contains(DATE)) {
+  if (!response.headers().contains(HttpHeaderNames.DATE)) {
     addDate(response, ZonedDateTime.now(GMT_ZONE_ID))
   }
 }
 
 public fun addDate(response: HttpResponse, temporal: ZonedDateTime) {
-  response.headers().set(DATE, DATE_FORMAT.format(temporal))
+  response.headers().set(HttpHeaderNames.DATE, DATE_FORMAT.format(temporal))
 }
 
 public fun addNoCache(response: HttpResponse) {
-  response.headers().add(CACHE_CONTROL, "no-cache, no-store, must-revalidate, max-age=0")
-  response.headers().add(PRAGMA, "no-cache")
+  response.headers().add(HttpHeaderNames.CACHE_CONTROL, "no-cache, no-store, must-revalidate, max-age=0")
+  response.headers().add(HttpHeaderNames.PRAGMA, "no-cache")
 }
 
 public fun addServer(response: HttpResponse) {
-  response.headers().add(SERVER, "MapsforgeTileServer")
+  response.headers().add(HttpHeaderNames.SERVER, "MapsforgeTileServer")
 }
 
 public fun send(response: HttpResponse, channel: Channel, request: HttpRequest?) {
-  if (response.status() != HttpResponseStatus.NOT_MODIFIED && !HttpHeaders.isContentLengthSet(response)) {
-    HttpHeaders.setContentLength(response, (if (response is FullHttpResponse) (response).content().readableBytes() else 0).toLong())
+  if (response.status() != HttpResponseStatus.NOT_MODIFIED && !HttpHeaderUtil.isContentLengthSet(response)) {
+    HttpHeaderUtil.setContentLength(response, (if (response is FullHttpResponse) (response).content().readableBytes() else 0).toLong())
   }
 
   addCommonHeaders(response)
@@ -94,8 +93,8 @@ public fun send(response: HttpResponse, channel: Channel, request: HttpRequest?)
 }
 
 public fun addKeepAliveIfNeed(response: HttpResponse, request: HttpRequest): Boolean {
-  if (HttpHeaders.isKeepAlive(request)) {
-    HttpHeaders.setKeepAlive(response, true)
+  if (HttpHeaderUtil.isKeepAlive(request)) {
+    HttpHeaderUtil.setKeepAlive(response, true)
     return true
   }
   return false
@@ -156,13 +155,13 @@ private fun createStatusResponse(responseStatus: HttpResponseStatus, request: Ht
   builder.append("<hr/><p style=\"text-align: center\">").append("MapsforgeTileServer").append("</p>")
 
   val response = DefaultFullHttpResponse(HttpVersion.HTTP_1_1, responseStatus, Unpooled.copiedBuffer(builder, CharsetUtil.UTF_8))
-  response.headers().set(CONTENT_TYPE, "text/html")
+  response.headers().set(HttpHeaderNames.CONTENT_TYPE, "text/html")
   return response
 }
 
 public fun sendOptionsResponse(allowHeaders: String, request: HttpRequest, context: ChannelHandlerContext) {
   val response = response(HttpResponseStatus.OK)
-  response.headers().set(ACCESS_CONTROL_ALLOW_METHODS, allowHeaders)
-  response.headers().set(ALLOW, allowHeaders)
+  response.headers().set(HttpHeaderNames.ACCESS_CONTROL_ALLOW_METHODS, allowHeaders)
+  response.headers().set(HttpHeaderNames.ALLOW, allowHeaders)
   send(response, context.channel(), request)
 }

@@ -51,7 +51,7 @@ class RenderThemeManager(renderThemeFiles: Array<Path>, displayModel: DisplayMod
 
   val defaultTheme: RenderThemeItem
 
-  {
+  init {
     // todo read font info as client does
     pixiGraphicFactory = PixiGraphicFactory(FontManager(Collections.emptyList()))
     addToGeneratedFiles("fonts")
@@ -100,7 +100,7 @@ class RenderThemeManager(renderThemeFiles: Array<Path>, displayModel: DisplayMod
       // todo read texture info as client does
       textureAtlasInfo = TextureAtlasInfo(ObjectIntOpenHashMap(), com.badlogic.gdx.utils.Array())
       addToGeneratedFiles(parentName)
-      themeResourceRootNameToTextureAtlasInfo.put(parentName, textureAtlasInfo!!)
+      themeResourceRootNameToTextureAtlasInfo.put(parentName, textureAtlasInfo)
     }
 
     val fileName = path.getFileName().toString()

@@ -57,7 +57,7 @@ public class Renderer(tileServer: MapsforgeTileServer) {
         tileRenderers[i] = tileRenderer;
       }
 
-      val mapBoundingBox = tileRenderer!!.boundingBox
+      val mapBoundingBox = tileRenderer.boundingBox
       if (intersects(west, east, south, north, mapBoundingBox)) {
         return tileRenderer
       }

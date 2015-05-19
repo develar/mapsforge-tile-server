@@ -59,7 +59,7 @@ private fun drawShapePaintContainer(shapePaintContainer:ShapePaintContainer, can
     ShapeType.POLYLINE -> {
       val shapeContainer = shapePaintContainer.shapeContainer as PolylineContainer
       val coordinates = if (shapePaintContainer.dy == 0f) shapeContainer.getCoordinatesAbsolute() else shapeContainer.getCoordinatesRelativeToTile()
-      [suppress("CAST_NEVER_SUCCEEDS")]
+      @suppress("CAST_NEVER_SUCCEEDS")
       canvas.drawPolyLine(coordinates, if (shapePaintContainer.dy == 0f) shapeContainer.getTile().getOrigin() else EMPTY_POINT, shapePaintContainer.dy)
     }
     else -> {

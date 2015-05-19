@@ -16,7 +16,7 @@ class GlyphProjectFactory(val template:File) {
 
   private var strokeWidthNumber:NSNumber? = null
 
-  {
+  init {
     rootDict = PropertyListParser.parse(template) as NSDictionary
     val objects = (rootDict.objectForKey("\$objects") as NSArray).getArray()
     for (i in 0..objects.size() - 1) {
